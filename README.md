@@ -15,6 +15,7 @@ for practicle usage and tutorials visit
 
 ## Join the community ##
 http://www.youtube.com/channel/UC744mnjF1LOYrl_kFF4LDhg?sub_confirmation=1
-https://panettonegames.com/
 https://discord.gg/JC4ETMwd
+https://panettonegames.com/
+
 

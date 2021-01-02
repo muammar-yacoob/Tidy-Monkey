@@ -16,7 +16,7 @@ class TITLE_PT_panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.label(text= "Mode: ")#+ context.active_object.mode)
+        row.label(text= "Mode: " + context.active_object.mode)
 
 
 
