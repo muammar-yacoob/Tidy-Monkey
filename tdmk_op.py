@@ -121,7 +121,10 @@ class GEN_ACTS_OT_operator(bpy.types.Operator):
         #bpy.ops.action.push_down()
 
 
-
+        original_context = bpy.context.area.type
+        bpy.context.area.type = "NLA_EDITOR"
+        bpy.ops.anim.channels_clean_empty()
+        bpy.context.area.type = original_context
 
         for obj in sel_objs:
             if obj.animation_data is not None:
