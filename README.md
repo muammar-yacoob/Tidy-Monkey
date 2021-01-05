@@ -2,7 +2,11 @@
 Organize & Export multiple blender models into Unity, Unreal & Godot game engines
 
 ### Installing ###
-1. Download zip file: https://github.com/Muammar81/TDMK/archive/master.zip
+YouTube Video:
+https://youtu.be/3g1JKg0-Wtc
+
+Steps:
+1. Download zip file: https://github.com/Muammar81/Tidy-Monkey/archive/master.zip
 2. Open Blender
 3. Go to Edit -> Preferences -> Add-ons
 4. Click the install button
