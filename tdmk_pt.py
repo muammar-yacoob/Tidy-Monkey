@@ -14,7 +14,7 @@ class TITLE_PT_panel(bpy.types.Panel):
     bl_idname = "TitlePanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tidy Monkey xx'
+    bl_category = 'Tidy Monkey'
 
     
     def draw(self, context):
