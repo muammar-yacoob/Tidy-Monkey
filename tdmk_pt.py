@@ -1,3 +1,7 @@
+
+#https://panettonegames.com/
+#https://gumroad.com/l/CpQAM
+
 import bpy
 from bpy.types import Panel
 
@@ -10,7 +14,7 @@ class TITLE_PT_panel(bpy.types.Panel):
     bl_idname = "TitlePanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tidy Monkey'
+    bl_category = 'Tidy Monkey xx'
 
     
     def draw(self, context):
@@ -40,9 +44,9 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None # and active_object.type == 'MESH': 
             
             row = layout.row()
-            row.operator("align.toview",icon='ORIENTATION_GIMBAL')
-            row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None # and active_object.type == 'MESH': 
-  
+            if context.mode != 'EDIT_MESH':
+                row.operator("align.toview",text ="Align to View", icon='ORIENTATION_GIMBAL') #.selectedObjectsCount = 3
+                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None    
                
             row = layout.row()
             if context.mode == 'EDIT_MESH':

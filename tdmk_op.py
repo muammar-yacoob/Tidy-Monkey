@@ -1,10 +1,12 @@
+#https://panettonegames.com/
+#https://gumroad.com/l/CpQAM
+
 import bpy
 from bpy.types import Operator
 
 import os
 import bpy.ops
 import bmesh
-
 
 
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
@@ -335,3 +337,4 @@ class SHARE_OT_operator(bpy.types.Operator):
         os.system("start "+ url)
 
         return{"FINISHED"}
+
