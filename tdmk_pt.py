@@ -39,6 +39,10 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             row = layout.row()
             row.operator("origin.toselected",icon='DOT')
             row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None # and active_object.type == 'MESH': 
+            
+            row = layout.row()
+            row.operator("align.toview",icon='ORIENTATION_GIMBAL')
+            row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None # and active_object.type == 'MESH': 
   
                
             row = layout.row()

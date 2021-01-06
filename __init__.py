@@ -9,15 +9,15 @@ bl_info = {
     "category" : "Scene Organization"
 }
 
-# https://panettonegames.com/
-# http://www.youtube.com/channel/UC744mnjF1LOYrl_kFF4LDhg?sub_confirmation=1
+#https://panettonegames.com/
+#https://gumroad.com/l/CpQAM
 
 from . tdmk_pt import *
 from . tdmk_op import *
 
 
 
-classes = (TITLE_PT_panel, ORGANIZE_PT_panel, CLEANUP_PT_panel, EXPORT_PT_panel, ORG_SELECTED_OT_operator, ORG_CENTER_OT_operator, BUTTS_OT_operator, ALIGN_OT_operator, REN_BONES_OT_operator, SELECT_SAME_OT_operator, CLEAR_MATS_OT_operator, CLEAN_TEX_OT_operator, GEN_ACTS_OT_operator, EXPORT_OT_operator, SHARE_OT_operator)
+classes = (TITLE_PT_panel, ORGANIZE_PT_panel, CLEANUP_PT_panel, EXPORT_PT_panel, ORG_SELECTED_OT_operator, ORG_ALIGNTOVIEW_OT_operator, ORG_CENTER_OT_operator, BUTTS_OT_operator, ALIGN_OT_operator, REN_BONES_OT_operator, SELECT_SAME_OT_operator, CLEAR_MATS_OT_operator, CLEAN_TEX_OT_operator, GEN_ACTS_OT_operator, EXPORT_OT_operator, SHARE_OT_operator)
 
 
 register, unregister = bpy.utils.register_classes_factory(classes)

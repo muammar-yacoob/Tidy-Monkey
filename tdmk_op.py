@@ -41,6 +41,16 @@ class ORG_CENTER_OT_operator(bpy.types.Operator):
             
         self.report({'INFO'},  str(len(sel_objs)) + " Origins were Centered")        
         return {"FINISHED"}
+        
+class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
+    bl_label = "Align to View"
+    bl_idname = "align.toview"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        regData = context.region_data
+        context.object.rotation_euler = regData.view_rotation.to_euler()
+        return {"FINISHED"}
 
 class BUTTS_OT_operator(bpy.types.Operator):
     bl_label = "Select Bottom"
