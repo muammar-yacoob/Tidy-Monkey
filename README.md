@@ -21,7 +21,7 @@ for practicle usage and tutorials visit
 
 ## Join the community ##
 https://panettonegames.com/
-https://discord.gg/JC4ETMwd
+https://discord.gg/V3VMsghe2v
 
 
 
