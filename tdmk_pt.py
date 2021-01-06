@@ -21,7 +21,6 @@ class TITLE_PT_panel(bpy.types.Panel):
 
 
 
-
 #-----Sub Panels----------------------------------------------        
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"

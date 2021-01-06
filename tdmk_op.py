@@ -1,8 +1,6 @@
 import bpy
 from bpy.types import Operator
 
-
-
 import os
 import bpy.ops
 import bmesh
