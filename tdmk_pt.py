@@ -115,6 +115,10 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator("renamebones.rename",icon='BONE_DATA')
                 row.enabled = context.active_object.type == 'ARMATURE' and len(context.selected_objects) > 0 # context.active_object is not None
                 
+                row = layout.row()
+                row.operator("renamevertgroups.rename",icon='GROUP_BONE')
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
+                
         except:
             print('err')  
                      

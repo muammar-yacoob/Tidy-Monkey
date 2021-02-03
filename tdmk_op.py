@@ -260,6 +260,18 @@ class REN_BONES_OT_operator(bpy.types.Operator):
 
 
         return {"FINISHED"}
+        
+class REN_VERT_OT_operator(bpy.types.Operator):
+    bl_label = "Rename Mixamo Vert Groups"
+    bl_idname = "renamevertgroups.rename"
+    bl_options = {'REGISTER', 'UNDO'}
+        
+    rename = bpy.props.StringProperty(name="Rename:")
+    def execute(self, context):
+        v_groups = bpy.context.active_object.vertex_groups
+        for vn in v_groups:
+            vn.name = vn.name.replace("mixamorig:","")
+        return {"FINISHED"}
 
 class ALIGN_OT_operator(bpy.types.Operator):
     bl_label = "Aligne Objects"
