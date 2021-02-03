@@ -161,6 +161,7 @@ class EXPORT_PT_panel(bpy.types.Panel):
 
                     row.label(text="Verts: " + str(len(context.active_object.data.vertices)))
                     row.label(text="Mats: " + str(materialCount))
+                    row = layout.row()
                     row.label(text="Acts: " + str(nlaCount))
                     row.label(text="Keys: " + str(shapeKeyCount))
 
