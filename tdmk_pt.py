@@ -14,16 +14,13 @@ class TITLE_PT_panel(bpy.types.Panel):
     bl_idname = "TitlePanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tidy Monkey'
+    bl_category = 'Tidy Monkey xx'
 
     
     def draw(self, context):
         layout = self.layout
         row = layout.row()
         row.label(text= "Mode: " + context.active_object.mode)
-
-
-
 
 #-----Sub Panels----------------------------------------------        
 class ORGANIZE_PT_panel(bpy.types.Panel):
@@ -32,18 +29,18 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_parent_id = 'TitlePanel'
-    #bl_options = {'DEFAULT_CLOSED'}
+    bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
         layout = self.layout
 
 
         try:
+            
+            selectedVerts = len([v for v in bpy.context.active_object.data.vertices if v.select])
             row = layout.row()
             row.operator("origin.toselected",icon='DOT')
-            row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None # and active_object.type == 'MESH': 
-            
-            
+            row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None #and active_object.type == 'MESH'
             
             row = layout.row()
             if context.mode != 'EDIT_MESH':
@@ -54,15 +51,24 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if context.mode == 'EDIT_MESH':
                 row.operator("bottoms.select",text ="Select Bottom", icon='TRIA_DOWN_BAR') #.selectedObjectsCount = 3
                 row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
-            
-
+                        
+####################                        
             row = layout.row()
             if context.mode == 'EDIT_MESH':
-                row.operator("fix.rotation",text ="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
-                row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
+                row.operator("selecttrait.select",text ="Select by "+ currentTrait, icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+                row.enabled = context.active_object.mode == 'EDIT' \
+                and [f for f in bmesh.from_edit_mesh(context.edit_object.data).faces if len(f.select)==1]
+                #and bpy.context.object.data.polygons.select ==1
+                #and (True in [x.select for x in bpy.context.object.data.polygons])
+                
+                #and context.active_object is not None  # context.active_object is not None
+                #
+                
+
+####################
+                        
 
 
-            
             row = layout.row()
             if context.mode != 'EDIT_MESH':
                 row.operator("centerregions.center",text ="Center Origins of " + str(len(context.selected_objects)), icon='SNAP_FACE_CENTER') #.selectedObjectsCount = 3
@@ -92,7 +98,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_parent_id = 'TitlePanel'
-    #bl_options = {'DEFAULT_CLOSED'}
+    bl_options = {'DEFAULT_CLOSED'}
 
 
     def draw(self, context):
@@ -118,17 +124,26 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("renamevertgroups.rename",icon='GROUP_BONE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
+###############################            
+            if context.mode == 'EDIT_MESH':
+                row = layout.row()
+                row.operator("fixnormals.fix",icon='ALIASED')
+                row.enabled = context.active_object.type == 'MESH' # and len(context.selected_objects) > 0 # context.active_object is not None        
                 
+                row = layout.row()
+                row.operator("fix.rotation",text ="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
+                #row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
+            
         except:
             print('err')  
-                     
+
 class EXPORT_PT_panel(bpy.types.Panel):
     bl_label = "Export FBX"
     bl_idname = "ExportPanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_parent_id = 'TitlePanel'
-    #bl_options = {'DEFAULT_CLOSED'}
+    bl_options = {'DEFAULT_CLOSED'}
 
 
     def draw(self, context):
@@ -187,3 +202,5 @@ class EXPORT_PT_panel(bpy.types.Panel):
             row.operator("sharelove.share",text="",icon='FUND').donate ='PPL'
         except:
             print('err')  
+
+###########################

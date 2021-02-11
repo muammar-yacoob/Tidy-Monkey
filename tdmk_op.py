@@ -8,7 +8,73 @@ import os
 import bpy.ops
 import bmesh
 
+selectIndex =  0
+currentTrait = 'MATERIAL'
 
+class SELECT_TRAIT_OT_operator(bpy.types.Operator):
+    bl_label = "Select Trait"
+    bl_idname = "selecttrait.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+
+
+#        for prop_id in prop_names:
+#            print(prop_id)  
+#            getattr(average_type)
+
+
+        #me = bpy.context.object.data
+        #bm = bmesh.from_edit_mesh(me)
+        #bm.select_history[-1]
+#        global cashedVerts
+#        cashedVerts = [elem.index for elem in bm.select_history if isinstance(elem, bmesh.types.BMVert)]
+#        ([v for v in cashedVerts if v.select])        
+
+        
+        
+        
+        #switch to face mode    
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        #for i in range(len(words):
+        global selectIndex
+        global currentTrait
+        
+        
+        if(selectIndex >= len(modes)-1):
+            selectIndex = -1
+        #else:
+
+
+        currentTrait = modes[selectIndex]
+        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        selectIndex += 1  
+
+        currentTrait = modes[selectIndex] 
+        print(modes[selectIndex])
+
+
+        return {"FINISHED"}    
+
+class FIX_NORMALS_OT_operator(bpy.types.Operator):
+    bl_label = "Fix Normals"
+    bl_idname = "fixnormals.fix"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+        bpy.ops.mesh.average_normals(average_type='FACE_AREA')
+        
+        bpy.ops.object.mode_set(mode='OBJECT') 
+        bpy.ops.object.shade_smooth()
+        bpy.context.object.data.use_auto_smooth = True
+        
+        return {"FINISHED"}
+  
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Selected"
     bl_idname = "origin.toselected"
@@ -20,9 +86,6 @@ class ORG_SELECTED_OT_operator(bpy.types.Operator):
         bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
         bpy.ops.object.editmode_toggle()
         return {"FINISHED"}
-
-
-
 
 class ORG_CENTER_OT_operator(bpy.types.Operator):
     import bpy
@@ -51,36 +114,6 @@ class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
         regData = context.region_data
         context.object.rotation_euler = regData.view_rotation.to_euler()
         return {"FINISHED"}
-
-class BUTTS_OT_operator(bpy.types.Operator):
-    bl_label = "Select Bottom"
-    bl_idname = "bottoms.select"
-    bl_options = {'REGISTER', 'UNDO'}
-    
-    def execute(self, context):
-         #bpy.ops.object.mode_set(mode = 'EDIT') 
-        bpy.ops.mesh.select_mode(type="VERT")
-        bpy.ops.mesh.select_all(action = 'DESELECT')
-
-        object = bpy.context.active_object
-        vcount = len(object.data.vertices)
-        currentMesh = bmesh.from_edit_mesh(object.data)
-
-        if (vcount > 0):
-            lowest = currentMesh.verts[0]
-            for i in range(vcount):
-                if (lowest.co.z > currentMesh.verts[i].co.z):
-                    lowest = currentMesh.verts[i]
-
-            for v in currentMesh.verts:
-                if (v.co.z == lowest.co.z):
-                    v.select = True
-                else:
-                    v.select = False
-
-        #bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-        return {"FINISHED"}
-
 
 class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Fix Rotation"
@@ -141,7 +174,35 @@ class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
             self.report({'ERROR'}, "Please select a face first" )
         
         return {"FINISHED"}
+    
+class BUTTS_OT_operator(bpy.types.Operator):
+    bl_label = "Select Bottom"
+    bl_idname = "bottoms.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+         #bpy.ops.object.mode_set(mode = 'EDIT') 
+        bpy.ops.mesh.select_mode(type="VERT")
+        bpy.ops.mesh.select_all(action = 'DESELECT')
 
+        object = bpy.context.active_object
+        vcount = len(object.data.vertices)
+        currentMesh = bmesh.from_edit_mesh(object.data)
+
+        if (vcount > 0):
+            lowest = currentMesh.verts[0]
+            for i in range(vcount):
+                if (lowest.co.z > currentMesh.verts[i].co.z):
+                    lowest = currentMesh.verts[i]
+
+            for v in currentMesh.verts:
+                if (v.co.z == lowest.co.z):
+                    v.select = True
+                else:
+                    v.select = False
+
+        #bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+        return {"FINISHED"}
 
 class SELECT_SAME_OT_operator(bpy.types.Operator):
     bl_label = "Select Similar Mesh"
@@ -252,15 +313,11 @@ class REN_BONES_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     rename = bpy.props.StringProperty(name="Rename:")
-    
     def execute(self, context):
-
         for bone in bpy.context.active_object.pose.bones:
             bone.name = bone.name.replace("mixamorig:","")
-
-
         return {"FINISHED"}
-        
+    
 class REN_VERT_OT_operator(bpy.types.Operator):
     bl_label = "Rename Mixamo Vert Groups"
     bl_idname = "renamevertgroups.rename"
@@ -272,7 +329,7 @@ class REN_VERT_OT_operator(bpy.types.Operator):
         for vn in v_groups:
             vn.name = vn.name.replace("mixamorig:","")
         return {"FINISHED"}
-
+    
 class ALIGN_OT_operator(bpy.types.Operator):
     bl_label = "Aligne Objects"
     bl_idname = "alignobjects.align"
@@ -296,9 +353,9 @@ class EXPORT_OT_operator(bpy.types.Operator):
         
         try:
             if not os.path.exists(directory):
-                os.mkdir("FBXs")
+                os.mkdir(directory)
         except:
-            self.report({'ERROR'}, "could not create " + directory + "\nMake sure file is saved first and restart blender" )
+            self.report({'ERROR'}, "could not create " + directory + " - Make sure file is saved first and restart blender" )
             return {'FINISHED'}
             
         sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
@@ -386,8 +443,10 @@ class EXPORT_OT_operator(bpy.types.Operator):
             #obj.select_set(False)
             #bpy.ops.object.select_all(action='DESELECT')
 
-            obj.location = originalLoc        
-            os.system("start "+ directory)
+            obj.location = originalLoc    
+                
+            #os.system("start "+ directory)
+            os.system("start "+ os.path.dirname(blend_file_path))
         
              
             
@@ -411,4 +470,3 @@ class SHARE_OT_operator(bpy.types.Operator):
         os.system("start "+ url)
 
         return{"FINISHED"}
-
