@@ -8,6 +8,8 @@ import os
 import bpy.ops
 import bmesh
 
+###########################
+
 class SELECT_MAT_OT_operator(bpy.types.Operator):
     bl_label = "Similar Material"
     bl_idname = "material.select"
@@ -154,6 +156,7 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
         
         return {"FINISHED"}
   
+
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Selected"
     bl_idname = "origin.toselected"
@@ -560,16 +563,4 @@ class SHARE_OT_operator(bpy.types.Operator):
 
         return{"FINISHED"}
 
-    bl_label = ""
-    bl_idname = "sharelove.share"
-    
-    donate = bpy.props.StringProperty(name="Donate:")
-    
-    
-    def execute(self, context):
-        url = "https://paypal.me/PanettoneGames?locale.x=en_GB"
-        if self.donate == "TW":
-            url =  "https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark"
-        os.system("start "+ url)
 
-        return{"FINISHED"}
