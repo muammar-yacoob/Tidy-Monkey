@@ -8,20 +8,22 @@ from bpy.types import Panel
 import os
 import bpy.ops
 import bmesh
-
 class TITLE_PT_panel(bpy.types.Panel):
     bl_label = "Tidy Monkey"
     bl_idname = "TitlePanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tidy Monkey xx'
+    bl_category = 'Tidy Monkey'
 
     
     def draw(self, context):
         layout = self.layout
         row = layout.row()
-        row.label(text= "Mode: " + context.active_object.mode)
-
+        try: 
+            row.label(text= "Mode: " + context.active_object.mode)
+        except:
+            row.label(text= "Mode: N/A")
+            
 #-----Sub Panels----------------------------------------------        
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
@@ -46,27 +48,23 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if context.mode != 'EDIT_MESH':
                 row.operator("align.toview",text ="Align to View", icon='ORIENTATION_GIMBAL') #.selectedObjectsCount = 3
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None    
-               
-            row = layout.row()
+
             if context.mode == 'EDIT_MESH':
-                row.operator("bottoms.select",text ="Select Bottom", icon='TRIA_DOWN_BAR') #.selectedObjectsCount = 3
-                row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
-                        
-####################                        
-            row = layout.row()
-            if context.mode == 'EDIT_MESH':
-                row.operator("selecttrait.select",text ="Select by "+ currentTrait, icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
-                row.enabled = context.active_object.mode == 'EDIT' \
-                and [f for f in bmesh.from_edit_mesh(context.edit_object.data).faces if len(f.select)==1]
-                #and bpy.context.object.data.polygons.select ==1
-                #and (True in [x.select for x in bpy.context.object.data.polygons])
+                row = layout.row()
+                row.operator("material.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+                row = layout.row()
+                row.operator("perimeter.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+                row = layout.row()
+                row.operator("normal.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+                row = layout.row()
+                row.operator("area.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+                row = layout.row()
+                row.operator("coplanar.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+  
                 
-                #and context.active_object is not None  # context.active_object is not None
-                #
                 
 
-####################
-                        
+
 
 
             row = layout.row()

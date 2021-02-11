@@ -8,10 +8,87 @@ import os
 import bpy.ops
 import bmesh
 
-selectIndex =  0
-currentTrait = 'MATERIAL'
+class SELECT_MAT_OT_operator(bpy.types.Operator):
+    bl_label = "Similar Material"
+    bl_idname = "material.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        currentTrait = modes[0]
+        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        return {"FINISHED"}  
 
-class SELECT_TRAIT_OT_operator(bpy.types.Operator):
+class SELECT_PER_OT_operator(bpy.types.Operator):
+    bl_label = "Similar Perimeter"
+    bl_idname = "perimeter.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        currentTrait = modes[1]
+        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        return {"FINISHED"}  
+
+class SELECT_NORM_OT_operator(bpy.types.Operator):
+    bl_label = "Similar Normal"
+    bl_idname = "normal.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        currentTrait = modes[2]
+        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        return {"FINISHED"}  
+
+class SELECT_AREA_OT_operator(bpy.types.Operator):
+    bl_label = "Similar Area"
+    bl_idname = "area.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        currentTrait = modes[3]
+        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        return {"FINISHED"}  
+    
+class SELECT_COPLANAR_OT_operator(bpy.types.Operator):
+    bl_label = "Similar Coplanner"
+    bl_idname = "coplanar.select"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        currentTrait = modes[4]
+        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        return {"FINISHED"}  
+         
+class CHECKER_EDGE_OT_operator(bpy.types.Operator):
+    bl_label = "Checker Edge"
+    bl_idname = "checker.edge"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+
+    def execute(self, context):
+        try:
+            bpy.ops.mesh.loop_multi_select(ring=True)
+            bpy.ops.mesh.select_nth()
+            bpy.ops.mesh.loop_multi_select(ring=False)
+        except:
+            self.report({'ERROR'},'No Uniformal Edges Detected')
+        
+            
+        return {"FINISHED"}
+
+##################### 
+#selectIndex =  0
+#currentTrait = 'MATERIAL'
+class xSELECT_TRAIT_OT_operator(bpy.types.Operator):
     bl_label = "Select Trait"
     bl_idname = "selecttrait.select"
     bl_options = {'REGISTER', 'UNDO'}
@@ -19,42 +96,33 @@ class SELECT_TRAIT_OT_operator(bpy.types.Operator):
     def execute(self, context):
 
 
-#        for prop_id in prop_names:
-#            print(prop_id)  
-#            getattr(average_type)
+# #        for prop_id in prop_names:
+# #            print(prop_id)  
+# #            getattr(average_type)
+        # #me = bpy.context.object.data
+        # #bm = bmesh.from_edit_mesh(me)
+        # #bm.select_history[-1]
+# #        global cashedVerts
+# #        cashedVerts = [elem.index for elem in bm.select_history if isinstance(elem, bmesh.types.BMVert)]
+# #        ([v for v in cashedVerts if v.select])        
 
+        # #switch to face mode    
+        # bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+        # modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+        # #for i in range(len(words):
+        # global selectIndex
+        # global currentTrait
+       
+        # if(selectIndex >= len(modes)-1):
+            # selectIndex = -1
+        # #else:
 
-        #me = bpy.context.object.data
-        #bm = bmesh.from_edit_mesh(me)
-        #bm.select_history[-1]
-#        global cashedVerts
-#        cashedVerts = [elem.index for elem in bm.select_history if isinstance(elem, bmesh.types.BMVert)]
-#        ([v for v in cashedVerts if v.select])        
+        # currentTrait = modes[selectIndex]
+        # bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        # selectIndex += 1  
 
-        
-        
-        
-        #switch to face mode    
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        #for i in range(len(words):
-        global selectIndex
-        global currentTrait
-        
-        
-        if(selectIndex >= len(modes)-1):
-            selectIndex = -1
-        #else:
-
-
-        currentTrait = modes[selectIndex]
-        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
-        selectIndex += 1  
-
-        currentTrait = modes[selectIndex] 
-        print(modes[selectIndex])
-
-
+        # currentTrait = modes[selectIndex] 
+        # print(modes[selectIndex])
         return {"FINISHED"}    
 
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
@@ -65,13 +133,24 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
     def execute(self, context):
 
         bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.select_all(action='SELECT')    
+
         bpy.ops.mesh.normals_make_consistent(inside=False)
+
+        bpy.ops.object.mode_set(mode='OBJECT') 
+        bpy.ops.object.shade_flat()
+        bpy.context.object.data.use_auto_smooth = True
+
+        bpy.ops.object.mode_set(mode='EDIT')    
+        bpy.ops.mesh.select_all(action='DESELECT')
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+        bpy.ops.mesh.edges_select_sharp()
+        bpy.ops.mesh.mark_sharp()
+            
+        bpy.ops.mesh.select_all(action='SELECT')            
         bpy.ops.mesh.average_normals(average_type='FACE_AREA')
         
         bpy.ops.object.mode_set(mode='OBJECT') 
-        bpy.ops.object.shade_smooth()
-        bpy.context.object.data.use_auto_smooth = True
         
         return {"FINISHED"}
   
@@ -291,8 +370,18 @@ class CLEAN_TEX_OT_operator(bpy.types.Operator):
     
     def execute(self, context):
         #bpy.ops.outliner.id_remap(id_type='TEXTURE', old_id='myTexture.001', new_id='myTexture.001')
-        purgedCount = bpy.ops.outliner.orphans_purge()
-        self.report({'INFO'}, str(purgedCount) + " Unused Objects were Purged")
+        #purgedCount = bpy.ops.outliner.orphans_purge()
+        
+        try: 
+            purgedCount = purgedCount = bpy.ops.outliner.orphans_purge()
+            if(purgedCount > 0):
+                self.report({'INFO'}, str(purgedCount) + " Unused Objects were Purged")
+        except:
+            purgedCount =0
+            self.report({'INFO'}, "Nothing to clean. You're all set!")
+        
+
+        
         
         for block in bpy.data.materials:
             if block.users == 0:
@@ -457,6 +546,20 @@ class EXPORT_OT_operator(bpy.types.Operator):
         return {'FINISHED'}
 
 class SHARE_OT_operator(bpy.types.Operator):
+    bl_label = ""
+    bl_idname = "sharelove.share"
+    
+    donate = bpy.props.StringProperty(name="Donate:")
+    
+    
+    def execute(self, context):
+        url = "https://paypal.me/PanettoneGames?locale.x=en_GB"
+        if self.donate == "TW":
+            url =  "https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark"
+        os.system("start "+ url)
+
+        return{"FINISHED"}
+
     bl_label = ""
     bl_idname = "sharelove.share"
     
