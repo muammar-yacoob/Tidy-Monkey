@@ -13,6 +13,7 @@ import bmesh
 class SELECT_MAT_OT_operator(bpy.types.Operator):
     bl_label = "Similar Material"
     bl_idname = "material.select"
+    bl_description ="Select Similar Faces"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -25,6 +26,7 @@ class SELECT_MAT_OT_operator(bpy.types.Operator):
 class SELECT_PER_OT_operator(bpy.types.Operator):
     bl_label = "Similar Perimeter"
     bl_idname = "perimeter.select"
+    bl_description ="Select Similar Faces"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -37,6 +39,7 @@ class SELECT_PER_OT_operator(bpy.types.Operator):
 class SELECT_NORM_OT_operator(bpy.types.Operator):
     bl_label = "Similar Normal"
     bl_idname = "normal.select"
+    bl_description ="Select Similar Faces"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -49,6 +52,7 @@ class SELECT_NORM_OT_operator(bpy.types.Operator):
 class SELECT_AREA_OT_operator(bpy.types.Operator):
     bl_label = "Similar Area"
     bl_idname = "area.select"
+    bl_description ="Select Similar Faces"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -61,6 +65,7 @@ class SELECT_AREA_OT_operator(bpy.types.Operator):
 class SELECT_COPLANAR_OT_operator(bpy.types.Operator):
     bl_label = "Similar Coplanner"
     bl_idname = "coplanar.select"
+    bl_description ="Select Similar Faces"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -73,6 +78,7 @@ class SELECT_COPLANAR_OT_operator(bpy.types.Operator):
 class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     bl_label = "Checker Edge"
     bl_idname = "checker.edge"
+    bl_description ="Checker Select Edges"
     bl_options = {'REGISTER', 'UNDO'}
     
 
@@ -130,6 +136,7 @@ class xSELECT_TRAIT_OT_operator(bpy.types.Operator):
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
     bl_label = "Fix Normals"
     bl_idname = "fixnormals.fix"
+    bl_description ="Fixes common Normals issues"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -160,6 +167,7 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Selected"
     bl_idname = "origin.toselected"
+    bl_description ="Sets object origin to selection"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -176,6 +184,7 @@ class ORG_CENTER_OT_operator(bpy.types.Operator):
     #objCount = bpy.props.IntProperty()
     bl_label = "Center Origins"# of " + str(objCount) #str(self.objCount)
     bl_idname = "centerregions.center"
+    bl_description ="Centers the origin"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -190,6 +199,7 @@ class ORG_CENTER_OT_operator(bpy.types.Operator):
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
     bl_label = "Align to View"
     bl_idname = "align.toview"
+    bl_description ="Aligns object to view "
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -200,6 +210,7 @@ class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
 class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Fix Rotation"
     bl_idname = "fix.rotation"
+    bl_description ="Fixes Object Rotation"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -260,6 +271,7 @@ class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
 class BUTTS_OT_operator(bpy.types.Operator):
     bl_label = "Select Bottom"
     bl_idname = "bottoms.select"
+    bl_description ="Selects lower most vertices"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -289,6 +301,7 @@ class BUTTS_OT_operator(bpy.types.Operator):
 class SELECT_SAME_OT_operator(bpy.types.Operator):
     bl_label = "Select Similar Mesh"
     bl_idname = "samemesh.similar"
+    bl_description ="Selects objects with similar vertex count"
     bl_options = {'REGISTER', 'UNDO'}
         
     similar = bpy.props.StringProperty(name="Similar:")
@@ -311,6 +324,7 @@ class SELECT_SAME_OT_operator(bpy.types.Operator):
 class CLEAR_MATS_OT_operator(bpy.types.Operator):
     bl_label = "Clear Unused Materials"
     bl_idname = "clearmats.clear"
+    bl_description ="Clears unused materials"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -325,6 +339,7 @@ class CLEAR_MATS_OT_operator(bpy.types.Operator):
 class GEN_ACTS_OT_operator(bpy.types.Operator):
     bl_label = "Generate Actions"
     bl_idname = "generate.actions"
+    bl_description ="Pushes Animations to the NLA Stack"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -369,6 +384,7 @@ class GEN_ACTS_OT_operator(bpy.types.Operator):
 class CLEAN_TEX_OT_operator(bpy.types.Operator):
     bl_label = "Delete Unused Textures"
     bl_idname = "deletetextures.delete"
+    bl_description ="Removes unused textures"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -402,6 +418,7 @@ class CLEAN_TEX_OT_operator(bpy.types.Operator):
 class REN_BONES_OT_operator(bpy.types.Operator):
     bl_label = "Rename Mixamo Bones"
     bl_idname = "renamebones.rename"
+    bl_description ="Removes the word Mixamo from all bones"
     bl_options = {'REGISTER', 'UNDO'}
     
     rename = bpy.props.StringProperty(name="Rename:")
@@ -413,6 +430,7 @@ class REN_BONES_OT_operator(bpy.types.Operator):
 class REN_VERT_OT_operator(bpy.types.Operator):
     bl_label = "Rename Mixamo Vert Groups"
     bl_idname = "renamevertgroups.rename"
+    bl_description ="Removes the word Mixamo from all vertex groups"
     bl_options = {'REGISTER', 'UNDO'}
         
     rename = bpy.props.StringProperty(name="Rename:")
@@ -425,6 +443,7 @@ class REN_VERT_OT_operator(bpy.types.Operator):
 class ALIGN_OT_operator(bpy.types.Operator):
     bl_label = "Aligne Objects"
     bl_idname = "alignobjects.align"
+    bl_description ="Aligns object to view"
     bl_options = {'REGISTER', 'UNDO'}
     
     algnmnt = bpy.props.StringProperty(name="Alignment:")
@@ -437,6 +456,7 @@ class ALIGN_OT_operator(bpy.types.Operator):
 class EXPORT_OT_operator(bpy.types.Operator):
     bl_label = "Export FBX"
     bl_idname = "exportfbxxx.export"
+    bl_description ="Exports selected Objects as FBX"
     
     def execute(self, context):
         bpy.ops.object.mode_set(mode='OBJECT')
@@ -551,6 +571,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
 class SHARE_OT_operator(bpy.types.Operator):
     bl_label = ""
     bl_idname = "sharelove.share"
+    bl_description ="Contribute"
     
     donate = bpy.props.StringProperty(name="Donate:")
     
