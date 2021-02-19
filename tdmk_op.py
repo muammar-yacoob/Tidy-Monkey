@@ -17,10 +17,14 @@ class SELECT_MAT_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        currentTrait = modes[0]
-        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        try:
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+            modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+            currentTrait = modes[0]
+            bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        except:
+            bpy.ops.mesh.select_mode(type='FACE')
+            self.report({'ERROR'}, "Select a face first" ) 
         return {"FINISHED"}  
 
 class SELECT_PER_OT_operator(bpy.types.Operator):
@@ -30,10 +34,14 @@ class SELECT_PER_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        currentTrait = modes[1]
-        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        try:
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+            modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+            currentTrait = modes[1]
+            bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        except:
+            bpy.ops.mesh.select_mode(type='FACE')
+            self.report({'ERROR'}, "Select a face first" ) 
         return {"FINISHED"}  
 
 class SELECT_NORM_OT_operator(bpy.types.Operator):
@@ -43,10 +51,14 @@ class SELECT_NORM_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        currentTrait = modes[2]
-        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        try:
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+            modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+            currentTrait = modes[2]
+            bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        except:
+            bpy.ops.mesh.select_mode(type='FACE')
+            self.report({'ERROR'}, "Select a face first" ) 
         return {"FINISHED"}  
 
 class SELECT_AREA_OT_operator(bpy.types.Operator):
@@ -56,10 +68,14 @@ class SELECT_AREA_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        currentTrait = modes[3]
-        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        try:
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+            modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+            currentTrait = modes[3]
+            bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        except:
+            bpy.ops.mesh.select_mode(type='FACE')
+            self.report({'ERROR'}, "Select a face first" ) 
         return {"FINISHED"}  
     
 class SELECT_COPLANAR_OT_operator(bpy.types.Operator):
@@ -69,10 +85,14 @@ class SELECT_COPLANAR_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        currentTrait = modes[4]
-        bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        try:
+            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
+            modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
+            currentTrait = modes[4]
+            bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
+        except:
+            bpy.ops.mesh.select_mode(type='FACE')
+            self.report({'ERROR'}, "Select a face first" ) 
         return {"FINISHED"}  
          
 class CHECKER_EDGE_OT_operator(bpy.types.Operator):
@@ -89,8 +109,7 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
             bpy.ops.mesh.loop_multi_select(ring=False)
         except:
             self.report({'ERROR'},'No Uniformal Edges Detected')
-        
-            
+           
         return {"FINISHED"}
 
 ##################### 

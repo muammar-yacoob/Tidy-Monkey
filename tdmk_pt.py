@@ -49,7 +49,14 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if context.mode != 'EDIT_MESH':
                 row.operator("align.toview",text ="Align to View", icon='ORIENTATION_GIMBAL') #.selectedObjectsCount = 3
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None    
-
+            row = layout.row()
+            if context.mode == 'EDIT_MESH':
+                row.operator("bottoms.select",text ="Select Bottom", icon='TRIA_DOWN_BAR') #.selectedObjectsCount = 3
+                row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
+            
+            row = layout.row()
+            row = layout.row()
+            
             if context.mode == 'EDIT_MESH':
                 row = layout.row()
                 row.operator("material.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
