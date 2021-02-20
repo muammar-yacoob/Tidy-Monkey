@@ -9,7 +9,42 @@ import bpy.ops
 import bmesh
 
 ###########################
+class CLEAN_VERTS_OT_operator(bpy.types.Operator):
+    bl_label = "Dessolve Similar Verts"
+    bl_idname = "clean.verts"
+    bl_description ="Dessolves Verts with similar connections:)"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        
+        try:
+            object = bpy.context.active_object
+            bm = bmesh.from_edit_mesh(object.data)
+            
+            bpy.ops.mesh.select_similar(type='EDGE')
+            bpy.ops.mesh.dissolve_verts()
+    
 
+            
+#            for v in bm.verts:
+#                if v.select == True:
+#                    if len(v.link_edges) == 2:
+#                        print(str(len(v.link_edges)))
+#                        v.select = True
+#                        #bm.verts.remove(v)
+#                    else:
+#                        v.select = False                        
+
+
+            #verts2 = [v for v in bm.verts if len(v.link_edges) == 2]
+
+            self.report({'INFO'},'Verts Dessolved')
+        except:
+            self.report({'ERROR'},'No Selected Vertices')
+            
+        return {"FINISHED"}
+        
+        
 class SELECT_MAT_OT_operator(bpy.types.Operator):
     bl_label = "Similar Material"
     bl_idname = "material.select"

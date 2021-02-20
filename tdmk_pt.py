@@ -142,6 +142,13 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("checker.edge", icon='ALIGN_JUSTIFY')
                 
+                row = layout.row()
+                row.operator("clean.verts", icon='TRASH')
+                
+                
+                
+                
+                
                 #row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
             
         except:
