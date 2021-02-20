@@ -107,7 +107,7 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     def execute(self, context):
         try:
             bpy.ops.mesh.loop_multi_select(ring=True)
-            bpy.ops.mesh.select_nth()
+            bpy.ops.mesh.select_nth(offset=1)
             bpy.ops.mesh.loop_multi_select(ring=False)
         except:
             self.report({'ERROR'},'No Uniformal Edges Detected')
