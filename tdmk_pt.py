@@ -71,11 +71,16 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None
             
             
-            row = layout.row()
-            if context.mode != 'EDIT_MESH': 
+                row = layout.row()
                 row.operator("samemesh.similar",icon='PARTICLEMODE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) == 1 # context.active_object is not None
                 row = layout.row()
+                
+                row.operator("apply.mods",icon='MODIFIER_DATA', text ="Apply Modifiers for " + str(len(context.selected_objects)))  
+
+                              
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0# context.active_object is not None
+                row = layout.row() 
 
 
                 row.label(text="Alignment",icon='MOD_ARRAY')

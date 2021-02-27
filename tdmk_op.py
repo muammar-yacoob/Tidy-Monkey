@@ -10,7 +10,25 @@ import bmesh
 
 ###########################
 
+class APPLY_MODS_OT_operator(bpy.types.Operator):
+    bl_label = "Apply Modifiers"
+    bl_idname = "apply.mods"
+    bl_options = {'REGISTER', 'UNDO'}
         
+    def execute(self, context):
+        sel_objs = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
+        #bpy.ops.object.select_all(action='DESELECT')
+        scn = bpy.context.scene
+        for obj in sel_objs:
+            #scn.objects.active = obj
+            #bpy.context.scene.objects.active = obj
+            bpy.ops.object.convert(target='MESH')
+
+            #obj.convert(target='MESH')
+
+        
+        self.report({'INFO'}, "Mods applied to " + str(len(sel_objs)) + " Objects")
+        return {"FINISHED"}         
         
 class SELECT_MAT_OT_operator(bpy.types.Operator):
     bl_label = "Similar Material"
