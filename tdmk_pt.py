@@ -65,12 +65,6 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row = layout.row()
 
   
-                
-                
-
-
-
-
             row = layout.row()
             if context.mode != 'EDIT_MESH':
                 row.operator("centerregions.center",text ="Center Origins of " + str(len(context.selected_objects)), icon='SNAP_FACE_CENTER') #.selectedObjectsCount = 3
