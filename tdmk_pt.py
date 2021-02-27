@@ -126,24 +126,17 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("renamevertgroups.rename",icon='GROUP_BONE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
-###############################            
+############ mesh only  
             if context.mode == 'EDIT_MESH':
                 row = layout.row()
                 row.operator("fixnormals.fix",icon='ALIASED')
                 row.enabled = context.active_object.type == 'MESH' # and len(context.selected_objects) > 0 # context.active_object is not None        
-                
-                row = layout.row()
-                row.operator("fix.rotation",text ="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
-                
                 row = layout.row()
                 row.operator("checker.edge", icon='ALIGN_JUSTIFY')
-                
+########## armature & mesh                
+            if context.mode == 'EDIT_MESH' or context.mode == 'EDIT_ARMATURE': #####
                 row = layout.row()
-                row.operator("clean.verts", icon='TRASH')
-                
-                
-                
-                
+                row.operator("fix.rotation",text ="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
                 
                 #row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
             
