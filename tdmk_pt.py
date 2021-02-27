@@ -40,7 +40,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
 
         try:
             
-            selectedVerts = len([v for v in bpy.context.active_object.data.vertices if v.select])
+            #selectedVerts = len([v for v in bpy.context.active_object.data.vertices if v.select])
             row = layout.row()
             row.operator("origin.toselected",icon='DOT')
             row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None #and active_object.type == 'MESH'
@@ -63,11 +63,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("perimeter.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
                 row = layout.row()
-                row.operator("normal.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
-                row = layout.row()
-                row.operator("area.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
-                row = layout.row()
-                row.operator("coplanar.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
+
   
                 
                 
