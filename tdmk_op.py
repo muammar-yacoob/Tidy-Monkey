@@ -528,13 +528,13 @@ class EXPORT_OT_operator(bpy.types.Operator):
             
         #---
         
-            currentFrame = bpy.context.scene.frame_current
-            bpy.ops.screen.animation_cancel(restore_frame=True)
-            bpy.context.scene.frame_set(bpy.context.scene.frame_start)
+        currentFrame = bpy.context.scene.frame_current
+        bpy.ops.screen.animation_cancel(restore_frame=True)
+        bpy.context.scene.frame_set(bpy.context.scene.frame_start)
+        
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
             
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
-            bpy.context.scene.frame_set(currentFrame) 
+
         
         for obj in sel_objs:
             bpy.ops.object.select_all(action='DESELECT')                
@@ -608,7 +608,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
             #os.system("start "+ directory)
             os.system("start "+ os.path.dirname(blend_file_path))
         
-             
+        bpy.context.scene.frame_set(currentFrame)              
             
         #reselect
         for obj in sel_objs:
