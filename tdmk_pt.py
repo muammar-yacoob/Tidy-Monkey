@@ -110,6 +110,10 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         try:
             if context.mode != 'EDIT_MESH':
                 row = layout.row()
+                row.operator("fixnormals.fix",text = "Fix Normals for "+ str(len(context.selected_objects)) ,icon='ALIASED')
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not None        
+                
+                row = layout.row()
                 row.operator("clearmats.clear", text = "Clear Unused Mats from "+ str(len(context.selected_objects)) ,icon='NODE_MATERIAL')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not None        
                 row = layout.row()
@@ -126,10 +130,8 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator("renamevertgroups.rename",icon='GROUP_BONE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
 ############ mesh only  
-            if context.mode != 'EDIT_MESH':
-                row = layout.row()
-                row.operator("fixnormals.fix",icon='ALIASED')
-                row.enabled = context.active_object.type == 'MESH' # and len(context.selected_objects) > 0 # context.active_object is not None        
+            if context.mode == 'EDIT_MESH':
+   
                 row = layout.row()
                 row.operator("checker.edge", icon='ALIGN_JUSTIFY')
 ########## armature & mesh                
