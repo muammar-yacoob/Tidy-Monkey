@@ -609,7 +609,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
             
             bake_anim=True,
             bake_anim_use_nla_strips=True,
-            bake_anim_use_all_actions=False #hasShapeKey  #True for shape keys and armatures 
+            bake_anim_use_all_actions=True #False #hasShapeKey  #True for shape keys and armatures 
             )
 
             #obj.select_set(False)
