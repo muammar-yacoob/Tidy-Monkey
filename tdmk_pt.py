@@ -126,7 +126,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator("renamevertgroups.rename",icon='GROUP_BONE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
 ############ mesh only  
-            if context.mode == 'EDIT_MESH':
+            if context.mode != 'EDIT_MESH':
                 row = layout.row()
                 row.operator("fixnormals.fix",icon='ALIASED')
                 row.enabled = context.active_object.type == 'MESH' # and len(context.selected_objects) > 0 # context.active_object is not None        
