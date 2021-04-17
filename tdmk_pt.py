@@ -131,9 +131,10 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
 ############ mesh only  
             if context.mode == 'EDIT_MESH':
-   
                 row = layout.row()
                 row.operator("checker.edge", icon='ALIGN_JUSTIFY')
+                row = layout.row()
+                row.operator("clean.verts", icon='TRASH')
 ########## armature & mesh                
             if context.mode == 'EDIT_MESH' or context.mode == 'EDIT_ARMATURE': #####
                 row = layout.row()
