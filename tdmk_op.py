@@ -193,7 +193,7 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
                 bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
                 bpy.context.object.modifiers["WeightedNormal"].keep_sharp = True
                 bpy.context.object.data.use_auto_smooth = True
-                bpy.context.object.data.auto_smooth_angle = 0.610865
+                bpy.context.object.data.auto_smooth_angle = 60*22/7/180
 
                 bpy.ops.object.mode_set(mode='EDIT')    
                 bpy.ops.mesh.select_all(action='DESELECT')               
@@ -201,7 +201,7 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
                 bpy.ops.mesh.select_all(action='SELECT')    
                 bpy.ops.mesh.normals_make_consistent(inside=False)               
                 bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-                bpy.ops.mesh.edges_select_sharp()
+                bpy.ops.mesh.edges_select_sharp(sharpness=80*22/7/180)
                 bpy.ops.mesh.mark_sharp()
                 bpy.ops.object.mode_set(mode='OBJECT') 
                 

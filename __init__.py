@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Muammar Yacoob",
     "descrtion" : "Scene Organization Tool",
     "blender" : (2, 90, 0),
-    "version" : (1, 3, 4),
+    "version" : (1, 3, 5),
     "location" : "Tidy Monkey",
     "warning" : "For the Export FBX to work, make sure you save the .blend file first",   
     "category" : "Scene Organization"
