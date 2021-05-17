@@ -173,13 +173,13 @@ class xSELECT_TRAIT_OT_operator(bpy.types.Operator):
         return {"FINISHED"}    
 
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
-    bl_label = "Fix Normals"
+    bl_label = "Beautify"
     bl_idname = "fixnormals.fix"
-    bl_description ="Fixes common Normals issues"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
 
+<<<<<<< HEAD
         try:
             
             sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
@@ -206,11 +206,33 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
                 bpy.ops.object.mode_set(mode='OBJECT') 
                 
                 
+=======
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+        bpy.ops.mesh.select_all(action='SELECT')   
+        
+        # geo clean up 
+        bpy.ops.mesh.dissolve_degenerate(threshold=0.0001) 
+        bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
+
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+
+        bpy.ops.object.mode_set(mode='OBJECT') 
+        bpy.ops.object.shade_flat()
+        bpy.context.object.data.use_auto_smooth = True
+
+        bpy.ops.object.mode_set(mode='EDIT')    
+        bpy.ops.mesh.select_all(action='DESELECT')
+        bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+        
+        #parameterized sharpness
+        bpy.ops.mesh.edges_select_sharp(sharpness=0.523599)
+        bpy.ops.mesh.mark_sharp()
+>>>>>>> cf1420ee8da823d7d4ce6ed05de99e6fd199627d
             
-            bpy.ops.object.mode_set(mode='OBJECT') 
-            self.report({'INFO'},'Origin Moved')
-        except:
-            self.report({'ERROR'},'Operation Interrupted')
+        bpy.ops.mesh.select_all(action='SELECT')            
+        #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
+        
+        bpy.ops.object.mode_set(mode='OBJECT') 
         
         return {"FINISHED"}
   
