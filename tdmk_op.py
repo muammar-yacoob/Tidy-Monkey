@@ -181,67 +181,67 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
 
         try:
             
-        mod_types = {'WeightedNormal'}
-        sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
-        for obj in sel_objs:
         
-            bpy.context.view_layer.objects.active = obj #sets the obj accessible to bpy.ops
+            sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
+            for obj in sel_objs:
             
-            bpy.ops.mesh.customdata_custom_splitnormals_clear()
-
-            
-
-            if 'WeightedNormal' in obj.modifiers: 
-                bpy.context.object.modifiers["WeightedNormal"].show_viewport = True
-            else:
-                bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
-                bpy.context.object.modifiers["WeightedNormal"].keep_sharp = True
+                bpy.context.view_layer.objects.active = obj #sets the obj accessible to bpy.ops
                 
-            if 'Weld' in obj.modifiers: 
-                bpy.context.object.modifiers["Weld"].show_viewport = True
-            else:
-                bpy.ops.object.modifier_add(type='WELD')
-                bpy.context.object.modifiers["Weld"].merge_threshold = 0.007
+                bpy.ops.mesh.customdata_custom_splitnormals_clear()
+
+                
+
+                if 'WeightedNormal' in obj.modifiers: 
+                    bpy.context.object.modifiers["WeightedNormal"].show_viewport = True
+                else:
+                    bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
+                    bpy.context.object.modifiers["WeightedNormal"].keep_sharp = True
+                    
+                if 'Weld' in obj.modifiers: 
+                    bpy.context.object.modifiers["Weld"].show_viewport = True
+                else:
+                    bpy.ops.object.modifier_add(type='WELD')
+                    bpy.context.object.modifiers["Weld"].merge_threshold = 0.007
 
 
-            bpy.context.object.data.use_auto_smooth = True
-            bpy.context.object.data.auto_smooth_angle = 60*22/7/180
+                bpy.context.object.data.use_auto_smooth = True
+                bpy.context.object.data.auto_smooth_angle = 60*22/7/180
 
-            bpy.ops.object.mode_set(mode='EDIT')    
-            bpy.ops.mesh.select_all(action='DESELECT')               
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-            bpy.ops.mesh.select_all(action='SELECT')    
-            bpy.ops.mesh.normals_make_consistent(inside=False)               
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-            bpy.ops.mesh.select_all(action='DESELECT')  
-            bpy.ops.mesh.edges_select_sharp(sharpness=75*22/7/180)
-            bpy.ops.mesh.mark_sharp()
-            #bpy.ops.object.mode_set(mode='OBJECT') 
+                bpy.ops.object.mode_set(mode='EDIT')    
+                bpy.ops.mesh.select_all(action='DESELECT')               
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+                bpy.ops.mesh.select_all(action='SELECT')    
+                bpy.ops.mesh.normals_make_consistent(inside=False)               
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+                bpy.ops.mesh.select_all(action='DESELECT')  
+                bpy.ops.mesh.edges_select_sharp(sharpness=75*22/7/180)
+                bpy.ops.mesh.mark_sharp()
+                #bpy.ops.object.mode_set(mode='OBJECT') 
+                
+                
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
+                bpy.ops.mesh.select_all(action='SELECT')   
+                
+                # geo clean up 
+                bpy.ops.mesh.dissolve_degenerate(threshold=0.0001) 
+                bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
+
+                bpy.ops.mesh.normals_make_consistent(inside=False)
+
+                bpy.ops.object.mode_set(mode='OBJECT') 
+                bpy.ops.object.shade_flat()
+                bpy.context.object.data.use_auto_smooth = True
+
+                bpy.ops.object.mode_set(mode='EDIT')    
+                bpy.ops.mesh.select_all(action='DESELECT')
+                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
+                           
+                bpy.ops.mesh.select_all(action='SELECT')            
+                #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
+                
+                bpy.ops.object.mode_set(mode='OBJECT')
             
-            
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-            bpy.ops.mesh.select_all(action='SELECT')   
-            
-            # geo clean up 
-            bpy.ops.mesh.dissolve_degenerate(threshold=0.0001) 
-            bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
-
-            bpy.ops.mesh.normals_make_consistent(inside=False)
-
-            bpy.ops.object.mode_set(mode='OBJECT') 
-            bpy.ops.object.shade_flat()
-            bpy.context.object.data.use_auto_smooth = True
-
-            bpy.ops.object.mode_set(mode='EDIT')    
-            bpy.ops.mesh.select_all(action='DESELECT')
-            bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-                       
-            bpy.ops.mesh.select_all(action='SELECT')            
-            #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
-            
-            bpy.ops.object.mode_set(mode='OBJECT')
-        
-        return {"FINISHED"}
+            return {"FINISHED"}
   
 
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
