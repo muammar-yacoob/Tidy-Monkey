@@ -129,7 +129,7 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
             bpy.ops.mesh.loop_multi_select(ring=False)
         except:
             self.report({'ERROR'},'No Uniformal Edges Detected')
-           
+            
         return {"FINISHED"}
 
 ##################### 
@@ -239,11 +239,11 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
                 #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
                 
                 bpy.ops.object.mode_set(mode='OBJECT') 
+                bpy.ops.object.shade_smooth()
+
                         
-            print('------------------')
-            #self.report({'INFO'},'Origin Moved')
         except:
-            self.report({'ERROR'},'No Uniformal Edges Detected')
+            self.report({'ERROR'},'Error Fixing Normals')
         
         return {"FINISHED"}
   
