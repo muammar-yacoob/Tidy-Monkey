@@ -178,10 +178,9 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-
-        try:
-            
         
+        try:
+            mod_types = {'WeightedNormal'}
             sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
             for obj in sel_objs:
             
@@ -239,9 +238,14 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
                 bpy.ops.mesh.select_all(action='SELECT')            
                 #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
                 
-                bpy.ops.object.mode_set(mode='OBJECT')
-            
-            return {"FINISHED"}
+                bpy.ops.object.mode_set(mode='OBJECT') 
+                        
+            print('------------------')
+            #self.report({'INFO'},'Origin Moved')
+        except:
+            self.report({'ERROR'},'No Uniformal Edges Detected')
+        
+        return {"FINISHED"}
   
 
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
