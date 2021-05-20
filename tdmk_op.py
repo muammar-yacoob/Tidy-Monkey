@@ -179,7 +179,6 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
     
     def execute(self, context):
 
-<<<<<<< HEAD
         try:
             
             sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
@@ -206,7 +205,6 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
                 bpy.ops.object.mode_set(mode='OBJECT') 
                 
                 
-=======
         bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
         bpy.ops.mesh.select_all(action='SELECT')   
         
@@ -227,7 +225,6 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
         #parameterized sharpness
         bpy.ops.mesh.edges_select_sharp(sharpness=0.523599)
         bpy.ops.mesh.mark_sharp()
->>>>>>> cf1420ee8da823d7d4ce6ed05de99e6fd199627d
             
         bpy.ops.mesh.select_all(action='SELECT')            
         #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
