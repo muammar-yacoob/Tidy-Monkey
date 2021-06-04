@@ -1,8 +1,10 @@
 ### Tidy Monkey ###
 Organize & Export multiple blender models into Unity, Unreal & Godot game engines
 
-[![Alternate Text]({https://panettonegames.files.wordpress.com/2021/05/tidymonkey-1.gif})]({https://youtu.be/3g1JKg0-Wtc} "Tidy Monkey")
+[![Tidy Monkey](https://user-images.githubusercontent.com/8532589/120841263-93656380-c56b-11eb-8286-2fe80f42b640.gif)](https://panettonegames.com/)
+Format: ![Tidy Monkey]
 
+<div>Icons made by <a href="https://www.flaticon.com/authors/pixel-perfect" title="Pixel perfect">Pixel perfect</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
 
 ### Connect with me:
 
@@ -37,3 +39,4 @@ https://discord.gg/V3VMsghe2v
 
 
 
+Icons made by freepik.com
