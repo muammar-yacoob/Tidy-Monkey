@@ -3,7 +3,7 @@ Organize & Export multiple blender models into Unity, Unreal & Godot game engine
 
 [![Alternate Text]({https://panettonegames.files.wordpress.com/2021/05/tidymonkey-1.gif})]({https://youtu.be/3g1JKg0-Wtc} "Tidy Monkey")
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
 
 =======
 YouTube Video:
