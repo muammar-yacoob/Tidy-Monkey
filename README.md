@@ -4,6 +4,15 @@ Organize & Export multiple blender models into Unity, Unreal & Godot game engine
 [![Alternate Text]({https://panettonegames.files.wordpress.com/2021/05/tidymonkey-1.gif})]({https://youtu.be/3g1JKg0-Wtc} "Tidy Monkey")
 
 
+### Connect with me:
+
+[<img align="left" alt="http://panettonegames.com/" width="22px" src="https://raw.githubusercontent.com/iconic/open-iconic/master/svg/globe.svg" />][website]
+[<img align="left" alt="PanettoneGames | YouTube" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/youtube.svg" />][youtube]
+[<img align="left" alt="PanettoneGames | Twitter" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/twitter.svg" />][twitter]
+[<img align="left" alt="PanettoneGames | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />][linkedin]
+[<img align="left" alt="PanettoneGames | Instagram" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/instagram.svg" />][instagram]
+
+<br />
 
 =======
 YouTube Video:
