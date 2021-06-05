@@ -5,10 +5,9 @@
 
 ## For practicle usage and tutorials, join the community ##
 [![YouTube](https://panettonegames.files.wordpress.com/2021/06/youtube.png?resize=33%2C33)](http://www.youtube.com/channel/UC744mnjF1LOYrl_kFF4LDhg?sub_confirmation=1)
-[![Twitter](https://panettonegames.files.wordpress.com/2021/06/twitter.png?resize=33%2C33)](https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark)
-[![Website](https://panettonegames.files.wordpress.com/2021/06/globe.png?resize=33%2C33)](https://panettonegames.com)
-[![Discord](https://panettonegames.files.wordpress.com/2021/06/discord.png?resize=33%2C33)](https://discord.gg/V3VMsghe2v)
-
+&nbsp; &nbsp; [![Twitter](https://panettonegames.files.wordpress.com/2021/06/twitter.png?resize=33%2C33)](https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark)
+&nbsp; &nbsp; [![Website](https://panettonegames.files.wordpress.com/2021/06/globe.png?resize=33%2C33)](https://panettonegames.com)
+&nbsp; &nbsp; [![Discord](https://panettonegames.files.wordpress.com/2021/06/discord.png?resize=33%2C33)](https://discord.gg/V3VMsghe2v)
 
 ## Installing the Add-on ##
 1. Download from: https://gumroad.com/l/CpQAM
@@ -20,3 +19,8 @@
 7. A new Tab labled [Tidy Monkey] will be added to the right side of the viewport sidebar i.e. below the Item, Tool & View tabs.
 8. Press N key to toggle the tools visibility
 
+#### Exported FBX are compaitable with: ####
+- [x] Unity3D
+- [x] Unreal Engine
+- [x] GoDot
+- [ ] CryEngine
