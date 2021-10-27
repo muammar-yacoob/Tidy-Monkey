@@ -1,5 +1,5 @@
 # Tidy Monkey #
-*Organize & Export multiple blender models into Unity, Unreal & Godot game engines*
+*A free Productivity Tool for Blender 3D Artists and Game Developers. Batch operations to Organize, Decimate, Change pivot point, Fix Rotation, Clean up unused Materials & Textures and easily export assets in FBX format including all animations and shape keys to game engines such as Unity, Unreal, Godot & Cry Engine.*
 
 [![Tidy Monkey](https://user-images.githubusercontent.com/8532589/120841263-93656380-c56b-11eb-8286-2fe80f42b640.gif)](https://youtu.be/3g1JKg0-Wtc)
 
