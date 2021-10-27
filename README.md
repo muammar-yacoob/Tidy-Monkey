@@ -4,7 +4,7 @@
 [![Tidy Monkey](https://user-images.githubusercontent.com/8532589/120841263-93656380-c56b-11eb-8286-2fe80f42b640.gif)](https://youtu.be/3g1JKg0-Wtc)
 
 ## For practicle usage and tutorials, join the community ##
-[![YouTube](https://panettonegames.files.wordpress.com/2021/06/youtube.png?resize=33%2C33)](http://www.youtube.com/channel/UC744mnjF1LOYrl_kFF4LDhg?sub_confirmation=1)
+[![YouTube](https://youtu.be/MHFUBcTz9Wo)
 &nbsp; &nbsp; [![Twitter](https://panettonegames.files.wordpress.com/2021/06/twitter.png?resize=33%2C33)](https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark)
 &nbsp; &nbsp; [![Website](https://panettonegames.files.wordpress.com/2021/06/globe.png?resize=33%2C33)](https://panettonegames.com)
 &nbsp; &nbsp; [![Discord](https://panettonegames.files.wordpress.com/2021/06/discord.png?resize=33%2C33)](https://discord.gg/V3VMsghe2v)
