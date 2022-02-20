@@ -1,6 +1,5 @@
-
 #https://panettonegames.com/
-#https://gumroad.com/l/CpQAM
+#https://blendermarket.com/products/tidy-monkey
 
 import bpy
 from bpy.types import Panel
@@ -25,7 +24,7 @@ class TITLE_PT_panel(bpy.types.Panel):
         except:
             row.label(text= "Mode: N/A")
             
-#-----Sub Panels----------------------------------------------        
+#-----Sub Panels------   
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
     bl_idname = "OrganizePanel"
@@ -76,19 +75,16 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) == 1 # context.active_object is not None
                 row = layout.row()
                 
-                row.operator("apply.mods",icon='MODIFIER_DATA', text ="Apply Modifiers for " + str(len(context.selected_objects)))  
-
-                              
+                row.operator("apply.mods",icon='MODIFIER_DATA', text ="Apply Modifiers for " + str(len(context.selected_objects)))                            
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0# context.active_object is not None
-                row = layout.row() 
 
-
-                row.label(text="Alignment",icon='MOD_ARRAY')
-                row = layout.row()
-                row.operator("alignobjects.align", text = 'X' ).algnmnt = 'X'
-                row.operator("alignobjects.align", text = 'Y' ).algnmnt = 'Y'
-                row.operator("alignobjects.align", text = 'Z' ).algnmnt = 'Z'
-                row.enabled = len(context.selected_objects) > 1 # context.active_object is not None
+                col = layout.column(align=True)
+                row = col.row(align=True)
+                row.operator("alignobjects.align", text = "X").algn = 'X'
+                row.operator("alignobjects.align", text = "Y").algn = 'Y'
+                row.operator("alignobjects.align", text = "Z").algn = 'Z'
+                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 1 
+                
 
         except:
             print('err')  
@@ -204,13 +200,14 @@ class EXPORT_PT_panel(bpy.types.Panel):
             row.enabled = len(context.selected_objects) > 0  # context.active_object is not None
             row = layout.split()
             layout.separator()
-            row = layout.row()
-            row = layout.row()
-            
+
+            col = layout.column(align=True)
+            row = col.row(align=True)
             row.label(text="Share the Love")
-            row.operator("sharelove.share",text="",icon='COMMUNITY').donate ='TW'
-            row.operator("sharelove.share",text="",icon='FUND').donate ='PPL'
+            
+            row.operator("sharelove.share",text="",icon='COMMUNITY').shareType = 'YT'
+            row.operator("sharelove.share",text="",icon='FUND').shareType = 'WB'
+      
+            
         except:
             print('err')  
-
-###########################

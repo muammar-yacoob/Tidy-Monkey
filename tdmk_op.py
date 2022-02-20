@@ -1,5 +1,5 @@
 #https://panettonegames.com/
-#https://gumroad.com/l/CpQAM
+#https://blendermarket.com/products/tidy-monkey
 
 import bpy
 from bpy.types import Operator
@@ -7,8 +7,6 @@ from bpy.types import Operator
 import os
 import bpy.ops
 import bmesh
-
-###########################
 
 class APPLY_MODS_OT_operator(bpy.types.Operator):
     bl_label = "Apply Modifiers"
@@ -132,46 +130,6 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
             
         return {"FINISHED"}
 
-##################### 
-#selectIndex =  0
-#currentTrait = 'MATERIAL'
-class xSELECT_TRAIT_OT_operator(bpy.types.Operator):
-    bl_label = "Select Trait"
-    bl_idname = "selecttrait.select"
-    bl_options = {'REGISTER', 'UNDO'}
-    
-    def execute(self, context):
-
-
-# #        for prop_id in prop_names:
-# #            print(prop_id)  
-# #            getattr(average_type)
-        # #me = bpy.context.object.data
-        # #bm = bmesh.from_edit_mesh(me)
-        # #bm.select_history[-1]
-# #        global cashedVerts
-# #        cashedVerts = [elem.index for elem in bm.select_history if isinstance(elem, bmesh.types.BMVert)]
-# #        ([v for v in cashedVerts if v.select])        
-
-        # #switch to face mode    
-        # bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE') 
-        # modes = ['MATERIAL','PERIMETER','NORMAL','AREA','COPLANAR']
-        # #for i in range(len(words):
-        # global selectIndex
-        # global currentTrait
-       
-        # if(selectIndex >= len(modes)-1):
-            # selectIndex = -1
-        # #else:
-
-        # currentTrait = modes[selectIndex]
-        # bpy.ops.mesh.select_similar(type=currentTrait, threshold=0.01) 
-        # selectIndex += 1  
-
-        # currentTrait = modes[selectIndex] 
-        # print(modes[selectIndex])
-        return {"FINISHED"}    
-
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
     bl_label = "Beautify"
     bl_idname = "fixnormals.fix"
@@ -247,7 +205,6 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
         
         return {"FINISHED"}
   
-
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Selected"
     bl_idname = "origin.toselected"
@@ -388,7 +345,7 @@ class SELECT_SAME_OT_operator(bpy.types.Operator):
     bl_description ="Selects objects with similar vertex count"
     bl_options = {'REGISTER', 'UNDO'}
         
-    similar = bpy.props.StringProperty(name="Similar:")
+    similar = bpy.props.StringProperty(name="Similar:" , options={'HIDDEN'})
   
     def execute(self, context):
 
@@ -505,7 +462,7 @@ class REN_BONES_OT_operator(bpy.types.Operator):
     bl_description ="Removes the word Mixamo from all bones"
     bl_options = {'REGISTER', 'UNDO'}
     
-    rename = bpy.props.StringProperty(name="Rename:")
+    rename = bpy.props.StringProperty(name="Rename:", options={'HIDDEN'})
     def execute(self, context):
         for bone in bpy.context.active_object.pose.bones:
             bone.name = bone.name.replace("mixamorig:","")
@@ -517,7 +474,7 @@ class REN_VERT_OT_operator(bpy.types.Operator):
     bl_description ="Removes the word Mixamo from all vertex groups"
     bl_options = {'REGISTER', 'UNDO'}
         
-    rename = bpy.props.StringProperty(name="Rename:")
+    rename = bpy.props.StringProperty(name="Rename:", options={'HIDDEN'})
     def execute(self, context):
         v_groups = bpy.context.active_object.vertex_groups
         for vn in v_groups:
@@ -530,11 +487,13 @@ class ALIGN_OT_operator(bpy.types.Operator):
     bl_description ="Aligns object to view"
     bl_options = {'REGISTER', 'UNDO'}
     
-    algnmnt = bpy.props.StringProperty(name="Alignment:")
+    algn: bpy.props.StringProperty(default = 'Z', options={'HIDDEN'})
     
     def execute(self, context):
         sel_objs = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
-        bpy.ops.object.align(align_axis={self.algnmnt})
+        self.report({'INFO'}, "Aligned at " + str(self.algn) + " axis")
+        print((self.algn))
+        bpy.ops.object.align(align_axis={self.algn})
         return {"FINISHED"}
 
 class EXPORT_OT_operator(bpy.types.Operator):
@@ -661,23 +620,6 @@ class EXPORT_OT_operator(bpy.types.Operator):
         self.report({'INFO'}, str(len(sel_objs)) + " Objects were Exported to "+ directory )
         return {'FINISHED'}
 
-class SHARE_OT_operator(bpy.types.Operator):
-    bl_label = ""
-    bl_idname = "sharelove.share"
-    bl_description ="Contribute"
-    
-    donate = bpy.props.StringProperty(name="Donate:")
-    
-    
-    def execute(self, context):
-        url = "https://paypal.me/PanettoneGames?locale.x=en_GB"
-        if self.donate == "TW":
-            url =  "https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark"
-        os.system("start "+ url)
-
-        return{"FINISHED"}
-
-
 class CLEAN_VERTS_OT_operator(bpy.types.Operator):
     bl_label = "Dessolve Similar Verts"
     bl_idname = "clean.verts"
@@ -712,3 +654,21 @@ class CLEAN_VERTS_OT_operator(bpy.types.Operator):
             self.report({'ERROR'},'No Selected Vertices')
             
         return {"FINISHED"}
+
+class SHARE_OT_operator(bpy.types.Operator):
+    bl_label = ""
+    bl_idname = "sharelove.share"
+    bl_description ="Share"   
+    
+    shareType: bpy.props.StringProperty(default = 'YT', options={'HIDDEN'})
+    
+    def execute(self, context):
+        print("self.shareType:",self.shareType)
+        self.report({"INFO"},"%s "%(self.shareType))
+        
+        url = "https://blendermarket.com/products/tidy-monkey"
+        if self.shareType == "YT":
+            url =  "https://twitter.com/intent/tweet?text=I%20Support%20TidyMonkey%20Blender%20Addon%20for%20Artists%20and%20Game%20Developers%0D%0Ahttp://www.PanettoneGames.com%20pic.twitter.com/1RuB2tqJrJ%20%0D%0A@88Spark"
+        os.system("start "+ url)
+
+        return{"FINISHED"}

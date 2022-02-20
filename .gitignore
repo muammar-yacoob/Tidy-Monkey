@@ -1,4 +1,6 @@
 Backup/
-Single/
+Others/
+FBXs/
 *.zip
-Reported Issues.txt
+*.blend*
+*.bak
