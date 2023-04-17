@@ -384,43 +384,33 @@ class GEN_ACTS_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-
-        sel_objs = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
-        #bpy.ops.object.select_all(action='DESELECT')
-        #for obj in sel_objs:
-        #    obj.action_pushdown
-        #bpy.ops.action.push_down()
-
-
+        selected_objects = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
         original_context = bpy.context.area.type
         bpy.context.area.type = "NLA_EDITOR"
         bpy.ops.anim.channels_clean_empty()
         bpy.context.area.type = original_context
 
-        for obj in sel_objs:
+        for obj in selected_objects:
             if obj.animation_data is not None:
                 action = obj.animation_data.action
                 if action is not None:
-                    #obj.animation_data.nla_tracks.
+                    # Check if the action is already in an NLA track
+                    in_nla = False
+                    for track in obj.animation_data.nla_tracks:
+                        if track.strips[0].action == action:
+                            in_nla = True
+                            break
                     
-                    track = obj.animation_data.nla_tracks.new()
-                    track.strips.new(action.name, action.frame_range[0], action)
-                    obj.animation_data.action = None # to avoid pushing the same animation more than once
-                
-
-        #for a in bpy.data.actions:
-            #print(a.name)
-#        for obj in sel_objs:
-#            #bpy.ops.nla.selected_objects_add()
-#            if obj.animation_data is not None:
-#                action = obj.animation_data.action
-#                if action is not None:
-#                    action.push_down
-
-
+                    if not in_nla:
+                        track = obj.animation_data.nla_tracks.new()
+                        track.strips.new(action.name, int(action.frame_range[0]), action)
+                        obj.animation_data.action = None # to avoid pushing the same animation more than once
         
-        self.report({'INFO'}, "Actions Generated for " + str(len(sel_objs)) + "")
+        self.report({'INFO'}, f"Actions generated for {len(selected_objects)} objects")
+        bpy.context.area.type = 'NLA_EDITOR'
+
         return {"FINISHED"}
+
 
 class CLEAN_TEX_OT_operator(bpy.types.Operator):
     bl_label = "Delete Unused Textures"
@@ -497,127 +487,88 @@ class ALIGN_OT_operator(bpy.types.Operator):
         return {"FINISHED"}
 
 class EXPORT_OT_operator(bpy.types.Operator):
-    bl_label = "Export FBX"
     bl_idname = "exportfbxxx.export"
-    bl_description ="Exports selected Objects as FBX"
-    
+    bl_label = "Export FBX"
+    bl_description = "Exports selected objects as FBX files"
+
     def execute(self, context):
         bpy.ops.object.mode_set(mode='OBJECT')
         blend_file_path = bpy.data.filepath
-        directory = os.path.dirname(blend_file_path) + "\\FBXs"
-        
-        try:
-            if not os.path.exists(directory):
-                os.mkdir(directory)
-        except:
-            self.report({'ERROR'}, "could not create " + directory + " - Make sure file is saved first and restart blender" )
-            return {'FINISHED'}
-            
-        sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
+        directory = os.path.dirname(blend_file_path) + "/FBXs"
+        if not os.path.exists(directory):
+            os.mkdir(directory)
+
+        sel_objs = [obj for obj in bpy.context.selected_objects]
         bpy.ops.object.select_all(action='DESELECT')
-        
-        #prepare textures
         bpy.ops.outliner.orphans_purge()
-        
         try:
             bpy.ops.file.pack_all()
         except Exception as e:
-            self.report({'ERROR'}, "Could Not Pack All Textures\n" + str(e))
-        
+            self.report({'ERROR'}, "Could not pack all textures\n" + str(e))
         try:
-            bpy.ops.file.unpack_all(method='WRITE_LOCAL')
+            bpy.ops.file.unpack_all(method='USE_LOCAL')
             bpy.ops.file.make_paths_absolute()
         except:
-            self.report({'ERROR'}, "Error Packing Textures" )
-            
-        #---
-        
-        currentFrame = bpy.context.scene.frame_current
+            self.report({'ERROR'}, "Error packing textures")
+
+        current_frame = bpy.context.scene.frame_current
         bpy.ops.screen.animation_cancel(restore_frame=True)
         bpy.context.scene.frame_set(bpy.context.scene.frame_start)
-        
-        bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
 
-        
         for obj in sel_objs:
-            bpy.ops.object.select_all(action='DESELECT')                
-            obj_path = os.path.join(directory ,obj.name + "." + "fbx") #make sure the .blend file is saved first or you get an error
+            bpy.ops.object.select_all(action='DESELECT')
+            obj_path = os.path.join(directory, obj.name + ".fbx")
 
             obj.select_set(True)
-            #obj.select_set(state=True)
-            #obj.transform_apply(location=False, rotation=True, scale=True)
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
-            originalLoc = obj.location.copy()
-            obj.location = (0,0,0)
-            
-     
+            original_loc = obj.location.copy()
+            obj.location = (0, 0, 0)
 
-            #except:
-                #self.report({'ERROR'}, "Error Applying Rotation & Scale" )
-                #---
-                
-                                
-            hasShapeKey = False
+            has_shape_key = bool(obj.type == 'ARMATURE')
+            if not has_shape_key:
+                try:
+                    has_shape_key = len(obj.data.shape_keys.key_blocks) > 0
+                except:
+                    pass
+
             try:
-                hasShapeKey = len(obj.data.shape_keys.key_blocks)
-            except:
-                hasShapeKey = False
-                
-            hasShapeKey = bool(obj.type == 'ARMATURE') or bool(hasShapeKey)
+                bpy.ops.export_scene.fbx(
+                    filepath=obj_path,
+                    use_selection=True,
+                    check_existing=False,
+                    global_scale=1.0,
+                    apply_scale_options='FBX_SCALE_UNITS',
+                    axis_forward='-Z',
+                    axis_up='Y',
+                    use_mesh_modifiers=True,
+                    mesh_smooth_type='FACE',
+                    use_mesh_edges=False,
+                    use_tspace=True,
+                    use_custom_props=True,
+                    bake_space_transform=True,
+                    bake_anim=True,
+                    bake_anim_use_nla_strips=True,
+                    bake_anim_use_all_actions=True,
+                    add_leaf_bones=False,
+                    primary_bone_axis='Y',
+                    secondary_bone_axis='X',
+                    use_armature_deform_only=True,
+                    path_mode='AUTO',
+                    batch_mode='OFF',
+                    use_metadata=True,
+                )
+            except Exception as e:
+                self.report({'ERROR'}, "Could not export FBX file\n" + str(e))
 
-            #push all acts down
-            #bpy.context.area.type = "NLA_EDITOR"
-            for obj in sel_objs:            
-                if obj.animation_data is not None:
-                    action = obj.animation_data.action
-                    if action is not None:
-                        track = obj.animation_data.nla_tracks.new()
-                        track.strips.new(action.name, action.frame_range[0], action)
-                        obj.animation_data.action = None            
+            obj.location = original_loc
+            obj.select_set(False)
 
-            for child in obj.children:
-                child.select_set(state=True)
-            
-
-            
-            bpy.ops.export_scene.fbx(
-            filepath=obj_path,
-            use_selection=True,
-            check_existing=False,
-            
-            global_scale=1.0,
-            use_mesh_modifiers=True,
-            axis_forward='Z', axis_up='Y',
-            apply_scale_options = 'FBX_SCALE_UNITS',
-            bake_space_transform=True, #Remove if broken <<<<<<<<<<<<<<
-            #-----------
-            
-            filter_glob="*.fbx",
-
-            bake_anim_use_all_bones=True,
-            use_armature_deform_only=True,              
-            add_leaf_bones=False,
-            
-            bake_anim=True,
-            bake_anim_use_nla_strips=True,
-            bake_anim_use_all_actions= hasShapeKey  #True for shape keys and armatures 
-            )
-
-            #obj.select_set(False)
-            #bpy.ops.object.select_all(action='DESELECT')
-
-            obj.location = originalLoc    
-                
-            #os.system("start "+ directory)
-            os.system("start "+ os.path.dirname(blend_file_path))
-        
-        bpy.context.scene.frame_set(currentFrame)              
-            
-        #reselect
+        bpy.context.scene.frame_set(current_frame)
         for obj in sel_objs:
             obj.select_set(True)
-        self.report({'INFO'}, str(len(sel_objs)) + " Objects were Exported to "+ directory )
+        self.report({'INFO'}, f"{len(sel_objs)} objects were exported to {directory}")
+        os.system("start "+ os.path.dirname(blend_file_path))
         return {'FINISHED'}
 
 class CLEAN_VERTS_OT_operator(bpy.types.Operator):
@@ -634,20 +585,6 @@ class CLEAN_VERTS_OT_operator(bpy.types.Operator):
             
             bpy.ops.mesh.select_similar(type='EDGE')
             bpy.ops.mesh.dissolve_verts()
-    
-
-            
-#            for v in bm.verts:
-#                if v.select == True:
-#                    if len(v.link_edges) == 2:
-#                        print(str(len(v.link_edges)))
-#                        v.select = True
-#                        #bm.verts.remove(v)
-#                    else:
-#                        v.select = False                        
-
-
-            #verts2 = [v for v in bm.verts if len(v.link_edges) == 2]
 
             self.report({'INFO'},'Verts Dessolved')
         except:
