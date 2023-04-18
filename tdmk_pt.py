@@ -89,6 +89,11 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
         except:
             print('err')  
 
+class RenameBonesProps(bpy.types.PropertyGroup):
+    old_text: bpy.props.StringProperty(name="Old Text", default = "mixamo")
+    new_text: bpy.props.StringProperty(name="New Text")
+    match_case: bpy.props.BoolProperty(name="Match Case", default=False)
+
 class CLEANUP_PT_panel(bpy.types.Panel):
     bl_label = "Clean Up"
     bl_idname = "CleanUp"
@@ -101,8 +106,6 @@ class CLEANUP_PT_panel(bpy.types.Panel):
     def draw(self, context):
 
         layout = self.layout
-
-        
         try:
             if context.mode != 'EDIT_MESH':
                 row = layout.row()
@@ -119,8 +122,25 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator("deletetextures.delete",icon='RENDER_RESULT')
                 row.enabled = context.active_object.type == 'MESH'
                 row = layout.row()
-                row.operator("renamebones.rename",icon='BONE_DATA')
-                row.enabled = context.active_object.type == 'ARMATURE' and len(context.selected_objects) > 0 # context.active_object is not None
+###
+                box = layout.box()
+                box.label(text="Rename Bones")
+                props = context.scene.rename_bones_props
+                row = box.row()
+                row.prop(props, "old_text")
+                row = box.row()
+                row.prop(props, "new_text")
+                row = box.row()
+                row.prop(props, "match_case")
+                row = box.row()
+                op = row.operator("renamebones.rename", icon='BONE_DATA')
+                op.old_text = props.old_text
+                op.new_text = props.new_text
+                op.match_case = props.match_case
+
+###
+
+                op.enabled = context.active_object.type == 'ARMATURE' and len(context.selected_objects) > 0 # context.active_object is not None
                 
                 row = layout.row()
                 row.operator("renamevertgroups.rename",icon='GROUP_BONE')

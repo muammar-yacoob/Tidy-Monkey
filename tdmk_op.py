@@ -447,15 +447,58 @@ class CLEAN_TEX_OT_operator(bpy.types.Operator):
         return {"FINISHED"}
 
 class REN_BONES_OT_operator(bpy.types.Operator):
-    bl_label = "Rename Mixamo Bones"
+    bl_label = "Rename Bones"
     bl_idname = "renamebones.rename"
-    bl_description ="Removes the word Mixamo from all bones"
+    bl_description ="Removes a certain text from all bones"
     bl_options = {'REGISTER', 'UNDO'}
     
-    rename = bpy.props.StringProperty(name="Rename:", options={'HIDDEN'})
+    old_text: bpy.props.StringProperty(name="old_text")
+    new_text: bpy.props.StringProperty(name="new_text")
+    match_case: bpy.props.BoolProperty(name="match_case", default=False)
+    
     def execute(self, context):
-        for bone in bpy.context.active_object.pose.bones:
-            bone.name = bone.name.replace("mixamorig:","")
+        props = context.scene.rename_bones_props
+        old_text = props.old_text
+        new_text = props.new_text
+        match_case = props.match_case
+
+        self.report({'INFO'}, "Replacing " + old_text + " with " + new_text)
+
+        # Rename Armatures
+        selected_armatures = [obj for obj in bpy.context.selected_objects if obj.type == 'ARMATURE']
+        for armature in selected_armatures:
+            
+            bpy.ops.object.mode_set(mode='EDIT')
+            for bone in armature.data.bones:
+                text = bone.name
+                if not match_case:
+                    text = text.lower()
+                    old_text = old_text.lower()
+
+                text = text.replace(old_text, new_text, 1 if match_case else -1)
+                bone.name = text
+
+            bpy.ops.object.mode_set(mode='POSE')
+            for pose_bone in armature.pose.bones:
+                text = pose_bone.name
+                if not match_case:
+                    text = text.lower()
+                    old_text = old_text.lower()
+
+                text = text.replace(old_text, new_text, 1 if match_case else -1)
+                pose_bone.name = text
+
+        # Rename Meshes
+        selected_meshes = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
+        for obj in selected_meshes:
+            bpy.ops.object.mode_set(mode='EDIT')
+
+            # Loop through all mesh data blocks in the object
+            for mesh in obj.data.meshes:
+                if old_text in mesh.name:
+                    mesh.name = mesh.name.replace(old_text, new_text)
+
+            bpy.ops.object.mode_set(mode='OBJECT')
         return {"FINISHED"}
     
 class REN_VERT_OT_operator(bpy.types.Operator):
@@ -464,11 +507,13 @@ class REN_VERT_OT_operator(bpy.types.Operator):
     bl_description ="Removes the word Mixamo from all vertex groups"
     bl_options = {'REGISTER', 'UNDO'}
         
-    rename = bpy.props.StringProperty(name="Rename:", options={'HIDDEN'})
+    bl_idname = "text_input.operator"
+    bl_label = "Text Input Operator"
+
+    text_input: bpy.props.StringProperty(name="Text Input")
+
     def execute(self, context):
-        v_groups = bpy.context.active_object.vertex_groups
-        for vn in v_groups:
-            vn.name = vn.name.replace("mixamorig:","")
+
         return {"FINISHED"}
     
 class ALIGN_OT_operator(bpy.types.Operator):
