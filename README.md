@@ -8,6 +8,13 @@ Main Features include:
 - Clean up unused Materials & Textures.
 - One click export assets in FBX format including all animations and shape keys.<br><br>
 
+## Installation ##
+1. Download [latest release](../../releases)
+2. In Blender, go to Edit -> Preferences -> Add-ons
+3. Click the install button and select the zip file downloaded from step 1.
+4. Check the box next to "Tidy Monkey"
+5. Back in Blender's viewport, hit N key to view the newly added tab labled **`[Tidy Monkey]`** sidebar i.e. below the Item, Tool & View tabs.
+
 ### Object Mode
 [![Object Mode](./res/Object%20Mode.jpg)](https://youtu.be/3g1JKg0-Wtc)<br>
 ### Edit Mode
@@ -15,11 +22,3 @@ Main Features include:
 ## For practicle usage and tutorials, join the community ##
 [![YouTube](https://panettonegames.files.wordpress.com/2021/06/youtube.png?resize=33%2C33)](https://youtu.be/MHFUBcTz9Wo)
 &nbsp; &nbsp; [![Website](https://panettonegames.files.wordpress.com/2021/06/globe.png?resize=33%2C33)](https://panettonegames.com)
-
-
-## Installation ##
-1. Download [latest release](../../releases)
-2. In Blender, go to Edit -> Preferences -> Add-ons
-3. Click the install button and select the zip file downloaded from step 1.
-4. Check the box next to "Tidy Monkey"
-5. Back in Blender's viewport, hit N key to view the newly added tab labled **`[Tidy Monkey]`** sidebar i.e. below the Item, Tool & View tabs.
