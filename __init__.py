@@ -1,31 +1,73 @@
 bl_info = {
-    "name" : "Tidy Monkey",
-    "author" : "Muammar Yacoob",
-    "descrtion" : "Scene Organization Tool",
-    "blender" : (3, 5, 1),
-    "version" : (1, 5, 0),
-    "location" : "Tidy Monkey",
-    "warning" : "For the Export FBX to work, make sure you save the .blend file first",   
-    "category" : "Scene Organization"
+    "name": "Tidy Monkey",
+    "author": "Spark Games",
+    "description": "Scene Organization Tool",
+    "blender": (3, 5, 1),
+    "version": (1, 5, 0),
+    "location": "View3D > Sidebar > Tidy Monkey",
+    "warning": "For the Export FBX to work, make sure you save the .blend file first",
+    "doc_url": "https://spark-games.co.uk",
+    "category": "Scene Organization"
 }
-#https://panettonegames.com/
+
 #https://blendermarket.com/products/tidy-monkey
 
-#region Registeration
+#region Imports
+import bpy
 from . tdmk_pt import *
 from . tdmk_op import *
+#endregion
 
-classes = (RenameBonesProps, TITLE_PT_panel, ORGANIZE_PT_panel, CLEANUP_PT_panel, EXPORT_PT_panel, ORG_SELECTED_OT_operator, ORG_ALIGNTOVIEW_OT_operator, ORG_CENTER_OT_operator, BUTTS_OT_operator, ALIGN_OT_operator, REN_BONES_OT_operator,REN_VERT_OT_operator, SELECT_SAME_OT_operator, CLEAR_MATS_OT_operator, CLEAN_TEX_OT_operator, GEN_ACTS_OT_operator, EXPORT_OT_operator, SHARE_OT_operator,ORG_FIXROTATION_OT_operator, FIX_NORMALS_OT_operator,SELECT_MAT_OT_operator,SELECT_PER_OT_operator,SELECT_NORM_OT_operator,SELECT_AREA_OT_operator,SELECT_COPLANAR_OT_operator,CHECKER_EDGE_OT_operator,CLEAN_VERTS_OT_operator,APPLY_MODS_OT_operator)
+#region Registration
+classes = (
+    RenameBonesProps,
+    TITLE_PT_panel,
+    ORGANIZE_PT_panel,
+    CLEANUP_PT_panel,
+    EXPORT_PT_panel,
+    ORG_SELECTED_OT_operator,
+    ORG_ALIGNTOVIEW_OT_operator,
+    ORG_CENTER_OT_operator,
+    BUTTS_OT_operator,
+    ALIGN_OT_operator,
+    REN_BONES_OT_operator,
+    REN_VERT_OT_operator,
+    SELECT_SAME_OT_operator,
+    CLEAR_MATS_OT_operator,
+    CLEAN_TEX_OT_operator,
+    GEN_ACTS_OT_operator,
+    EXPORT_OT_operator,
+    SHARE_OT_operator,
+    ORG_FIXROTATION_OT_operator,
+    FIX_NORMALS_OT_operator,
+    SELECT_MAT_OT_operator,
+    SELECT_PER_OT_operator,
+    SELECT_NORM_OT_operator,
+    SELECT_AREA_OT_operator,
+    SELECT_COPLANAR_OT_operator,
+    CHECKER_EDGE_OT_operator,
+    CLEAN_VERTS_OT_operator,
+    APPLY_MODS_OT_operator
+)
 
 def register():
     for cls in classes:
-        bpy.utils.register_class(cls)
+        try:
+            bpy.utils.register_class(cls)
+        except Exception as e:
+            print(f"Failed to register {cls.__name__}: {str(e)}")
+            
     bpy.types.Scene.rename_bones_props = bpy.props.PointerProperty(type=RenameBonesProps)
 
 def unregister():
-    for cls in classes:
-        bpy.utils.unregister_class(cls)
-    del bpy.types.Scene.rename_bones_props
+    for cls in reversed(classes):
+        try:
+            bpy.utils.unregister_class(cls)
+        except Exception as e:
+            print(f"Failed to unregister {cls.__name__}: {str(e)}")
+            
+    if hasattr(bpy.types.Scene, "rename_bones_props"):
+        del bpy.types.Scene.rename_bones_props
 
 #register, unregister = bpy.utils.register_classes_factory(classes)
     

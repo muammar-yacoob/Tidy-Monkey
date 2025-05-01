@@ -1,7 +1,7 @@
 [//]: # (Constants)
-[license-link]: https://opensource.org/licenses/MIT
+[license-link]: ../../blob/main/LICENSE
 [stars-link]: ../../stargazers
-[youtube-link]: https://youtu.be/MHFUBcTz9Wo
+[youtube-link]: https://youtu.be/3g1JKg0-Wtc
 [website-link]: https://spark-games.co.uk
 [coffee-link]: https://buymeacoffee.com/spark88
 [bug-link]: ../../issues
@@ -18,11 +18,22 @@
   <h3>A Productivity Tool for <br>
   Blender 3D Artists and Game Devs</h3>
 
-  [![License](https://img.shields.io/badge/license-MIT-blue.svg)][license-link]
-  [![Issues](https://img.shields.io/badge/issues-report-red?logo=github)][bug-link]  
-  [![YouTube](https://img.shields.io/badge/YouTube-red?style=flat&logo=youtube)][youtube-link]
-  [![Website](https://img.shields.io/badge/website-visit-green)][website-link]
-  [![coffee](https://img.shields.io/badge/coffee-donate-yellow.svg)][coffee-link]
+  <a href="../../blob/main/LICENSE" target="_blank">
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+  </a>
+  <a href="../../issues" target="_blank">
+    <img src="https://img.shields.io/badge/issues-report-red?logo=github" alt="Issues">
+  </a>
+  
+  <a href="https://youtu.be/3g1JKg0-Wtc" target="_blank">
+    <img src="https://img.shields.io/badge/YouTube-red?style=flat&logo=youtube" alt="YouTube">
+  </a>
+  <a href="https://spark-games.co.uk" target="_blank">
+    <img src="https://img.shields.io/badge/website-visit-green" alt="Website">
+  </a>
+  <a href="https://buymeacoffee.com/spark88" target="_blank">
+    <img src="https://img.shields.io/badge/coffee-donate-yellow.svg" alt="Buy me a coffee">
+  </a>
 </div>
 
 ## ✨ Features
@@ -36,36 +47,40 @@
 
 ## 🚀 Installation
 
-1. Download the [latest release][release-link]
+1. <a href="../../releases" target="_blank">Download the latest release</a>
 2. In Blender, go to `Edit -> Preferences -> Add-ons`
 3. Click the `Install` button and select the downloaded zip file
 4. Check the box next to `Tidy Monkey`
 5. In Blender's viewport, press `N` key to view the newly added sidebar
 
-
-
-
-## 🌱 Support & Contributions
-
-If these tools save you time (and disk space 😉):
-- Please⭐ <a href="../../stargazers" target="_blank">Star</a> to help spread useful tools.
-- <a href="[coffee-link]" target="_blank">Buy me a coffee</a> to fuel more dev tools.
-- or <a href="../../fork" target="_blank">Contribute</a> - Released under MIT license.
-
+## 📖 Usage Guide
 
 <table>
 <tr>
 <td width="50%" valign="top">
 
 ### Object Mode
-[![Object Mode Tutorial](./res/Object%20Mode.jpg)][object-tutorial-link]
+<a href="https://youtu.be/3g1JKg0-Wtc" target="_blank">
+  <img src="./res/Object%20Mode.jpg" alt="Object Mode Tutorial">
+</a>
 
 </td>
 <td width="50%" valign="top">
 
 ### Edit Mode
-![Edit Mode Guide](./res/Edit%20Mode.jpg)
+<img src="./res/Edit%20Mode.jpg" alt="Edit Mode Guide">
 
 </td>
 </tr>
 </table>
+
+## 🌱 Support & Contributions
+
+If these tools save you time (and disk space 😉):
+- Please ⭐ <a href="../../stargazers" target="_blank">Star this repo</a> to help spread useful tools
+- <a href="https://buymeacoffee.com/spark88" target="_blank">Buy me a coffee</a> to fuel more dev tools
+- or <a href="../../fork" target="_blank">Contribute</a> - Released under <a href="../../blob/main/LICENSE" target="_blank">MIT License</a>
+
+<div align="center">
+<a href="../../blob/main/PRIVACY.md" target="_blank">Privacy Policy</a>
+</div>
