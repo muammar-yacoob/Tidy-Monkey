@@ -32,15 +32,15 @@
 - Easily change pivot point to mesh bottom or selected vertices/faces
 - Fix Rotation
 - Clean up unused Materials & Textures
-- One click export assets in FBX format including all animations and shape keys
+- One click FBX export objects
 
 ## 🚀 Installation
 
 1. Download the [latest release][release-link]
 2. In Blender, go to `Edit -> Preferences -> Add-ons`
 3. Click the `Install` button and select the downloaded zip file
-4. Check the box next to "Tidy Monkey"
-5. In Blender's viewport, press `N` key to view the newly added **Tidy Monkey** sidebar (below the Item, Tool & View tabs)
+4. Check the box next to `Tidy Monkey`
+5. In Blender's viewport, press `N` key to view the newly added sidebar
 
 
 
