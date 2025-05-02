@@ -123,25 +123,32 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.enabled = context.active_object.type == 'MESH'
                 row = layout.row()
 ###
-                box = layout.box()
-                box.label(text="Rename Bones")
-                props = context.scene.rename_bones_props
-                row = box.row()
-                row.prop(props, "old_text")
-                row = box.row()
-                row.prop(props, "new_text")
-                row = box.row()
-                row.prop(props, "match_case")
-                row = box.row()
-                op = row.operator("renamebones.rename", icon='BONE_DATA')
-                op.old_text = props.old_text
-                op.new_text = props.new_text
-                op.match_case = props.match_case
+                # Only show rename bones section if an armature is selected
+                has_armature = False
+                for obj in context.selected_objects:
+                    if obj.type == 'ARMATURE':
+                        has_armature = True
+                        break
+                
+                if has_armature:
+                    box = layout.box()
+                    box.label(text="Rename Bones")
+                    props = context.scene.rename_bones_props
+                    row = box.row()
+                    row.prop(props, "old_text")
+                    row = box.row()
+                    row.prop(props, "new_text")
+                    row = box.row()
+                    row.prop(props, "match_case")
+                    row = box.row()
+                    op = row.operator("renamebones.rename", icon='BONE_DATA')
+                    op.old_text = props.old_text
+                    op.new_text = props.new_text
+                    op.match_case = props.match_case
+                    op.enabled = context.active_object.type == 'ARMATURE' and len(context.selected_objects) > 0
 
 ###
 
-                op.enabled = context.active_object.type == 'ARMATURE' and len(context.selected_objects) > 0 # context.active_object is not None
-                
                 row = layout.row()
                 row.operator("renamevertgroups.rename",icon='GROUP_BONE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
