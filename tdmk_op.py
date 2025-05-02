@@ -136,73 +136,75 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
+        selected_objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
         
-        try:
-            mod_types = {'WeightedNormal'}
-            sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
-            for obj in sel_objs:
+        if not selected_objects:
+            self.report({'ERROR'}, "No mesh objects selected")
+            return {"CANCELLED"}
+        
+        # First pass: Process individual objects
+        for obj in selected_objects:
+            # Set active object for operations
+            context.view_layer.objects.active = obj
             
-                bpy.context.view_layer.objects.active = obj #sets the obj accessible to bpy.ops
-                
-                bpy.ops.mesh.customdata_custom_splitnormals_clear()
-
-                
-
-                if 'WeightedNormal' in obj.modifiers: 
-                    bpy.context.object.modifiers["WeightedNormal"].show_viewport = True
-                else:
-                    bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
-                    bpy.context.object.modifiers["WeightedNormal"].keep_sharp = True
-                    
-                if 'Weld' in obj.modifiers: 
-                    bpy.context.object.modifiers["Weld"].show_viewport = True
-                else:
-                    bpy.ops.object.modifier_add(type='WELD')
-                    bpy.context.object.modifiers["Weld"].merge_threshold = 0.007
-
-
-                bpy.context.object.data.use_auto_smooth = True
-                bpy.context.object.data.auto_smooth_angle = 60*22/7/180
-
-                bpy.ops.object.mode_set(mode='EDIT')    
-                bpy.ops.mesh.select_all(action='DESELECT')               
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-                bpy.ops.mesh.select_all(action='SELECT')    
-                bpy.ops.mesh.normals_make_consistent(inside=False)               
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-                bpy.ops.mesh.select_all(action='DESELECT')  
-                bpy.ops.mesh.edges_select_sharp(sharpness=75*22/7/180)
-                bpy.ops.mesh.mark_sharp()
-                #bpy.ops.object.mode_set(mode='OBJECT') 
-                
-                
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='FACE')
-                bpy.ops.mesh.select_all(action='SELECT')   
-                
-                # geo clean up 
-                bpy.ops.mesh.dissolve_degenerate(threshold=0.0001) 
-                bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
-
-                bpy.ops.mesh.normals_make_consistent(inside=False)
-
-                bpy.ops.object.mode_set(mode='OBJECT') 
-                bpy.ops.object.shade_flat()
-                bpy.context.object.data.use_auto_smooth = True
-
-                bpy.ops.object.mode_set(mode='EDIT')    
-                bpy.ops.mesh.select_all(action='DESELECT')
-                bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='EDGE')
-                           
-                bpy.ops.mesh.select_all(action='SELECT')            
-                #bpy.ops.mesh.average_normals(average_type='FACE_AREA')
-                
-                bpy.ops.object.mode_set(mode='OBJECT') 
-                bpy.ops.object.shade_smooth()
-
-                        
-        except:
-            self.report({'ERROR'},'Error Fixing Normals')
+            # Enter edit mode
+            bpy.ops.object.mode_set(mode='EDIT')
+            
+            # Select all faces and make normals consistent (point outward)
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.normals_make_consistent(inside=False)
+            
+            # Clean up geometry
+            bpy.ops.mesh.dissolve_degenerate(threshold=0.0001)
+            bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
+            
+            # Return to object mode
+            bpy.ops.object.mode_set(mode='OBJECT')
+            
+            # Clear custom split normals
+            bpy.ops.mesh.customdata_custom_splitnormals_clear()
+            
+            # Apply smooth shading with auto smooth (new in Blender 4.4)
+            bpy.ops.object.shade_smooth()
+            bpy.ops.object.shade_auto_smooth(angle=1.0472)  # 60 degrees in radians
+            
+            # Add weld modifier if it doesn't exist
+            if 'Weld' not in obj.modifiers:
+                weld_mod = obj.modifiers.new(name='Weld', type='WELD')
+                weld_mod.merge_threshold = 0.0001
         
+        # Second pass: Handle parent-child normal transfer
+        # Get parent objects from the selection
+        parent_objects = [obj for obj in selected_objects if obj.parent is None]
+        
+        for parent in parent_objects:
+            # Find child objects of this parent
+            child_objects = [obj for obj in selected_objects if obj.parent == parent]
+            
+            if not child_objects:
+                continue
+                
+            # Transfer normals from parent to each child
+            for child in child_objects:
+                context.view_layer.objects.active = child
+                
+                # Add a Data Transfer modifier to copy normals from parent
+                if 'NormalTransfer' not in child.modifiers:
+                    transfer_mod = child.modifiers.new(name='NormalTransfer', type='DATA_TRANSFER')
+                    transfer_mod.object = parent
+                    transfer_mod.use_loop_data = True
+                    transfer_mod.data_types_loops = {'CUSTOM_NORMAL'}
+                    transfer_mod.loop_mapping = 'NEAREST_POLYNOR'
+                
+                # Ensure NormalTransfer is first in the stack
+                while child.modifiers[0].name != 'NormalTransfer':
+                    bpy.ops.object.modifier_move_up(modifier='NormalTransfer')
+        
+        # Reselect all objects
+        for obj in selected_objects:
+            obj.select_set(True)
+            
+        self.report({'INFO'}, f"Fixed normals on {len(selected_objects)} objects")
         return {"FINISHED"}
   
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
@@ -229,12 +231,31 @@ class ORG_CENTER_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        sel_objs = [obj for obj in bpy.context.selected_objects]# if obj.type == 'MESH']
-        #bpy.ops.object.select_all(action='DESELECT')
+        sel_objs = [obj for obj in bpy.context.selected_objects]
+        original_selection = set(sel_objs)
+        original_active = context.view_layer.objects.active
+        
+        # Process each object individually
         for obj in sel_objs:
-            bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')    
+            # Deselect all objects first
+            bpy.ops.object.select_all(action='DESELECT')
             
-        self.report({'INFO'},  str(len(sel_objs)) + " Origins were Centered")        
+            # Select only the current object and make it active
+            obj.select_set(True)
+            context.view_layer.objects.active = obj
+            
+            # Set the origin to the center of geometry
+            bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='BOUNDS')
+        
+        # Restore original selection and active object
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in original_selection:
+            obj.select_set(True)
+        
+        if original_active:
+            context.view_layer.objects.active = original_active
+            
+        self.report({'INFO'}, f"Origins were centered for {len(sel_objs)} objects")
         return {"FINISHED"}
         
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
