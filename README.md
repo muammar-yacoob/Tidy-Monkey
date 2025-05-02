@@ -13,7 +13,7 @@
 # Tidy Monkey
 
 <div align="center">
-  <img src="./res/logo.png" height="300" alt="Tidy Monkey Logo">
+  <img src="./res/logo.png" width="300" alt="Tidy Monkey Logo">
 
   <h3>A Productivity Tool for <br>
   Blender 3D Artists and Game Devs</h3>
@@ -42,8 +42,6 @@
 4. Check the box next to `Tidy Monkey`
 5. In Blender's viewport, press `N` key to view the newly added sidebar
 
-## 📖 Usage Guide
-
 <table>
 <tr>
 <td width="50%" valign="top">
@@ -63,12 +61,6 @@
 
 ## 🌱 Support & Contributions
 
-If these tools save you time (and disk space 😉):
-- Please ⭐ [Star this repo](../../stargazers) to help spread useful tools
-- [Buy me a coffee](https://buymeacoffee.com/spark88) to fuel more dev tools
-- [Contributions are welcome](../../fork) - Released under [MIT License](../../blob/main/LICENSE)
-
-<div align="center">
-
-[Privacy Policy](../../blob/main/PRIVACY.md)
-</div>
+- [Star ⭐ repo](../../stargazers) and I power up like Mario 🍄 
+- Devs run on [coffee](https://buymeacoffee.com/spark88) to fuel more dev tools
+- [Contributions](../../fork) are welcome
