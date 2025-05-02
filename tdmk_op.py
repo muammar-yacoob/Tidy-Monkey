@@ -482,44 +482,61 @@ class REN_BONES_OT_operator(bpy.types.Operator):
         old_text = props.old_text
         new_text = props.new_text
         match_case = props.match_case
-
-        self.report({'INFO'}, "Replacing " + old_text + " with " + new_text)
-
+        
+        # Start in object mode
+        if context.mode != 'OBJECT': bpy.ops.object.mode_set(mode='OBJECT')
+        
         # Rename Armatures
-        selected_armatures = [obj for obj in bpy.context.selected_objects if obj.type == 'ARMATURE']
-        for armature in selected_armatures:
+        selected_armatures = [obj for obj in context.selected_objects if obj.type == 'ARMATURE']
+        if not selected_armatures:
+            self.report({'WARNING'}, "No armature selected")
+            return {'CANCELLED'}
             
+        renamed_bones = []  # Track renamed bones to update vertex groups
+            
+        for armature in selected_armatures:
+            context.view_layer.objects.active = armature
+            
+            # Edit mode - rename bones
             bpy.ops.object.mode_set(mode='EDIT')
             for bone in armature.data.bones:
-                text = bone.name
-                if not match_case:
-                    text = text.lower()
-                    old_text = old_text.lower()
-
-                text = text.replace(old_text, new_text, 1 if match_case else -1)
-                bone.name = text
-
+                old_name = bone.name
+                compare_text = old_name if match_case else old_name.lower()
+                compare_old = old_text if match_case else old_text.lower()
+                if compare_old in compare_text:
+                    new_name = old_name.replace(old_text, new_text, 1 if match_case else -1)
+                    renamed_bones.append((old_name, new_name))
+                    bone.name = new_name
+            
+            # Pose mode - rename pose bones
             bpy.ops.object.mode_set(mode='POSE')
             for pose_bone in armature.pose.bones:
-                text = pose_bone.name
-                if not match_case:
-                    text = text.lower()
-                    old_text = old_text.lower()
-
-                text = text.replace(old_text, new_text, 1 if match_case else -1)
-                pose_bone.name = text
-
-        # Rename Meshes
-        selected_meshes = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
-        for obj in selected_meshes:
-            bpy.ops.object.mode_set(mode='EDIT')
-
-            # Loop through all mesh data blocks in the object
-            for mesh in obj.data.meshes:
-                if old_text in mesh.name:
-                    mesh.name = mesh.name.replace(old_text, new_text)
-
-            bpy.ops.object.mode_set(mode='OBJECT')
+                old_name = pose_bone.name
+                compare_text = old_name if match_case else old_name.lower()
+                compare_old = old_text if match_case else old_text.lower()
+                if compare_old in compare_text:
+                    pose_bone.name = old_name.replace(old_text, new_text, 1 if match_case else -1)
+        
+        # Find all mesh objects that might have vertex groups to update
+        mesh_objects = [obj for obj in bpy.data.objects if obj.type == 'MESH' and obj.vertex_groups]
+        group_count = 0
+        
+        # Update vertex groups in all mesh objects to match renamed bones
+        for obj in mesh_objects:
+            for old_name, new_name in renamed_bones:
+                if old_name in obj.vertex_groups:
+                    vgroup = obj.vertex_groups[old_name]
+                    vgroup.name = new_name
+                    group_count += 1
+        
+        # Return to object mode
+        bpy.ops.object.mode_set(mode='OBJECT')
+        
+        msg = f"Replaced '{old_text}' with '{new_text}' in {len(selected_armatures)} armatures"
+        if group_count > 0:
+            msg += f" and {group_count} vertex groups"
+            
+        self.report({'INFO'}, msg)
         return {"FINISHED"}
     
 class REN_VERT_OT_operator(bpy.types.Operator):
