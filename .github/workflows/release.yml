@@ -1,0 +1,33 @@
+name: Create Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create TidyMonkey Directory
+        run: |
+          mkdir -p TidyMonkey
+          find . -name "*.py" -exec cp {} TidyMonkey/ \;
+          
+      - name: Create Zip File
+        run: zip -r TidyMonkey_Installer.zip TidyMonkey
+
+      - name: Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: TidyMonkey_Installer.zip
+          name: Latest Release
+          tag_name: latest
+          body: Automated release from latest main branch push
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: true 

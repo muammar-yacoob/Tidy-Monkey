@@ -13,15 +13,16 @@
 # Tidy Monkey
 
 <div align="center">
-  <img src="./res/logo.png" width="300" style="max-width: 100%; height: auto;" alt="Tidy Monkey Logo">
+  <img src="./res/logo.png" width="300" alt="Tidy Monkey Logo">
 
   <h3>A Productivity Tool for <br>
   Blender 3D Artists and Game Devs</h3>
 
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](../../blob/main/LICENSE)
-  [![YouTube](https://img.shields.io/badge/YouTube-red?style=flat&logo=youtube)][youtube]
-  [![Website](https://img.shields.io/badge/website-visit-green)][website]
-  [![Coffee](https://img.shields.io/badge/coffee-donate-yellow.svg)][coffee]
+  [![Issues](https://img.shields.io/badge/issues-report-red?logo=github)](../../issues)
+  [![YouTube](https://img.shields.io/badge/YouTube-red?style=flat&logo=youtube)](https://youtu.be/3g1JKg0-Wtc)
+  [![Website](https://img.shields.io/badge/website-visit-green)](https://spark-games.co.uk)
+  [![Buy me a coffee](https://img.shields.io/badge/coffee-donate-yellow.svg)](https://buymeacoffee.com/spark88)
 </div>
 
 ## ✨ Features
@@ -36,19 +37,15 @@
 ## 🚀 Installation
 
 1. [Download the latest release](../../releases)
-2. In Blender, go to `Edit -> Preferences -> Add-ons`
-3. Click the `Install` button and select the downloaded zip file
-4. Check the box next to `Tidy Monkey`
-5. In Blender's viewport, press `N` key to view the newly added sidebar
-
-## 📖 Usage Guide
+2. Open Blender and drag the `TidyMonkey.zip` file into Blender workspace
+3. In Blender press `N` key to view the newly added sidebar
 
 <table>
 <tr>
 <td width="50%" valign="top">
 
 ### Object Mode
-[![Object Mode Tutorial](./res/Object%20Mode.jpg)][youtube]
+[![Object Mode Tutorial](./res/Object%20Mode.jpg)](https://youtu.be/3g1JKg0-Wtc)
 
 </td>
 <td width="50%" valign="top">
@@ -62,13 +59,6 @@
 
 ## 🌱 Support & Contributions
 
-- [Star repo](../../stargazers) & I power up like Super Mario ⭐ 
-- Devs run on [coffee][coffee]  ☕ 
-- Suggestions & [Contributions](../../fork) are welcome
-
-<div align="center">
-</div>
-
-[youtube]: https://youtu.be/3g1JKg0-Wtc
-[website]: https://spark-games.co.uk
-[coffee]: https://buymeacoffee.com/spark88
+- [Star ⭐ repo](../../stargazers) and I power up like Mario 🍄 
+- Devs run on [coffee](https://buymeacoffee.com/spark88) to fuel more dev tools
+- [Contributions](../../fork) are welcome
