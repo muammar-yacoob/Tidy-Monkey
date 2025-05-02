@@ -18,22 +18,11 @@
   <h3>A Productivity Tool for <br>
   Blender 3D Artists and Game Devs</h3>
 
-  <a href="../../blob/main/LICENSE" target="_blank">
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
-  </a>
-  <a href="../../issues" target="_blank">
-    <img src="https://img.shields.io/badge/issues-report-red?logo=github" alt="Issues">
-  </a>
-  
-  <a href="https://youtu.be/3g1JKg0-Wtc" target="_blank">
-    <img src="https://img.shields.io/badge/YouTube-red?style=flat&logo=youtube" alt="YouTube">
-  </a>
-  <a href="https://spark-games.co.uk" target="_blank">
-    <img src="https://img.shields.io/badge/website-visit-green" alt="Website">
-  </a>
-  <a href="https://buymeacoffee.com/spark88" target="_blank">
-    <img src="https://img.shields.io/badge/coffee-donate-yellow.svg" alt="Buy me a coffee">
-  </a>
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](../../blob/main/LICENSE)
+  [![Issues](https://img.shields.io/badge/issues-report-red?logo=github)](../../issues)
+  [![YouTube](https://img.shields.io/badge/YouTube-red?style=flat&logo=youtube)](https://youtu.be/3g1JKg0-Wtc)
+  [![Website](https://img.shields.io/badge/website-visit-green)](https://spark-games.co.uk)
+  [![Buy me a coffee](https://img.shields.io/badge/coffee-donate-yellow.svg)](https://buymeacoffee.com/spark88)
 </div>
 
 ## ✨ Features
@@ -47,7 +36,7 @@
 
 ## 🚀 Installation
 
-1. <a href="../../releases" target="_blank">Download the latest release</a>
+1. [Download the latest release](../../releases)
 2. In Blender, go to `Edit -> Preferences -> Add-ons`
 3. Click the `Install` button and select the downloaded zip file
 4. Check the box next to `Tidy Monkey`
@@ -60,15 +49,13 @@
 <td width="50%" valign="top">
 
 ### Object Mode
-<a href="https://youtu.be/3g1JKg0-Wtc" target="_blank">
-  <img src="./res/Object%20Mode.jpg" alt="Object Mode Tutorial">
-</a>
+[![Object Mode Tutorial](./res/Object%20Mode.jpg)](https://youtu.be/3g1JKg0-Wtc)
 
 </td>
 <td width="50%" valign="top">
 
 ### Edit Mode
-<img src="./res/Edit%20Mode.jpg" alt="Edit Mode Guide">
+![Edit Mode Guide](./res/Edit%20Mode.jpg)
 
 </td>
 </tr>
@@ -77,10 +64,11 @@
 ## 🌱 Support & Contributions
 
 If these tools save you time (and disk space 😉):
-- Please ⭐ <a href="../../stargazers" target="_blank">Star this repo</a> to help spread useful tools
-- <a href="https://buymeacoffee.com/spark88" target="_blank">Buy me a coffee</a> to fuel more dev tools
-- or <a href="../../fork" target="_blank">Contribute</a> - Released under <a href="../../blob/main/LICENSE" target="_blank">MIT License</a>
+- Please ⭐ [Star this repo](../../stargazers) to help spread useful tools
+- [Buy me a coffee](https://buymeacoffee.com/spark88) to fuel more dev tools
+- [Contributions are welcome](../../fork) - Released under [MIT License](../../blob/main/LICENSE)
 
 <div align="center">
-<a href="../../blob/main/PRIVACY.md" target="_blank">Privacy Policy</a>
+
+[Privacy Policy](../../blob/main/PRIVACY.md)
 </div>
