@@ -37,10 +37,8 @@
 ## 🚀 Installation
 
 1. [Download the latest release](../../releases)
-2. In Blender, go to `Edit -> Preferences -> Add-ons`
-3. Click the `Install` button and select the downloaded zip file
-4. Check the box next to `Tidy Monkey`
-5. In Blender's viewport, press `N` key to view the newly added sidebar
+2. Open Blender and drag the `TidyMonkey.zip` file into Blender workspace
+3. In Blender press `N` key to view the newly added sidebar
 
 <table>
 <tr>
