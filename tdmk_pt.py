@@ -120,8 +120,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator("clearmats.clear", text = "Clear Unused Mats from "+ str(len(context.selected_objects)) ,icon='NODE_MATERIAL')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not None        
                 row = layout.row()
-                row.operator("generate.actions",text ="Generate Actions for " + str(len(context.selected_objects)), icon='ARMATURE_DATA') #.selectedObjectsCount = 3
-                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None
+                row.operator("generate.actions", text="Generate Actions", icon='ARMATURE_DATA')
                 row = layout.row()
                 row.operator("deletetextures.delete",icon='RENDER_RESULT')
                 row.enabled = context.active_object.type == 'MESH'

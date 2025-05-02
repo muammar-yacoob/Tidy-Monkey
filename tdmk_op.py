@@ -473,32 +473,72 @@ class GEN_ACTS_OT_operator(bpy.types.Operator):
     bl_description ="Pushes Animations to the NLA Stack"
     bl_options = {'REGISTER', 'UNDO'}
     
+    @classmethod
+    def poll(cls, context):
+        # Check if any selected objects have actions that can be pushed to NLA
+        for obj in context.selected_objects:
+            if obj.animation_data and obj.animation_data.action:
+                # Check if action is already in NLA
+                if obj.animation_data.nla_tracks:
+                    already_in_nla = False
+                    for track in obj.animation_data.nla_tracks:
+                        if track.strips and track.strips[0].action == obj.animation_data.action:
+                            already_in_nla = True
+                            break
+                    if not already_in_nla:
+                        return True
+                else:
+                    # No NLA tracks yet, so action can be pushed
+                    return True
+        return False
+    
     def execute(self, context):
-        selected_objects = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
+        # Save original editor type
         original_context = bpy.context.area.type
+        
+        # Temporarily switch to NLA editor for certain operations
         bpy.context.area.type = "NLA_EDITOR"
         bpy.ops.anim.channels_clean_empty()
         bpy.context.area.type = original_context
 
-        for obj in selected_objects:
-            if obj.animation_data is not None:
-                action = obj.animation_data.action
-                if action is not None:
-                    # Check if the action is already in an NLA track
-                    in_nla = False
-                    for track in obj.animation_data.nla_tracks:
-                        if track.strips[0].action == action:
-                            in_nla = True
-                            break
-                    
-                    if not in_nla:
-                        track = obj.animation_data.nla_tracks.new()
-                        track.strips.new(action.name, int(action.frame_range[0]), action)
-                        obj.animation_data.action = None # to avoid pushing the same animation more than once
+        # Only process objects that have actions not already in NLA
+        processed_count = 0
+        for obj in context.selected_objects:
+            if not obj.animation_data or not obj.animation_data.action:
+                continue
+                
+            action = obj.animation_data.action
+            
+            # Check if action is already in NLA
+            already_in_nla = False
+            if obj.animation_data.nla_tracks:
+                for track in obj.animation_data.nla_tracks:
+                    if track.strips and track.strips[0].action == action:
+                        already_in_nla = True
+                        break
+            
+            # If not in NLA, add it
+            if not already_in_nla:
+                # Create a descriptive name for the track based on object name and action name
+                track_name = f"{obj.name}_Action"
+                
+                # Create new NLA track with descriptive name
+                track = obj.animation_data.nla_tracks.new()
+                track.name = track_name
+                
+                # Create strip with descriptive name
+                strip_name = f"{obj.name}_{action.name}"
+                strip = track.strips.new(strip_name, int(action.frame_range[0]), action)
+                
+                # Clear active action to avoid pushdown action showing twice
+                obj.animation_data.action = None
+                processed_count += 1
         
-        self.report({'INFO'}, f"Actions generated for {len(selected_objects)} objects")
-        bpy.context.area.type = 'NLA_EDITOR'
-
+        if processed_count > 0:
+            self.report({'INFO'}, f"Actions generated for {processed_count} objects")
+        else:
+            self.report({'INFO'}, "No new actions to push to NLA stack")
+            
         return {"FINISHED"}
 
 
@@ -598,12 +638,37 @@ class REN_BONES_OT_operator(bpy.types.Operator):
                     vgroup.name = new_name
                     group_count += 1
         
+        # Also rename animations containing the target text
+        action_count = 0
+        for action in bpy.data.actions:
+            old_action_name = action.name
+            compare_action = old_action_name if match_case else old_action_name.lower()
+            compare_old = old_text if match_case else old_text.lower()
+            
+            if compare_old in compare_action:
+                action.name = old_action_name.replace(old_text, new_text, 1 if match_case else -1)
+                action_count += 1
+                
+                # If this action is used in NLA strips, update those names too
+                for obj in bpy.data.objects:
+                    if obj.animation_data and obj.animation_data.nla_tracks:
+                        for track in obj.animation_data.nla_tracks:
+                            for strip in track.strips:
+                                if strip.name and compare_old in (strip.name.lower() if not match_case else strip.name):
+                                    strip.name = strip.name.replace(old_text, new_text, 1 if match_case else -1)
+                                if strip.action == action:
+                                    # Update track name if it was based on the old action name
+                                    if compare_old in (track.name.lower() if not match_case else track.name):
+                                        track.name = track.name.replace(old_text, new_text, 1 if match_case else -1)
+        
         # Return to object mode
         bpy.ops.object.mode_set(mode='OBJECT')
         
         msg = f"Replaced '{old_text}' with '{new_text}' in {len(selected_armatures)} armatures"
         if group_count > 0:
             msg += f" and {group_count} vertex groups"
+        if action_count > 0:
+            msg += f" and {action_count} animations"
             
         self.report({'INFO'}, msg)
         return {"FINISHED"}
