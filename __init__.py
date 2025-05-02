@@ -28,6 +28,7 @@ classes = (
     ORG_SELECTED_OT_operator,
     ORG_ALIGNTOVIEW_OT_operator,
     ORG_CENTER_OT_operator,
+    ORG_BOTTOMCENTER_OT_operator,
     BUTTS_OT_operator,
     ALIGN_OT_operator,
     REN_BONES_OT_operator,

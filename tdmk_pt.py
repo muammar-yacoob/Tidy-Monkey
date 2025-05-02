@@ -68,6 +68,10 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if context.mode != 'EDIT_MESH':
                 row.operator("centerregions.center",text ="Center Origins of " + str(len(context.selected_objects)), icon='SNAP_FACE_CENTER') #.selectedObjectsCount = 3
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None
+                
+                row = layout.row()
+                row.operator("origin.tobottomcenter", text="Origin to Bottom Center", icon='ANCHOR_BOTTOM')
+                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0
             
             
                 row = layout.row()

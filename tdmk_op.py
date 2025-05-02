@@ -257,6 +257,75 @@ class ORG_CENTER_OT_operator(bpy.types.Operator):
             
         self.report({'INFO'}, f"Origins were centered for {len(sel_objs)} objects")
         return {"FINISHED"}
+
+class ORG_BOTTOMCENTER_OT_operator(bpy.types.Operator):
+    bl_label = "Origin to Bottom Center"
+    bl_idname = "origin.tobottomcenter"
+    bl_description = "Sets origin to bottom center (average X/Y, lowest Z)"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    def execute(self, context):
+        if context.mode != 'OBJECT':
+            self.report({'ERROR'}, "Must be in Object Mode")
+            return {'CANCELLED'}
+            
+        sel_objs = [obj for obj in context.selected_objects if obj.type in {'MESH', 'ARMATURE'}]
+        if not sel_objs:
+            self.report({'ERROR'}, "No mesh or armature objects selected")
+            return {'CANCELLED'}
+            
+        # Save original cursor location and mode
+        original_cursor = context.scene.cursor.location.copy()
+        original_selection = set(sel_objs)
+        original_active = context.view_layer.objects.active
+        
+        processed_count = 0
+        
+        for obj in sel_objs:
+            # Deselect all objects
+            bpy.ops.object.select_all(action='DESELECT')
+            
+            # Select only this object and make it active
+            obj.select_set(True)
+            context.view_layer.objects.active = obj
+            
+            verts = []
+            if obj.type == 'MESH':
+                # For mesh objects, use the mesh vertices
+                verts = [obj.matrix_world @ v.co for v in obj.data.vertices]
+            elif obj.type == 'ARMATURE':
+                # For armatures, use bone positions
+                if obj.data.bones:
+                    verts = [obj.matrix_world @ bone.head_local for bone in obj.data.bones]
+                    verts.extend([obj.matrix_world @ bone.tail_local for bone in obj.data.bones])
+            
+            if not verts:
+                continue
+                
+            # Find the lowest Z value and calculate average X and Y
+            min_z = min(v.z for v in verts)
+            avg_x = sum(v.x for v in verts) / len(verts)
+            avg_y = sum(v.y for v in verts) / len(verts)
+            
+            # Set the 3D cursor to the calculated position
+            context.scene.cursor.location = (avg_x, avg_y, min_z)
+            
+            # Set the origin to the cursor
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+            processed_count += 1
+        
+        # Restore original selection and cursor position
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in original_selection:
+            obj.select_set(True)
+            
+        if original_active:
+            context.view_layer.objects.active = original_active
+            
+        context.scene.cursor.location = original_cursor
+        
+        self.report({'INFO'}, f"Set origin to bottom center for {processed_count} objects")
+        return {'FINISHED'}
         
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
     bl_label = "Align to View"
