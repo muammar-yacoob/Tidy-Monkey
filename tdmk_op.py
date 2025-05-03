@@ -3,6 +3,7 @@
 
 import bpy
 from bpy.types import Operator
+from mathutils import Vector, Matrix
 
 import os
 import bpy.ops
@@ -116,19 +117,55 @@ class SELECT_COPLANAR_OT_operator(bpy.types.Operator):
 class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     bl_label = "Checker Edge"
     bl_idname = "checker.edge"
-    bl_description ="Checker Select Edges"
+    bl_description ="Select every other edge in a sequence"
     bl_options = {'REGISTER', 'UNDO'}
     
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return obj and obj.type == 'MESH' and obj.mode == 'EDIT'
 
     def execute(self, context):
-        try:
-            bpy.ops.mesh.loop_multi_select(ring=True)
-            bpy.ops.mesh.select_nth(offset=3)
-            bpy.ops.mesh.loop_multi_select(ring=False)
-        except:
-            self.report({'ERROR'},'No Uniformal Edges Detected')
+        obj = context.active_object
+        
+        if obj.type != 'MESH':
+            self.report({'ERROR'}, "This operator only works with mesh objects")
+            return {'CANCELLED'}
             
-        return {"FINISHED"}
+        # Get the BMesh
+        bm = bmesh.from_edit_mesh(obj.data)
+        
+        # Check if any edges are selected
+        selected_edges = [e for e in bm.edges if e.select]
+        
+        if not selected_edges:
+            self.report({'ERROR'}, "No edges selected")
+            return {'CANCELLED'}
+        
+        # Only select the loop if a single edge is selected
+        # For multiple selected edges, apply checker pattern directly
+        if len(selected_edges) == 1:
+            # If only one edge is selected, select connected edges in a loop
+            bpy.ops.mesh.loop_multi_select(ring=True)
+            
+            # Get the newly selected edges
+            selected_edges = [e for e in bm.edges if e.select]
+            
+            if len(selected_edges) <= 1:
+                self.report({'ERROR'}, "Selected edge is not part of a loop")
+                return {'CANCELLED'}
+        
+        # Remember how many edges were selected before the checker operation
+        selected_count = len(selected_edges)
+            
+        # Apply the checker pattern to the current selection
+        bpy.ops.mesh.select_nth(offset=1, skip=1)
+        
+        # Update the mesh
+        bmesh.update_edit_mesh(obj.data)
+        
+        self.report({'INFO'}, f"Checker pattern applied to {selected_count} edges")
+        return {'FINISHED'}
 
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
     bl_label = "Beautify"
@@ -341,63 +378,115 @@ class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
 class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Fix Rotation"
     bl_idname = "fix.rotation"
-    bl_description ="Fixes Object Rotation"
+    bl_description = "Aligns object rotation based on selected face"
     bl_options = {'REGISTER', 'UNDO'}
     
+    @classmethod
+    def poll(cls, context):
+        obj = context.active_object
+        return (obj is not None and 
+                obj.mode == 'EDIT' and 
+                obj.type in {'MESH', 'ARMATURE'})
+    
     def execute(self, context):
-        try:    
-            regData = context.region_data
-            
-            bpy.ops.view3d.snap_cursor_to_selected()
-            
-            for area in bpy.context.screen.areas:
-                if area.type == 'VIEW_3D':
-                    override = bpy.context.copy()
-                    override['area'] = area
-
-                    bpy.ops.view3d.view_axis(override, type='BOTTOM', align_active=True, relative=False)
-                    break
-            
-            
-            bpy.ops.object.mode_set(mode='OBJECT')    
-            obj = bpy.context.active_object
-            bpy.ops.mesh.primitive_cube_add( align='VIEW')
-            plane = bpy.context.selected_objects[0]
-
-            
-            #bad parenting 101
-            bpy.ops.object.select_all(action='DESELECT')
-
-            obj.select_set(True) 
-            plane.select_set(True)    
-            print("obj :" + obj.name)
-            print("pln :" + plane.name)
-            bpy.context.view_layer.objects.active = plane
-
-            bpy.ops.object.parent_set(type='OBJECT', keep_transform=False)
-            bpy.ops.object.rotation_clear(clear_delta=False)
-            
-            bpy.ops.object.select_all(action='DESELECT')
-            obj.select_set(True) 
-            bpy.context.view_layer.objects.active = obj
-            bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-
-            bpy.ops.object.select_all(action='DESELECT')
-            plane.select_set(True) 
-            bpy.ops.object.delete(use_global=False)
-            
-            for area in bpy.context.screen.areas:
-                if area.type == 'VIEW_3D':
-                    override = bpy.context.copy()
-                    override['area'] = area
-
-                    bpy.ops.view3d.view_axis(override, type='FRONT', align_active=True, relative=False)
-                    break
-        except:
-            self.report({'ERROR'}, "Please select a face first" )
+        obj = context.active_object
         
-        return {"FINISHED"}
+        # Store original mode to return to it later
+        original_mode = obj.mode
+        
+        # For mesh objects
+        if obj.type == 'MESH':
+            # Get the active mesh
+            bpy.ops.object.mode_set(mode='OBJECT')
+            mesh = obj.data
+            
+            # Check if any faces are selected
+            selected_faces = [f for f in mesh.polygons if f.select]
+            if not selected_faces:
+                self.report({'ERROR'}, "Please select at least one face")
+                bpy.ops.object.mode_set(mode=original_mode)
+                return {'CANCELLED'}
+            
+            # Use the normal of the first selected face
+            face_normal = selected_faces[0].normal.copy()
+            
+            # Create a rotation matrix from the normal (Z axis will be aligned with normal)
+            # We'll use the world normal for better results
+            world_normal = obj.matrix_world.to_3x3() @ face_normal
+            world_normal.normalize()
+            
+            # Create a rotation matrix that aligns Z axis with the normal
+            # First, build the third axis that's perpendicular to world_normal and global Y
+            # If world_normal is too close to global Y, use global X instead
+            if abs(world_normal.dot(Vector((0, 1, 0)))) > 0.99:
+                x_axis = Vector((1, 0, 0)) - world_normal * world_normal.dot(Vector((1, 0, 0)))
+            else:
+                x_axis = Vector((0, 1, 0)) - world_normal * world_normal.dot(Vector((0, 1, 0)))
+            
+            x_axis.normalize()
+            y_axis = world_normal.cross(x_axis)
+            y_axis.normalize()
+            
+            # Create rotation matrix
+            rot_matrix = Matrix()
+            rot_matrix[0][:3] = x_axis
+            rot_matrix[1][:3] = y_axis
+            rot_matrix[2][:3] = world_normal
+            
+            # Apply rotation to object
+            obj.matrix_world = rot_matrix.to_4x4() @ Matrix.Translation(obj.matrix_world.translation)
+            
+        # For armature objects
+        elif obj.type == 'ARMATURE':
+            # Enter object mode
+            bpy.ops.object.mode_set(mode='OBJECT')
+            
+            # Get selected bones (in Edit mode)
+            bpy.ops.object.mode_set(mode='EDIT')
+            armature = obj.data
+            selected_bones = [b for b in armature.edit_bones if b.select]
+            
+            if not selected_bones:
+                self.report({'ERROR'}, "Please select at least one bone")
+                bpy.ops.object.mode_set(mode=original_mode)
+                return {'CANCELLED'}
+            
+            # Use direction of the first selected bone
+            bone_dir = (selected_bones[0].tail - selected_bones[0].head).normalized()
+            
+            # Create a rotation matrix from the bone direction (Y axis will align with bone)
+            world_dir = obj.matrix_world.to_3x3() @ bone_dir
+            world_dir.normalize()
+            
+            # Create rotation matrix that aligns Y axis with bone direction
+            z_axis = Vector((0, 0, 1)) - world_dir * world_dir.dot(Vector((0, 0, 1)))
+            if z_axis.length < 0.01:  # If bone is already aligned with Z
+                z_axis = Vector((0, 1, 0)) - world_dir * world_dir.dot(Vector((0, 1, 0)))
+            
+            z_axis.normalize()
+            x_axis = world_dir.cross(z_axis)
+            x_axis.normalize()
+            
+            # Create rotation matrix
+            rot_matrix = Matrix()
+            rot_matrix[0][:3] = x_axis
+            rot_matrix[1][:3] = world_dir
+            rot_matrix[2][:3] = z_axis
+            
+            # Exit edit mode to apply rotation
+            bpy.ops.object.mode_set(mode='OBJECT')
+            
+            # Apply rotation to object
+            obj.matrix_world = rot_matrix.to_4x4() @ Matrix.Translation(obj.matrix_world.translation)
+        
+        # Apply rotation
+        bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+        
+        # Return to original mode
+        bpy.ops.object.mode_set(mode=original_mode)
+        
+        self.report({'INFO'}, "Rotation fixed based on selection")
+        return {'FINISHED'}
     
 class BUTTS_OT_operator(bpy.types.Operator):
     bl_label = "Select Bottom"
