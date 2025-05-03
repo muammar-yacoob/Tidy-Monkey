@@ -77,7 +77,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             
                 row = layout.row()
-                row.operator("samemesh.similar",icon='MOD_MESHDEFORM')
+                row.operator("samemesh.similar",icon='OUTLINER_OB_POINTCLOUD')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) == 1 # context.active_object is not None
                 row = layout.row()
                 
@@ -160,7 +160,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
 ############ mesh only  
             if context.mode == 'EDIT_MESH':
                 row = layout.row()
-                row.operator("clean.verts", icon='STICKY_UVS_DISABLE')
+                row.operator("clean.verts", icon='MOD_HUE_SATURATION')
                 
 ########## armature & mesh                
             if context.mode == 'EDIT_MESH' or context.mode == 'EDIT_ARMATURE': #####
