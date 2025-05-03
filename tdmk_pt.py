@@ -41,32 +41,34 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             #selectedVerts = len([v for v in bpy.context.active_object.data.vertices if v.select])
             row = layout.row()
-            row.operator("origin.toselected",icon='DOT')
+            row.operator("origin.toselected",icon='CLIPUV_HLT')
             row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None #and active_object.type == 'MESH'
             
             row = layout.row()
             if context.mode != 'EDIT_MESH':
                 row.operator("align.toview",text ="Align to View", icon='ORIENTATION_GIMBAL') #.selectedObjectsCount = 3
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) == 1  # context.active_object is not None    
-            row = layout.row()
-            if context.mode == 'EDIT_MESH':
-                row.operator("bottoms.select",text ="Select Bottom", icon='TRIA_DOWN_BAR') #.selectedObjectsCount = 3
-                row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
             
-            row = layout.row()
-            row = layout.row()
-            
+            # Group the selection operators in a box with a title
             if context.mode == 'EDIT_MESH':
-                row = layout.row()
-                row.operator("material.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
-                row = layout.row()
-                row.operator("perimeter.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
-                row = layout.row()
-
+                box = layout.box()
+                box.label(text="Selection Tools")
+                
+                row = box.row()
+                row.operator("bottoms.select", text="Select Bottom", icon='TRIA_DOWN_BAR')
+                
+                row = box.row()
+                row.operator("material.select", icon='RESTRICT_SELECT_OFF')
+                
+                row = box.row()
+                row.operator("perimeter.select", icon='RESTRICT_SELECT_OFF')
+                
+                row = box.row()
+                row.operator("checker.edge", icon='ALIGN_JUSTIFY')
   
             row = layout.row()
             if context.mode != 'EDIT_MESH':
-                row.operator("centerregions.center",text ="Center Origins of " + str(len(context.selected_objects)), icon='SNAP_FACE_CENTER') #.selectedObjectsCount = 3
+                row.operator("centerregions.center",text ="Center Origins of " + str(len(context.selected_objects)), icon='ANCHOR_CENTER') #.selectedObjectsCount = 3
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None
                 
                 row = layout.row()
@@ -75,7 +77,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             
                 row = layout.row()
-                row.operator("samemesh.similar",icon='PARTICLEMODE')
+                row.operator("samemesh.similar",icon='MOD_MESHDEFORM')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) == 1 # context.active_object is not None
                 row = layout.row()
                 
@@ -113,7 +115,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         try:
             if context.mode != 'EDIT_MESH':
                 row = layout.row()
-                row.operator("fixnormals.fix",text = "Fix Normals for "+ str(len(context.selected_objects)) ,icon='ALIASED')
+                row.operator("fixnormals.fix",text = "Fix Normals for "+ str(len(context.selected_objects)) ,icon='NORMALS_FACE')
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not None        
                 
                 row = layout.row()
@@ -157,12 +159,9 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
 ############ mesh only  
             if context.mode == 'EDIT_MESH':
-
                 row = layout.row()
-                row.operator("checker.edge", icon='ALIGN_JUSTIFY')
-
-                row = layout.row()
-                row.operator("clean.verts", icon='TRASH')
+                row.operator("clean.verts", icon='STICKY_UVS_DISABLE')
+                
 ########## armature & mesh                
             if context.mode == 'EDIT_MESH' or context.mode == 'EDIT_ARMATURE': #####
                 row = layout.row()
