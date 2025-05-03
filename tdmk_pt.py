@@ -41,33 +41,33 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             #selectedVerts = len([v for v in bpy.context.active_object.data.vertices if v.select])
             row = layout.row()
-            row.operator("origin.toselected", text="Origin to Selection", icon='PIVOT_CURSOR')
-            row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None
+            row.operator("origin.toselected",icon='DOT')
+            row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None #and active_object.type == 'MESH'
             
             row = layout.row()
             if context.mode != 'EDIT_MESH':
-                row.operator("align.toview", text="Align to View", icon='VIEW3D')
-                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) == 1
+                row.operator("align.toview",text ="Align to View", icon='ORIENTATION_GIMBAL') #.selectedObjectsCount = 3
+                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) == 1  # context.active_object is not None    
             row = layout.row()
             if context.mode == 'EDIT_MESH':
-                row.operator("bottoms.select", text="Select Bottom Verts", icon='SORT_ASC')
-                row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None
+                row.operator("bottoms.select",text ="Select Bottom", icon='TRIA_DOWN_BAR') #.selectedObjectsCount = 3
+                row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
             
             row = layout.row()
             row = layout.row()
             
             if context.mode == 'EDIT_MESH':
                 row = layout.row()
-                row.operator("material.select", text="Select by Material", icon='MATERIAL')
+                row.operator("material.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
                 row = layout.row()
-                row.operator("perimeter.select", text="Select by Perimeter", icon='MESH_CIRCLE')
+                row.operator("perimeter.select", icon='RESTRICT_SELECT_OFF') #.selectedObjectsCount = 3
                 row = layout.row()
 
   
             row = layout.row()
             if context.mode != 'EDIT_MESH':
-                row.operator("centerregions.center", text="Center Origins", icon='PIVOT_BOUNDBOX    ')
-                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0
+                row.operator("centerregions.center",text ="Center Origins of " + str(len(context.selected_objects)), icon='SNAP_FACE_CENTER') #.selectedObjectsCount = 3
+                row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 0  # context.active_object is not None
                 
                 row = layout.row()
                 row.operator("origin.tobottomcenter", text="Origin to Bottom Center", icon='ANCHOR_BOTTOM')
@@ -75,20 +75,18 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             
                 row = layout.row()
-                row.operator("samemesh.similar", text="Select Similar Meshes", icon='OUTLINER_OB_MESH')
-                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) == 1
+                row.operator("samemesh.similar",icon='PARTICLEMODE')
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) == 1 # context.active_object is not None
                 row = layout.row()
                 
-                row.operator("apply.mods", text="Apply All Modifiers", icon='CHECKMARK')
-                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0
+                row.operator("apply.mods",icon='MODIFIER_DATA', text ="Apply Modifiers for " + str(len(context.selected_objects)))                            
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0# context.active_object is not None
 
                 col = layout.column(align=True)
                 row = col.row(align=True)
-                row.label(text="Align Objects:")
-                row = col.row(align=True)
-                row.operator("alignobjects.align", text="X").algn = 'X'
-                row.operator("alignobjects.align", text="Y").algn = 'Y'
-                row.operator("alignobjects.align", text="Z").algn = 'Z'
+                row.operator("alignobjects.align", text = "X").algn = 'X'
+                row.operator("alignobjects.align", text = "Y").algn = 'Y'
+                row.operator("alignobjects.align", text = "Z").algn = 'Z'
                 row.enabled = context.active_object.mode == 'OBJECT' and len(context.selected_objects) > 1 
                 
 
@@ -115,16 +113,16 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         try:
             if context.mode != 'EDIT_MESH':
                 row = layout.row()
-                row.operator("fixnormals.fix", text="Fix Normals", icon='MOD_NORMALEDIT')
-                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0
+                row.operator("fixnormals.fix",text = "Fix Normals for "+ str(len(context.selected_objects)) ,icon='ALIASED')
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not None        
                 
                 row = layout.row()
-                row.operator("clearmats.clear", text="Remove Unused Materials", icon='MATERIAL_DATA')
-                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0
+                row.operator("clearmats.clear", text = "Clear Unused Mats from "+ str(len(context.selected_objects)) ,icon='NODE_MATERIAL')
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not None        
                 row = layout.row()
-                row.operator("generate.actions", text="Push to NLA Stack", icon='ACTION_TWEAK')
+                row.operator("generate.actions", text="Generate Actions", icon='ARMATURE_DATA')
                 row = layout.row()
-                row.operator("deletetextures.delete", text="Clean Unused Textures", icon='TEXTURE')
+                row.operator("deletetextures.delete",icon='RENDER_RESULT')
                 row.enabled = context.active_object.type == 'MESH'
                 row = layout.row()
 ###
@@ -137,7 +135,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 
                 if has_armature:
                     box = layout.box()
-                    box.label(text="Rename Bones & Animations", icon='BONE_DATA')
+                    box.label(text="Rename Bones")
                     props = context.scene.rename_bones_props
                     row = box.row()
                     row.prop(props, "old_text")
@@ -146,7 +144,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                     row = box.row()
                     row.prop(props, "match_case")
                     row = box.row()
-                    op = row.operator("renamebones.rename", text="Replace Text", icon='OUTLINER_DATA_FONT')
+                    op = row.operator("renamebones.rename", icon='BONE_DATA')
                     op.old_text = props.old_text
                     op.new_text = props.new_text
                     op.match_case = props.match_case
@@ -155,22 +153,23 @@ class CLEANUP_PT_panel(bpy.types.Panel):
 ###
 
                 row = layout.row()
-                row.operator("renamevertgroups.rename", text="Clean Mixamo Weights", icon='GROUP_VERTEX')
-                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0
-                
+                row.operator("renamevertgroups.rename",icon='GROUP_BONE')
+                row.enabled = context.active_object.type == 'MESH' and len(context.selected_objects) > 0 # context.active_object is not 
 ############ mesh only  
             if context.mode == 'EDIT_MESH':
-                row = layout.row()
-                row.operator("checker.edge", text="Checker Edge Selection", icon='EDGESEL')
 
                 row = layout.row()
-                row.operator("clean.verts", text="Dissolve Similar Vertices", icon='SNAP_VERTEX')
-                
-########## armature & mesh                
-            if context.mode == 'EDIT_MESH' or context.mode == 'EDIT_ARMATURE':
+                row.operator("checker.edge", icon='ALIGN_JUSTIFY')
+
                 row = layout.row()
-                row.operator("fix.rotation", text="Reset Rotation", icon='ORIENTATION_LOCAL')
+                row.operator("clean.verts", icon='TRASH')
+########## armature & mesh                
+            if context.mode == 'EDIT_MESH' or context.mode == 'EDIT_ARMATURE': #####
+                row = layout.row()
+                row.operator("fix.rotation",text ="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
                 
+                #row.enabled = context.active_object.mode == 'EDIT' and context.active_object is not None  # context.active_object is not None
+            
         except:
             print('err')  
 
@@ -227,17 +226,17 @@ class EXPORT_PT_panel(bpy.types.Panel):
                 
 
             row = layout.row()        
-            row.operator("exportfbxxx.export", text="Export Selected as FBX", icon='EXPORT')
-            row.enabled = len(context.selected_objects) > 0
+            row.operator("exportfbxxx.export",text ="FBX Export " + str(len(context.selected_objects))+ " Objects",icon='AUTO' ) 
+            row.enabled = len(context.selected_objects) > 0  # context.active_object is not None
             row = layout.split()
             layout.separator()
 
             col = layout.column(align=True)
             row = col.row(align=True)
-            row.label(text="Support Tidy Monkey", icon='HEART')
+            row.label(text="Share the Love")
             
-            row.operator("sharelove.share", text="", icon='URL').shareType = 'YT'
-            row.operator("sharelove.share", text="", icon='FUND').shareType = 'WB'
+            row.operator("sharelove.share",text="",icon='COMMUNITY').shareType = 'YT'
+            row.operator("sharelove.share",text="",icon='FUND').shareType = 'WB'
       
             
         except:
