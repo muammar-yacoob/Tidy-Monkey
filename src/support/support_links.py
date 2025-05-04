@@ -14,7 +14,7 @@ _support_cache = {
 display_options = {
     "show_daily": True,  
     "link_color": "#00BFFF",
-    "cache_lifetime": 3600  
+    "cache_lifetime": 0  # No caching, update on every draw
 }
 
 URLS = {
@@ -120,7 +120,8 @@ def check_sidebar_state(scene, depsgraph):
                     sidebar_visible = True
                     break
     
-    if sidebar_visible and not _support_cache["sidebar_visible"]: 
+    # If sidebar just became visible, reset the cache
+    if sidebar_visible != _support_cache["sidebar_visible"]:
         reset_support_cache()
     
     _support_cache["sidebar_visible"] = sidebar_visible
@@ -132,17 +133,16 @@ def create_support_section(layout, options=["rate", "github", "website", "donate
     global _support_cache
     current_time = time.time()
     
-    cache_expired = (current_time - _support_cache["last_update"]) > display_options["cache_lifetime"]
+    # Always refresh when creating the support section
+    # This ensures new messages on each sidebar open
+    random_category_info = get_random_category(options)
+    if not random_category_info: 
+        return
     
-    if cache_expired or _support_cache["category"] is None:
-        random_category_info = get_random_category(options)
-        if not random_category_info: 
-            return
-        
-        _support_cache["category_key"] = random_category_info["key"]
-        _support_cache["category"] = random_category_info["category"]
-        _support_cache["message"] = get_random_message(random_category_info["category"]["messages"])
-        _support_cache["last_update"] = current_time
+    _support_cache["category_key"] = random_category_info["key"]
+    _support_cache["category"] = random_category_info["category"]
+    _support_cache["message"] = get_random_message(random_category_info["category"]["messages"])
+    _support_cache["last_update"] = current_time
     
     category_key = _support_cache["category_key"]
     category = _support_cache["category"]

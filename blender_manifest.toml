@@ -1,0 +1,27 @@
+schema_version = "1.0.0"
+
+id = "tidy_monkey"
+version = "2.0.0"
+name = "Tidy Monkey"
+tagline = "Scene Organization Tool for Artists and Game Developers"
+maintainer = "Spark Games <contact@spark-games.co.uk>"
+type = "add-on"
+
+website = "https://spark-games.co.uk"
+tags = ["Scene Organization", "Modeling", "Export"]
+
+blender_version_min = "4.0.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+copyright = [
+  "2023-2024 Spark Games",
+]
+
+[permissions]
+files = "Import/export FBX from/to disk"
+clipboard = "Copy and paste bone transforms"
+
+[extension]
+entry_point = "extension" 
