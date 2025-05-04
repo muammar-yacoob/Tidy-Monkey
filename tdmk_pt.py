@@ -24,13 +24,6 @@ class TITLE_PT_panel(bpy.types.Panel):
             row.label(text= "Mode: " + context.active_object.mode)
         except:
             row.label(text= "Mode: N/A")
-        
-        # Add support section directly to the main panel
-        layout.separator()
-        box = layout.box()
-        row = box.row()
-        row.label(text="Support", icon='FUND')
-        create_support_section(box)
 
 #-----Sub Panels------   
 class ORGANIZE_PT_panel(bpy.types.Panel):
@@ -238,3 +231,19 @@ class EXPORT_PT_panel(bpy.types.Panel):
             
         except:
             print('err')  
+
+# Add support panel at the bottom
+class SUPPORT_PT_panel(bpy.types.Panel):
+    bl_label = "Support"
+    bl_idname = "SupportPanel"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_parent_id = 'TitlePanel'
+    bl_options = {'DEFAULT_CLOSED'}
+    
+    def draw(self, context):
+        layout = self.layout
+        box = layout.box()
+        row = box.row()
+        row.label(text="Support", icon='FUND')
+        create_support_section(box)

@@ -26,6 +26,7 @@ classes = (
     ORGANIZE_PT_panel,
     CLEANUP_PT_panel,
     EXPORT_PT_panel,
+    SUPPORT_PT_panel,
     ORG_SELECTED_OT_operator,
     ORG_ALIGNTOVIEW_OT_operator,
     ORG_CENTER_OT_operator,

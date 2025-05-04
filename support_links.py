@@ -74,12 +74,14 @@ support_categories = {
 }
 
 # Function to get a random message from an array
-def get_random_message(messages): return messages[random.randint(0, len(messages) - 1)]
+def get_random_message(messages): 
+    return messages[random.randint(0, len(messages) - 1)]
 
 # Function to get a random category from the available options
 def get_random_category(options):
     available_categories = [key for key in options if key in support_categories]
-    if not available_categories: return None
+    if not available_categories: 
+        return None
     
     random_key = available_categories[random.randint(0, len(available_categories) - 1)]
     return {
@@ -89,7 +91,8 @@ def get_random_category(options):
 
 # Determine if support section should be shown today
 def should_show_support_section():
-    if display_options["show_daily"]: return True
+    if display_options["show_daily"]: 
+        return True
     import datetime
     return datetime.datetime.now().day % 3 == 0
 
@@ -110,18 +113,21 @@ def check_sidebar_state(scene, depsgraph):
     sidebar_visible = False
     for window in bpy.context.window_manager.windows:
         for area in window.screen.areas:
-            if area.type != 'VIEW_3D': continue
+            if area.type != 'VIEW_3D': 
+                continue
             for region in area.regions:
                 if region.type == 'UI' and region.width > 1:
                     sidebar_visible = True
                     break
     
-    if sidebar_visible and not _support_cache["sidebar_visible"]: reset_support_cache()
+    if sidebar_visible and not _support_cache["sidebar_visible"]: 
+        reset_support_cache()
     
     _support_cache["sidebar_visible"] = sidebar_visible
 
 def create_support_section(layout, options=["rate", "github", "website", "donate"]):
-    if not should_show_support_section(): return
+    if not should_show_support_section(): 
+        return
     
     global _support_cache
     current_time = time.time()
@@ -130,7 +136,8 @@ def create_support_section(layout, options=["rate", "github", "website", "donate
     
     if cache_expired or _support_cache["category"] is None:
         random_category_info = get_random_category(options)
-        if not random_category_info: return
+        if not random_category_info: 
+            return
         
         _support_cache["category_key"] = random_category_info["key"]
         _support_cache["category"] = random_category_info["category"]
@@ -153,7 +160,10 @@ def create_support_section(layout, options=["rate", "github", "website", "donate
     op.url = url
 
 # Called on register
-def register_support_handlers(): bpy.app.handlers.depsgraph_update_post.append(check_sidebar_state)
+def register_support_handlers():
+    bpy.app.handlers.depsgraph_update_post.append(check_sidebar_state)
 
 # Called on unregister
-def unregister_support_handlers(): if check_sidebar_state in bpy.app.handlers.depsgraph_update_post: bpy.app.handlers.depsgraph_update_post.remove(check_sidebar_state) 
+def unregister_support_handlers():
+    if check_sidebar_state in bpy.app.handlers.depsgraph_update_post:
+        bpy.app.handlers.depsgraph_update_post.remove(check_sidebar_state) 
