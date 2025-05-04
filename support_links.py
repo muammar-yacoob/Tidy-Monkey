@@ -105,72 +105,55 @@ def reset_support_cache():
     }
 
 def check_sidebar_state(scene, depsgraph):
-    try:
-        global _support_cache
-        
-        sidebar_visible = False
-        for window in bpy.context.window_manager.windows:
-            for area in window.screen.areas:
-                if area.type != 'VIEW_3D': continue
-                for region in area.regions:
-                    if region.type == 'UI' and region.width > 1:
-                        sidebar_visible = True
-                        break
-        
-        if sidebar_visible and not _support_cache["sidebar_visible"]: reset_support_cache()
-        
-        _support_cache["sidebar_visible"] = sidebar_visible
-    except Exception as e:
-        print(f"Error checking sidebar state: {str(e)}")
+    global _support_cache
+    
+    sidebar_visible = False
+    for window in bpy.context.window_manager.windows:
+        for area in window.screen.areas:
+            if area.type != 'VIEW_3D': continue
+            for region in area.regions:
+                if region.type == 'UI' and region.width > 1:
+                    sidebar_visible = True
+                    break
+    
+    if sidebar_visible and not _support_cache["sidebar_visible"]: reset_support_cache()
+    
+    _support_cache["sidebar_visible"] = sidebar_visible
 
 def create_support_section(layout, options=["rate", "github", "website", "donate"]):
-    try:
-        if not should_show_support_section(): return
+    if not should_show_support_section(): return
+    
+    global _support_cache
+    current_time = time.time()
+    
+    cache_expired = (current_time - _support_cache["last_update"]) > display_options["cache_lifetime"]
+    
+    if cache_expired or _support_cache["category"] is None:
+        random_category_info = get_random_category(options)
+        if not random_category_info: return
         
-        global _support_cache
-        current_time = time.time()
-        
-        cache_expired = (current_time - _support_cache["last_update"]) > display_options["cache_lifetime"]
-        
-        if cache_expired or _support_cache["category"] is None:
-            random_category_info = get_random_category(options)
-            if not random_category_info: return
-            
-            _support_cache["category_key"] = random_category_info["key"]
-            _support_cache["category"] = random_category_info["category"]
-            _support_cache["message"] = get_random_message(random_category_info["category"]["messages"])
-            _support_cache["last_update"] = current_time
-        
-        category_key = _support_cache["category_key"]
-        category = _support_cache["category"]
-        message = _support_cache["message"]
-        
-        col = layout.column(align=True)
-        col.scale_y = 0.9
-        col.label(text=message)
-        
-        row = col.row(align=True)
-        row.scale_y = 1.2
-        
-        url = URLS[category_key]
-        op = row.operator("wm.url_open", text=f"{category['title']} {category['emoji']}", icon='COMMUNITY')
-        op.url = url
-    except Exception as e:
-        print(f"Error in support section: {str(e)}")
-        layout.label(text="Support Tidy Monkey!", icon='FUND')
+        _support_cache["category_key"] = random_category_info["key"]
+        _support_cache["category"] = random_category_info["category"]
+        _support_cache["message"] = get_random_message(random_category_info["category"]["messages"])
+        _support_cache["last_update"] = current_time
+    
+    category_key = _support_cache["category_key"]
+    category = _support_cache["category"]
+    message = _support_cache["message"]
+    
+    col = layout.column(align=True)
+    col.scale_y = 0.9
+    col.label(text=message)
+    
+    row = col.row(align=True)
+    row.scale_y = 1.2
+    
+    url = URLS[category_key]
+    op = row.operator("wm.url_open", text=f"{category['title']} {category['emoji']}", icon='COMMUNITY')
+    op.url = url
 
 # Called on register
-def register_support_handlers():
-    try:
-        if check_sidebar_state not in bpy.app.handlers.depsgraph_update_post:
-            bpy.app.handlers.depsgraph_update_post.append(check_sidebar_state)
-    except Exception as e:
-        print(f"Error registering support handlers: {str(e)}")
+def register_support_handlers(): bpy.app.handlers.depsgraph_update_post.append(check_sidebar_state)
 
 # Called on unregister
-def unregister_support_handlers():
-    try:
-        if check_sidebar_state in bpy.app.handlers.depsgraph_update_post:
-            bpy.app.handlers.depsgraph_update_post.remove(check_sidebar_state)
-    except Exception as e:
-        print(f"Error unregistering support handlers: {str(e)}") 
+def unregister_support_handlers(): if check_sidebar_state in bpy.app.handlers.depsgraph_update_post: bpy.app.handlers.depsgraph_update_post.remove(check_sidebar_state) 
