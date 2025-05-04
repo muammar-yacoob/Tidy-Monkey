@@ -1,20 +1,26 @@
 @echo off
 setlocal enabledelayedexpansion
 
-mkdir ".\temp\TidyMonkey" 2>nul
-mkdir ".\temp\TidyMonkey\icons" 2>nul
+:: Clear temporary directory
+rmdir /S /Q ".\temp" 2>nul
+mkdir ".\temp" 2>nul
 
-for /R %%f in (*.py) do (copy "%%f" ".\temp\TidyMonkey\" >nul)
+:: Copy all files from tidy_monkey directory preserving structure
+xcopy /S /E /Y ".\tidy_monkey" ".\temp\tidy_monkey\" >nul
 
-:: Copy the manifest file
-copy "blender_manifest.toml" ".\temp\TidyMonkey\" >nul
+:: Copy the root __init__.py
+copy ".\__init__.py" ".\temp\" >nul
 
-:: Copy icon files (if any)
-for %%f in (icons\*.*) do (copy "%%f" ".\temp\TidyMonkey\icons\" >nul 2>nul)
+:: Copy the manifest file to root level
+copy ".\blender_manifest.toml" ".\temp\" >nul
 
-:: Delete existing zip file first to ensure it's completely rebuilt
+:: Delete existing zip file first
 if exist ".\TidyMonkeyInstaller.zip" del /F ".\TidyMonkeyInstaller.zip"
 
-powershell -Command "Compress-Archive -Path '.\temp\TidyMonkey' -DestinationPath '.\TidyMonkeyInstaller.zip' -Force"
+:: Create zip with correct structure
+powershell -Command "Compress-Archive -Path '.\temp\*' -DestinationPath '.\TidyMonkeyInstaller.zip' -Force"
 
+:: Clean up
 rmdir /S /Q ".\temp"
+
+echo Package created: TidyMonkeyInstaller.zip

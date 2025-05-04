@@ -1,5 +1,6 @@
 import bpy
 from bpy.types import Panel
+from . import support_links
 
 class SUPPORT_PT_panel(bpy.types.Panel):
     bl_label = "Support"
@@ -15,10 +16,6 @@ class SUPPORT_PT_panel(bpy.types.Panel):
         return True
     
     def draw(self, context):
-        from .support_links import create_support_section, reset_support_cache
-        
-        reset_support_cache()
-        
         layout = self.layout
         try:
             box = layout.box()
@@ -28,7 +25,7 @@ class SUPPORT_PT_panel(bpy.types.Panel):
             row.operator("sharelove.share", text="", icon='COMMUNITY').shareType = 'YT'
             row.operator("sharelove.share", text="", icon='FUND').shareType = 'WB'
             
-            create_support_section(layout)
+            support_links.create_support_section(layout)
         except Exception as e:
             print(f'Error in SUPPORT_PT_panel: {str(e)}')
 

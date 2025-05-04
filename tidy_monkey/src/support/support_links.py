@@ -2,6 +2,8 @@ import bpy
 import random
 import os
 import time
+import webbrowser
+from bpy.types import Operator
 
 _support_cache = {
     "category_key": None,
@@ -158,6 +160,33 @@ def create_support_section(layout, options=["rate", "github", "website", "donate
     url = URLS[category_key]
     op = row.operator("wm.url_open", text=f"{category['title']} {category['emoji']}", icon='COMMUNITY')
     op.url = url
+
+class TDMK_OT_Share(Operator):
+    bl_idname = "sharelove.share"
+    bl_label = "Share the love"
+    bl_description = "Support Tidy Monkey development"
+    
+    shareType: bpy.props.StringProperty(default="YT")
+    
+    def execute(self, context):
+        if self.shareType == "YT":
+            webbrowser.open("https://www.youtube.com/@SparkGamesUK?sub_confirmation=1")
+        elif self.shareType == "WB":
+            webbrowser.open("https://spark-games.co.uk")
+        return {'FINISHED'}
+
+classes = (
+    TDMK_OT_Share,
+)
+
+def register():
+    for cls in classes:
+        bpy.utils.register_class(cls)
+
+def unregister():
+    for cls in reversed(classes):
+        if bpy.utils.unregister_class in bpy.app.handlers.persistent_handlers:
+            bpy.utils.unregister_class(cls)
 
 # Called on register
 def register_support_handlers():
