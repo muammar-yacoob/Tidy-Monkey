@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Panel
-from .export_fbx import EXPORT_OT_operator
-from .share_love import SHARE_OT_operator
+from ..export.export_fbx import EXPORT_OT_operator
+from ..export.share_love import SHARE_OT_operator
 
 class EXPORT_PT_panel(bpy.types.Panel):
     bl_label = "Export FBX"
@@ -40,7 +40,7 @@ class EXPORT_PT_panel(bpy.types.Panel):
                 row.label(text="Multiple Objects", icon='INFO')
 
             row = layout.row()        
-            row.operator("exportfbxxx.export", text=f"FBX Export {len(context.selected_objects)} Objects", icon='AUTO')
+            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export {len(context.selected_objects)} Objects", icon='AUTO')
             row.enabled = len(context.selected_objects) > 0
             
         except Exception as e:
