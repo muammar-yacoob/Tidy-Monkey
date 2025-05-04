@@ -4,7 +4,7 @@ id = "tidy_monkey"
 version = "2.0.0"
 name = "Tidy Monkey"
 tagline = "Scene Organization Tool for Artists and Game Developers"
-maintainer = "Spark Games <contact@spark-games.co.uk>"
+maintainer = "Spark Games <support@spark-games.co.uk>"
 type = "add-on"
 
 website = "https://spark-games.co.uk"
@@ -16,5 +16,5 @@ license = [
   "SPDX:GPL-3.0-or-later",
 ]
 copyright = [
-  "2023-2024 Spark Games",
+  "2025 Spark Games",
 ] 
