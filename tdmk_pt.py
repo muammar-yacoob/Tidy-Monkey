@@ -7,6 +7,7 @@ from bpy.types import Panel
 import os
 import bpy.ops
 import bmesh
+from . support_links import create_support_section, reset_support_cache
 
 class TITLE_PT_panel(bpy.types.Panel):
     bl_label = "Tidy Monkey"
@@ -23,7 +24,14 @@ class TITLE_PT_panel(bpy.types.Panel):
             row.label(text= "Mode: " + context.active_object.mode)
         except:
             row.label(text= "Mode: N/A")
-            
+        
+        # Add support section directly to the main panel
+        layout.separator()
+        box = layout.box()
+        row = box.row()
+        row.label(text="Support", icon='FUND')
+        create_support_section(box)
+
 #-----Sub Panels------   
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
@@ -227,16 +235,6 @@ class EXPORT_PT_panel(bpy.types.Panel):
             row = layout.row()        
             row.operator("exportfbxxx.export",text ="FBX Export " + str(len(context.selected_objects))+ " Objects",icon='AUTO' ) 
             row.enabled = len(context.selected_objects) > 0  # context.active_object is not None
-            row = layout.split()
-            layout.separator()
-
-            col = layout.column(align=True)
-            row = col.row(align=True)
-            row.label(text="Share the Love")
-            
-            row.operator("sharelove.share",text="",icon='COMMUNITY').shareType = 'YT'
-            row.operator("sharelove.share",text="",icon='FUND').shareType = 'WB'
-      
             
         except:
             print('err')  

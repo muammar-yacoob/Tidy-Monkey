@@ -2,8 +2,8 @@ bl_info = {
     "name": "Tidy Monkey",
     "author": "Spark Games",
     "description": "Scene Organization Tool",
-    "blender": (3, 5, 1),
-    "version": (1, 5, 0),
+    "blender": (4, 4, 0),
+    "version": (2, 0, 0),
     "location": "View3D > Sidebar > Tidy Monkey",
     "warning": "For the Export FBX to work, make sure you save the .blend file first",
     "doc_url": "https://spark-games.co.uk",
@@ -16,6 +16,7 @@ bl_info = {
 import bpy
 from . tdmk_pt import *
 from . tdmk_op import *
+from . support_links import register_support_handlers, unregister_support_handlers
 #endregion
 
 #region Registration
@@ -59,8 +60,14 @@ def register():
             print(f"Failed to register {cls.__name__}: {str(e)}")
             
     bpy.types.Scene.rename_bones_props = bpy.props.PointerProperty(type=RenameBonesProps)
+    
+    # Register support handlers
+    register_support_handlers()
 
 def unregister():
+    # Unregister support handlers
+    unregister_support_handlers()
+    
     for cls in reversed(classes):
         try:
             bpy.utils.unregister_class(cls)
