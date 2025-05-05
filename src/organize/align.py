@@ -5,11 +5,11 @@ import mathutils
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
     bl_label = "Align to View"
     bl_idname = "align.toview"
-    bl_description = "Aligns object to view using current pivot"
+    bl_description = "Aligns object to view"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        # Get the current view rotation
+        # Get the current view rotation as a quaternion
         view_rotation = context.region_data.view_rotation
         
         # Get currently selected objects
@@ -18,73 +18,21 @@ class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
             self.report({'ERROR'}, "No objects selected")
             return {'CANCELLED'}
         
-        # Determine pivot point based on current transform settings
-        pivot_point = context.scene.tool_settings.transform_pivot_point
-        pivot_position = None
+        # Apply the view rotation to each selected object
+        for obj in selected_objects:
+            # Store the original location
+            original_location = obj.location.copy()
+            
+            # Set rotation mode to quaternion
+            obj.rotation_mode = 'QUATERNION'
+            
+            # Apply the view rotation
+            obj.rotation_quaternion = view_rotation
+            
+            # Restore the original location
+            obj.location = original_location
         
-        if pivot_point == 'BOUNDING_BOX_CENTER':
-            # Use bounding box center of selection
-            min_co = mathutils.Vector((float('inf'), float('inf'), float('inf')))
-            max_co = mathutils.Vector((float('-inf'), float('-inf'), float('-inf')))
-            
-            for obj in selected_objects:
-                for corner in obj.bound_box:
-                    world_corner = obj.matrix_world @ mathutils.Vector(corner)
-                    min_co.x = min(min_co.x, world_corner.x)
-                    min_co.y = min(min_co.y, world_corner.y)
-                    min_co.z = min(min_co.z, world_corner.z)
-                    max_co.x = max(max_co.x, world_corner.x)
-                    max_co.y = max(max_co.y, world_corner.y)
-                    max_co.z = max(max_co.z, world_corner.z)
-            
-            pivot_position = (min_co + max_co) / 2
-            
-        elif pivot_point == 'CURSOR':
-            # Use 3D cursor position
-            pivot_position = context.scene.cursor.location
-            
-        elif pivot_point == 'INDIVIDUAL_ORIGINS':
-            # Each object rotates around its own origin
-            for obj in selected_objects:
-                original_location = obj.location.copy()
-                obj.rotation_euler = view_rotation.to_euler()
-                obj.location = original_location
-            
-            self.report({'INFO'}, "Aligned objects to view using individual origins")
-            return {'FINISHED'}
-            
-        elif pivot_point == 'MEDIAN_POINT':
-            # Use median point of selection
-            if selected_objects:
-                sum_co = mathutils.Vector((0, 0, 0))
-                for obj in selected_objects:
-                    sum_co += obj.matrix_world.translation
-                pivot_position = sum_co / len(selected_objects)
-        
-        elif pivot_point == 'ACTIVE_ELEMENT':
-            # Use active object as pivot
-            if context.active_object:
-                pivot_position = context.active_object.matrix_world.translation
-            else:
-                self.report({'WARNING'}, "No active object, using first selected")
-                pivot_position = selected_objects[0].matrix_world.translation
-        
-        # Apply the rotation around the pivot point
-        if pivot_position is not None:
-            for obj in selected_objects:
-                # Store original position relative to pivot
-                original_position = obj.matrix_world.translation - pivot_position
-                
-                # Apply rotation to this relative position
-                rotated_position = view_rotation @ original_position
-                
-                # Set the new rotation
-                obj.rotation_euler = view_rotation.to_euler()
-                
-                # Calculate and set the new position
-                obj.matrix_world.translation = pivot_position + rotated_position
-        
-        self.report({'INFO'}, f"Aligned to view using {pivot_point} pivot")
+        self.report({'INFO'}, "Aligned objects to current view")
         return {"FINISHED"}
 
 class ALIGN_OT_operator(bpy.types.Operator):

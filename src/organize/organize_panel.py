@@ -27,9 +27,9 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
         selection_count = len(context.selected_objects)
 
         try:
-            row = layout.row()
-            row.operator(ORG_SELECTED_OT_operator.bl_idname, icon='CLIPUV_HLT')
-            row.enabled = in_edit_mode
+            if in_edit_mode:
+                row = layout.row()
+                row.operator(ORG_SELECTED_OT_operator.bl_idname, icon='PIVOT_CURSOR')
             
             if not in_edit_mode:
                 row = layout.row()
@@ -54,13 +54,16 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             if not in_edit_mode and in_object_mode:
                 row = layout.row()
+                
+                center_label = "Center Origin" if selection_count == 1 else f"Center Origins of {selection_count}"
                 row.operator(ORG_CENTER_OT_operator.bl_idname, 
-                            text=f"Center Origins of {selection_count}", 
+                            text=center_label, 
                             icon='ANCHOR_CENTER')
                 row.enabled = selection_count > 0
                 
                 row = layout.row()
-                row.operator(ORG_BOTTOMCENTER_OT_operator.bl_idname, text="Origin to Bottom Center", icon='ANCHOR_BOTTOM')
+                bottom_label = "Origin to Bottom" if selection_count == 1 else f"Origin to Bottom for {selection_count}"
+                row.operator(ORG_BOTTOMCENTER_OT_operator.bl_idname, text=bottom_label, icon='ANCHOR_BOTTOM')
                 row.enabled = selection_count > 0
                 
                 row = layout.row()
@@ -68,8 +71,10 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = context.active_object.type == 'MESH' and selection_count == 1
                 
                 row = layout.row()
+                
+                modifier_label = "Apply Modifiers" if selection_count == 1 else f"Apply Modifiers for {selection_count}"
                 row.operator(APPLY_MODS_OT_operator.bl_idname, icon='MODIFIER_DATA', 
-                           text=f"Apply Modifiers for {selection_count}")
+                           text=modifier_label)
                 row.enabled = context.active_object.type == 'MESH' and selection_count > 0
                 
                 col = layout.column(align=True)

@@ -109,11 +109,15 @@ class EXPORT_OT_operator(bpy.types.Operator):
             context.view_layer.objects.active = obj
             
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
-            has_shape_key = False
+            has_animation = False
             if obj.type == 'MESH' and hasattr(obj.data, 'shape_keys') and obj.data.shape_keys:
-                if obj.data.shape_keys.key_blocks:
-                    has_shape_key = len(obj.data.shape_keys.key_blocks) > 0
+                if obj.data.shape_keys.key_blocks and len(obj.data.shape_keys.key_blocks) > 0:
+                    has_animation = True
+            
+            if obj.animation_data:
+                if (obj.animation_data.action or 
+                    (obj.animation_data.nla_tracks and len(obj.animation_data.nla_tracks) > 0)):
+                    has_animation = True
             
             obj_path = os.path.join(directory, obj.name + ".fbx")
             
@@ -132,9 +136,9 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     use_tspace=True,  # Important for normal maps
                     use_custom_props=True,
                     bake_space_transform=False,  # Don't bake transforms to preserve positions
-                    bake_anim=has_shape_key,
-                    bake_anim_use_nla_strips=has_shape_key,
-                    bake_anim_use_all_actions=has_shape_key,
+                    bake_anim=has_animation,
+                    bake_anim_use_nla_strips=has_animation,
+                    bake_anim_use_all_actions=has_animation,
                     add_leaf_bones=False,
                     primary_bone_axis='Y',
                     secondary_bone_axis='X',
