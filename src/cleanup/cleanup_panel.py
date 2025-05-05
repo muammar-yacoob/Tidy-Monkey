@@ -13,10 +13,10 @@ from ..organize.fix_rotation import ORG_FIXROTATION_OT_operator
 
 class CLEANUP_PT_panel(bpy.types.Panel):
     bl_label = "Clean Up"
-    bl_idname = "TIDYMONKEY_PT_CleanUp"
+    bl_idname = "CleanUp"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TIDYMONKEY_PT_Base'
+    bl_parent_id = 'TitlePanel'
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):

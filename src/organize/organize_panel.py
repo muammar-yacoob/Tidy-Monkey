@@ -20,10 +20,10 @@ from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
 
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
-    bl_idname = "TIDYMONKEY_PT_Organize"
+    bl_idname = "OrganizePanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TIDYMONKEY_PT_Base'
+    bl_parent_id = 'TitlePanel'
     bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
