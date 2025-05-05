@@ -1,15 +1,20 @@
 import bpy
 from bpy.types import Panel
 from ..export.export_fbx import EXPORT_OT_operator
+from ..export.export_glb import EXPORT_GLB_OT_operator
 from ..export.share_love import SHARE_OT_operator
 
 class EXPORT_PT_panel(bpy.types.Panel):
-    bl_label = "Export FBX"
-    bl_idname = "ExportPanel"
+    bl_label = "Export"
+    bl_idname = "EXPORT_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TitlePanel'
+    bl_parent_id = 'TITLE_PT_panel'
     bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.mode == 'OBJECT'
 
     def draw(self, context):
         layout = self.layout 
@@ -39,12 +44,19 @@ class EXPORT_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.label(text="Multiple Objects", icon='INFO')
 
-            row = layout.row()        
-            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export {len(context.selected_objects)} Objects", icon='AUTO')
+            box = layout.box()
+            box.label(text="Export Options", icon='EXPORT')
+            
+            row = box.row()
+            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({len(context.selected_objects)})", icon='EXPORT')
+            row.enabled = len(context.selected_objects) > 0
+            
+            row = box.row()
+            row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({len(context.selected_objects)})", icon='FILE_3D')
             row.enabled = len(context.selected_objects) > 0
             
         except Exception as e:
-            print(f'Error in EXPORT_PT_panel draw method: {str(e)}')
+            pass
 
 classes = (
     EXPORT_PT_panel,

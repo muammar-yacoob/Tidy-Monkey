@@ -1,24 +1,18 @@
 import bpy
 import random
-import os
-import time
 import webbrowser
 from bpy.types import Operator
 
+# This cache will store the current support message
 _support_cache = {
     "category_key": None,
     "category": None,
     "message": None,
     "last_update": 0,
-    "sidebar_visible": False
+    "sidebar_opened": False
 }
 
-display_options = {
-    "show_daily": True,  
-    "link_color": "#00BFFF",
-    "cache_lifetime": 0  # No caching, update on every draw
-}
-
+# Support links URLs
 URLS = {
     "rate": "https://blendermarket.com/products/tidy-monkey/ratings",
     "github": "https://github.com/muammar-yacoob/Tidy-Monkey",
@@ -26,63 +20,52 @@ URLS = {
     "donate": "https://www.buymeacoffee.com/spark88"
 }
 
+# Support categories with their messages
 support_categories = {
     "rate": {
         "title": "Rate Addon",
         "emoji": "⭐",
         "messages": [
-            "Please Rate & feed my ego! 🧠",
-            "Dev stayed up late. Please Rate! 🦉",
-            "5 stars = fewer bugs, happier monkeys 🐒",
-            "Every star delays AI stealing my job 🤖⭐",
-            "Your rating keeps this monkey tidy 🐵",
-            "Be the smile behind the code. Please Rate 😁"
+            "Please rate on Blender Market!",
+            "Rate the addon to support future updates",
+            "Enjoying Tidy Monkey? Please rate!",
         ]
     },
-
     "github": {
         "title": "Star on GitHub",
         "emoji": "🌟",
         "messages": [
-            "One GitHub star = one coder smile 😄",
-            "GitHub stars = free dev snacks 🍩",
-            "Give repo stars, I power up like Mario ⭐",
-            "Found it useful? Star the repo to share! ✨"
+            "Star us on GitHub!",
+            "Find the code on GitHub",
+            "Report issues on our GitHub repo",
         ]
     },
-
     "website": {
-        "title": "More Awesome Tools",
+        "title": "Visit Website",
         "emoji": "🚀",
         "messages": [
-            "More tools? Visit my site for free goodies! 🎁",
-            "Like this? I've got more at my website 🔎",
-            "Don't stop here. Browse more Blender tools 🚀",
+            "Check more tools on our website!",
+            "Visit our website for more addons",
+            "Need help? Visit our website",
         ]
     },
-
     "donate": {
-        "title": "Support Development",
+        "title": "Support Us",
         "emoji": "☕",
         "messages": [
-            "Help a dev eat more than ramen! 🍜",
-            "The AI didn't write this msg & I need to eat 🍔",
-            "Dev low on fuel! Donate coffee? ⛽",
-            "Human devs need snacks too 🍪",
-            "Each donation = human > AI 🏆",
-            "Fuel my code, fund my sanity ☕🧘‍♂️"
+            "Support development with a coffee!",
+            "Buy us a coffee to fuel development",
+            "Help support future updates",
         ]
     }
 }
 
-# Function to get a random message from an array
-def get_random_message(messages): 
+def get_random_message(messages):
     return messages[random.randint(0, len(messages) - 1)]
 
-# Function to get a random category from the available options
 def get_random_category(options):
     available_categories = [key for key in options if key in support_categories]
-    if not available_categories: 
+    if not available_categories:
         return None
     
     random_key = available_categories[random.randint(0, len(available_categories) - 1)]
@@ -91,74 +74,58 @@ def get_random_category(options):
         "category": support_categories[random_key]
     }
 
-# Determine if support section should be shown today
-def should_show_support_section():
-    if display_options["show_daily"]: 
-        return True
-    import datetime
-    return datetime.datetime.now().day % 3 == 0
-
-# Reset the cache when needed
-def reset_support_cache():
-    global _support_cache
-    _support_cache = {
-        "category_key": None,
-        "category": None,
-        "message": None,
-        "last_update": 0,
-        "sidebar_visible": _support_cache.get("sidebar_visible", False)
-    }
-
-def check_sidebar_state(scene, depsgraph):
-    global _support_cache
-    
-    sidebar_visible = False
+def is_sidebar_visible():
     for window in bpy.context.window_manager.windows:
         for area in window.screen.areas:
-            if area.type != 'VIEW_3D': 
+            if area.type != 'VIEW_3D':
                 continue
             for region in area.regions:
                 if region.type == 'UI' and region.width > 1:
-                    sidebar_visible = True
-                    break
-    
-    # If sidebar just became visible, reset the cache
-    if sidebar_visible != _support_cache["sidebar_visible"]:
-        reset_support_cache()
-    
-    _support_cache["sidebar_visible"] = sidebar_visible
+                    return True
+    return False
+
+def update_support_message():
+    global _support_cache
+    # Choose a random support category
+    category_info = get_random_category(["rate", "github", "website", "donate"])
+    if not category_info:
+        return
+        
+    _support_cache["category_key"] = category_info["key"]
+    _support_cache["category"] = category_info["category"]
+    _support_cache["message"] = get_random_message(category_info["category"]["messages"])
 
 def create_support_section(layout, options=["rate", "github", "website", "donate"]):
-    if not should_show_support_section(): 
-        return
-    
     global _support_cache
-    current_time = time.time()
     
-    # Always refresh when creating the support section
-    # This ensures new messages on each sidebar open
-    random_category_info = get_random_category(options)
-    if not random_category_info: 
-        return
+    # Check if this is the first time opening the sidebar this session
+    # or if we need to refresh the message
+    sidebar_visible = is_sidebar_visible()
+    if sidebar_visible and not _support_cache["sidebar_opened"]:
+        update_support_message()
+        _support_cache["sidebar_opened"] = True
     
-    _support_cache["category_key"] = random_category_info["key"]
-    _support_cache["category"] = random_category_info["category"]
-    _support_cache["message"] = get_random_message(random_category_info["category"]["messages"])
-    _support_cache["last_update"] = current_time
+    # If we have no message yet, generate one
+    if _support_cache["message"] is None:
+        update_support_message()
     
+    # Get the current support info
     category_key = _support_cache["category_key"]
     category = _support_cache["category"]
     message = _support_cache["message"]
     
-    col = layout.column(align=True)
-    col.scale_y = 0.9
-    col.label(text=message)
+    if not category or not message:
+        return
+        
+    # Create a simple compact UI
+    row = layout.row()
+    row.alignment = 'CENTER'
+    row.label(text=message)
     
-    row = col.row(align=True)
-    row.scale_y = 1.2
-    
+    row = layout.row()
+    row.scale_y = 1.1
     url = URLS[category_key]
-    op = row.operator("wm.url_open", text=f"{category['title']} {category['emoji']}", icon='COMMUNITY')
+    op = row.operator("wm.url_open", text=f"{category['title']} {category['emoji']}", icon='URL')
     op.url = url
 
 class TDMK_OT_Share(Operator):
@@ -180,19 +147,15 @@ classes = (
 )
 
 def register():
-    for cls in classes:
-        bpy.utils.register_class(cls)
+    pass
 
 def unregister():
-    for cls in reversed(classes):
-        if bpy.utils.unregister_class in bpy.app.handlers.persistent_handlers:
-            bpy.utils.unregister_class(cls)
+    pass
 
-# Called on register
 def register_support_handlers():
-    bpy.app.handlers.depsgraph_update_post.append(check_sidebar_state)
+    # No need for handlers with this simpler approach
+    pass
 
-# Called on unregister
 def unregister_support_handlers():
-    if check_sidebar_state in bpy.app.handlers.depsgraph_update_post:
-        bpy.app.handlers.depsgraph_update_post.remove(check_sidebar_state) 
+    # No need for handlers cleanup
+    pass 

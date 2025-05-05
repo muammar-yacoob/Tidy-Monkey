@@ -3,51 +3,92 @@ from bpy.types import Operator
 import os
 
 class EXPORT_OT_operator(bpy.types.Operator):
-    bl_idname = "exportfbxxx.export"
+    bl_idname = "exportfbx.export"
     bl_label = "Export FBX"
     bl_description = "Exports selected objects as FBX files"
 
     def execute(self, context):
+        # Check if the file is saved
+        if not bpy.data.filepath:
+            self.report({'ERROR'}, "Please save your file first before exporting")
+            return {'CANCELLED'}
+        
+        # Ensure we're in object mode
         bpy.ops.object.mode_set(mode='OBJECT')
+        
+        # Setup export directory
         blend_file_path = bpy.data.filepath
         directory = os.path.dirname(blend_file_path) + "/FBXs"
         if not os.path.exists(directory):
             os.mkdir(directory)
 
+        # Get selected objects before any selection changes
         sel_objs = [obj for obj in context.selected_objects]
+        if not sel_objs:
+            self.report({'ERROR'}, "No objects selected to export")
+            return {'CANCELLED'}
+        
+        # Find armatures and their children
+        armatures = [obj for obj in sel_objs if obj.type == 'ARMATURE']
+        armature_children = {}
+        
+        # Map each armature to its children
+        for arm in armatures:
+            armature_children[arm] = [obj for obj in bpy.data.objects 
+                                     if obj.parent == arm and obj.type == 'MESH']
+        
+        # Clean up orphaned data
         bpy.ops.object.select_all(action='DESELECT')
         bpy.ops.outliner.orphans_purge()
+        
+        # Pack textures
         try:
             bpy.ops.file.pack_all()
         except Exception as e:
-            self.report({'ERROR'}, f"Could not pack all textures\n{str(e)}")
+            self.report({'WARNING'}, f"Could not pack all textures\n{str(e)}")
+        
+        # Make sure we have local copies of textures
         try:
             bpy.ops.file.unpack_all(method='USE_LOCAL')
             bpy.ops.file.make_paths_absolute()
-        except:
-            self.report({'ERROR'}, "Error packing textures")
-
+        except Exception as e:
+            self.report({'WARNING'}, "Error processing textures")
+        
+        # Store current frame to restore later
         current_frame = context.scene.frame_current
         bpy.ops.screen.animation_cancel(restore_frame=True)
         context.scene.frame_set(context.scene.frame_start)
-
-        for obj in sel_objs:
+        
+        exported_count = 0
+        
+        # Process armatures with their children first
+        for arm in armatures:
+            children = armature_children[arm]
+            if not children:
+                continue  # Skip armatures with no mesh children
+                
             bpy.ops.object.select_all(action='DESELECT')
-            obj_path = os.path.join(directory, obj.name + ".fbx")
-
-            obj.select_set(True)
+            
+            # Select armature and its children for export
+            arm.select_set(True)
+            for child in children:
+                child.select_set(True)
+                
+            # Set armature as active object
+            context.view_layer.objects.active = arm
+            
+            # Apply rotation and scale but keep location
             bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-
-            original_loc = obj.location.copy()
-            obj.location = (0, 0, 0)
-
-            has_shape_key = bool(obj.type == 'ARMATURE')
-            if not has_shape_key:
-                try:
-                    has_shape_key = len(obj.data.shape_keys.key_blocks) > 0
-                except:
-                    pass
-
+            
+            # Store original location
+            original_loc = arm.location.copy()
+            
+            # Center for export
+            arm.location = (0, 0, 0)
+            
+            # Export armature with its children
+            obj_path = os.path.join(directory, arm.name + ".fbx")
+            
             try:
                 bpy.ops.export_scene.fbx(
                     filepath=obj_path,
@@ -60,7 +101,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     use_mesh_modifiers=True,
                     mesh_smooth_type='FACE',
                     use_mesh_edges=False,
-                    use_tspace=True,
+                    use_tspace=True,  # Important for normal maps
                     use_custom_props=True,
                     bake_space_transform=True,
                     bake_anim=True,
@@ -69,22 +110,84 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     add_leaf_bones=False,
                     primary_bone_axis='Y',
                     secondary_bone_axis='X',
-                    use_armature_deform_only=True,
-                    path_mode='AUTO',
+                    use_armature_deform_only=False,  # Include all modifiers
+                    path_mode='COPY',  # Copy textures
+                    embed_textures=True,  # Embed textures
                     batch_mode='OFF',
                     use_metadata=True,
                 )
+                exported_count += 1
+                self.report({'INFO'}, f"Exported armature: {arm.name}")
             except Exception as e:
-                self.report({'ERROR'}, f"Could not export FBX file\n{str(e)}")
-
+                self.report({'ERROR'}, f"Could not export armature {arm.name}\n{str(e)}")
+            
+            # Restore original location
+            arm.location = original_loc
+        
+        # Process remaining objects (not part of armature hierarchies)
+        remaining_objs = [obj for obj in sel_objs if obj not in armatures and 
+                         obj.parent not in armatures]
+        
+        for obj in remaining_objs:
+            bpy.ops.object.select_all(action='DESELECT')
+            obj.select_set(True)
+            context.view_layer.objects.active = obj
+            
+            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+            
+            original_loc = obj.location.copy()
+            obj.location = (0, 0, 0)
+            
+            # Check for shape keys
+            has_shape_key = False
+            if obj.type == 'MESH' and hasattr(obj.data, 'shape_keys') and obj.data.shape_keys:
+                if obj.data.shape_keys.key_blocks:
+                    has_shape_key = len(obj.data.shape_keys.key_blocks) > 0
+            
+            obj_path = os.path.join(directory, obj.name + ".fbx")
+            
+            try:
+                bpy.ops.export_scene.fbx(
+                    filepath=obj_path,
+                    use_selection=True,
+                    check_existing=False,
+                    global_scale=1.0,
+                    apply_scale_options='FBX_SCALE_UNITS',
+                    axis_forward='-Z',
+                    axis_up='Y',
+                    use_mesh_modifiers=True,
+                    mesh_smooth_type='FACE',
+                    use_mesh_edges=False,
+                    use_tspace=True,  # Important for normal maps
+                    use_custom_props=True,
+                    bake_space_transform=True,
+                    bake_anim=has_shape_key,
+                    bake_anim_use_nla_strips=has_shape_key,
+                    bake_anim_use_all_actions=has_shape_key,
+                    add_leaf_bones=False,
+                    primary_bone_axis='Y',
+                    secondary_bone_axis='X',
+                    use_armature_deform_only=False,  # Include all modifiers
+                    path_mode='COPY',  # Copy textures
+                    embed_textures=True,  # Embed textures
+                    batch_mode='OFF',
+                    use_metadata=True,
+                )
+                exported_count += 1
+            except Exception as e:
+                self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
+            
+            # Restore original location
             obj.location = original_loc
-            obj.select_set(False)
-
+        
+        # Restore original frame and selection
         context.scene.frame_set(current_frame)
+        bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
-        self.report({'INFO'}, f"{len(sel_objs)} objects were exported to {directory}")
-        os.system("start " + os.path.dirname(blend_file_path))
+        
+        self.report({'INFO'}, f"{exported_count} objects were exported to {directory}")
+        os.system("start " + directory)
         return {'FINISHED'}
 
 classes = (EXPORT_OT_operator,) 

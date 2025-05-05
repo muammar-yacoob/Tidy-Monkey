@@ -3,31 +3,51 @@ from bpy.types import Panel
 
 class TITLE_PT_panel(bpy.types.Panel):
     bl_label = "Tidy Monkey"
-    bl_idname = "TitlePanel"
+    bl_idname = "TITLE_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = 'Tidy Monkey'
     
+    @classmethod
+    def poll(cls, context):
+        return True
+    
     def draw(self, context):
         layout = self.layout
-        row = layout.row()
-        try: 
-            mode = context.active_object.mode
-            if mode == 'OBJECT':
-                row.label(text="Mode: ", icon='OBJECT_DATA')
-                row.label(text=mode, icon_value=0)
-                row.label(text="", icon='CHECKMARK')
-            elif mode == 'EDIT':
-                row.label(text="Mode: ", icon='EDITMODE_HLT')
-                row.label(text=mode, icon_value=0)
-                row.label(text="", icon='ERROR')
-            elif mode == 'POSE':
-                row.label(text="Mode: ", icon='ARMATURE_DATA')
-                row.label(text=mode, icon_value=0)
-                row.label(text="", icon='MOD_OCEAN')
-            else:
-                row.label(text=f"Mode: {mode}")
-        except:
-            row.label(text="Mode: N/A")
+        
+        # Check if there's an active object
+        if context.active_object:
+            try: 
+                mode = context.active_object.mode
+                # Create a row for the mode display
+                if mode == 'OBJECT':
+                    row = layout.row(align=True)
+                    row.alignment = 'LEFT'
+                    row.label(text="Mode:", icon='OBJECT_DATA')
+                    row.label(text=mode)
+                elif mode == 'EDIT':
+                    row = layout.row(align=True)
+                    row.alignment = 'LEFT'
+                    row.label(text="Mode:", icon='EDITMODE_HLT')
+                    edit_label = row.row()
+                    edit_label.alert = True
+                    edit_label.label(text=mode)
+                elif mode == 'POSE':
+                    row = layout.row(align=True)
+                    row.alignment = 'LEFT'
+                    row.label(text="Mode:", icon='ARMATURE_DATA')
+                    row.label(text=mode)
+                else:
+                    row = layout.row(align=True)
+                    row.alignment = 'LEFT'
+                    row.label(text=f"Mode:{mode}")
+            except:
+                row = layout.row(align=True)
+                row.alignment = 'LEFT'
+                row.label(text="Mode:ERROR")
+        else:
+            row = layout.row(align=True)
+            row.alignment = 'LEFT'
+            row.label(text="Mode:N/A", icon='ERROR')
 
 classes = (TITLE_PT_panel,) 

@@ -10,6 +10,7 @@ except ImportError as e:
 try:
     # from . import export_ops # <-- Commented out to break potential cycle
     from . import export_fbx
+    from . import export_glb
     from . import share_love
     print("    Imported export ops modules (excluding self-import check)." )
 except ImportError as e:

@@ -41,4 +41,4 @@ echo 2. Go to Edit -^> Preferences -^> Add-ons -^> Install...
 echo 3. Select the TidyMonkeyInstaller.zip file
 echo 4. Enable the addon
 echo.
-pause
+:: pause

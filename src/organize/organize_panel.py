@@ -4,15 +4,10 @@ from ..organize.origin_to_selected import ORG_SELECTED_OT_operator
 from ..organize.center_origins import ORG_CENTER_OT_operator
 from ..organize.origin_to_bottom import ORG_BOTTOMCENTER_OT_operator
 from ..organize.align import ORG_ALIGNTOVIEW_OT_operator, ALIGN_OT_operator
-from ..organize.fix_rotation import ORG_FIXROTATION_OT_operator
 from ..organize.apply_modifiers import APPLY_MODS_OT_operator
 from ..organize.select_similar import (
-    SELECT_SIMILAR_OT_operator, 
     SELECT_MAT_OT_operator, 
-    SELECT_PER_OT_operator,
-    SELECT_NORM_OT_operator,
-    SELECT_AREA_OT_operator,
-    SELECT_COPLANAR_OT_operator
+    SELECT_PER_OT_operator
 )
 from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
@@ -20,11 +15,10 @@ from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
 
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
-    bl_idname = "OrganizePanel"
+    bl_idname = "ORGANIZE_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TitlePanel'
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = 'TITLE_PT_panel'
     
     def draw(self, context):
         layout = self.layout
@@ -86,8 +80,5 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = selection_count > 1
         except Exception as e:
             print(f'Error in ORGANIZE_PT_panel draw method: {str(e)}')
-            # Optional: Add traceback for more detailed debugging
-            # import traceback
-            # traceback.print_exc()
 
 classes = (ORGANIZE_PT_panel,) 

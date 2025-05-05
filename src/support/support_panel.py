@@ -5,11 +5,11 @@ from ..export.share_love import SHARE_OT_operator
 
 class SUPPORT_PT_panel(bpy.types.Panel):
     bl_label = "Support"
-    bl_idname = "SupportPanel"
+    bl_idname = "SUPPORT_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TitlePanel'
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_parent_id = 'TITLE_PT_panel'
+    bl_options = {}
     bl_order = 10
     
     @classmethod
@@ -20,15 +20,14 @@ class SUPPORT_PT_panel(bpy.types.Panel):
         layout = self.layout
         try:
             box = layout.box()
-            row = box.row()
-            row.label(text="Share the Love")
+            support_links.create_support_section(box)
             
-            row.operator(SHARE_OT_operator.bl_idname, text="", icon='COMMUNITY').shareType = 'YT'
-            row.operator(SHARE_OT_operator.bl_idname, text="", icon='FUND').shareType = 'WB'
-            
-            support_links.create_support_section(layout)
+            row = box.row(align=True)
+            row.scale_y = 1.0
+            row.operator(SHARE_OT_operator.bl_idname, text="YouTube", icon='URL').shareType = 'YT'
+            row.operator(SHARE_OT_operator.bl_idname, text="Website", icon='WORLD').shareType = 'WB'
         except Exception as e:
-            print(f'Error in SUPPORT_PT_panel draw method: {str(e)}')
+            pass
 
 classes = (
     SUPPORT_PT_panel,

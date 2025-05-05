@@ -13,10 +13,10 @@ from ..organize.fix_rotation import ORG_FIXROTATION_OT_operator
 
 class CLEANUP_PT_panel(bpy.types.Panel):
     bl_label = "Clean Up"
-    bl_idname = "CleanUp"
+    bl_idname = "CLEANUP_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TitlePanel'
+    bl_parent_id = 'TITLE_PT_panel'
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -80,7 +80,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator(ORG_FIXROTATION_OT_operator.bl_idname, text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
                 
         except Exception as e:
-            print(f'Error in CLEANUP_PT_panel draw method: {str(e)}')
+            pass
 
 classes = (
     CLEANUP_PT_panel,
@@ -89,17 +89,13 @@ classes = (
 
 def register():
     try:
-        print("  Attempting to register Scene.rename_bones_props from cleanup_panel...")
         bpy.types.Scene.rename_bones_props = bpy.props.PointerProperty(type=RenameBonesProps)
-        print("  SUCCESS: Registered Scene.rename_bones_props")
     except Exception as e:
-        print(f"  ERROR registering Scene.rename_bones_props in cleanup_panel: {e}")
+        pass
 
 def unregister():
     try:
         if hasattr(bpy.types.Scene, "rename_bones_props"):
-            print("  Attempting to unregister Scene.rename_bones_props from cleanup_panel...")
             del bpy.types.Scene.rename_bones_props
-            print("  SUCCESS: Unregistered Scene.rename_bones_props")
     except Exception as e:
-        print(f"  ERROR unregistering Scene.rename_bones_props in cleanup_panel: {e}") 
+        pass 
