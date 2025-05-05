@@ -15,12 +15,15 @@ bl_info = {
 #https://blendermarket.com/products/tidy-monkey
 
 #region Imports
+# Keep imports minimal here to reduce risk of load-time errors
 try:
     import bpy
     import traceback
     print("  Root imports (bpy, traceback) successful.")
 except Exception as e:
+    # This is unlikely but critical if it fails
     print(f"  FATAL ERROR during root import: {e}")
+    # Avoid further execution if basic imports fail
     raise e 
 #endregion
 
@@ -47,7 +50,7 @@ def register():
         # Check if src has a register function before calling
         if hasattr(src, 'register') and callable(src.register):
             print("    Imported src module successfully.")
-            src.register() # Call the register function within src/__init__.py
+            src.register()
             print("    Called src.register successfully.")
             print("Tidy Monkey: Root register() finished successfully.")
         else:
@@ -68,7 +71,7 @@ def unregister():
          # Check if src has an unregister function before calling
         if hasattr(src, 'unregister') and callable(src.unregister):
             print("    Imported src module successfully.")
-            src.unregister() # Call the unregister function within src/__init__.py
+            src.unregister()
             print("    Called src.unregister successfully.")
             print("Tidy Monkey: Root unregister() finished successfully.")
         else:
@@ -80,10 +83,14 @@ def unregister():
         print(f"    FATAL ERROR during unregistration delegation: {e}")
         traceback.print_exc()
     
-# The __name__ == "__main__" block is generally not relevant for installed addons
-# if __name__ == "__main__":
-#     print("\n--- Tidy Monkey: Running as main script (should not happen in addon mode) ---")
-#     register()
+if __name__ == "__main__":
+    # This part should ideally not run when installed as an addon
+    print("\n--- Tidy Monkey: Running as main script (should not happen in addon mode) ---")
+    # Attempt registration for standalone testing, might fail without full Blender context
+    try:
+        register()
+    except Exception as e:
+        print(f"Error running register() in __main__: {e}")
 
 print("--- Tidy Monkey: Root __init__.py execution END ---")
 #endregion

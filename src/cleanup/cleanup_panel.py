@@ -2,7 +2,6 @@ import bpy
 from bpy.types import Panel, PropertyGroup
 import bpy.props
 
-from ..organize.fix_rotation import ORG_FIXROTATION_OT_operator
 from ..cleanup.fix_normals import FIX_NORMALS_OT_operator
 from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
@@ -10,13 +9,14 @@ from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
 from ..cleanup.rename_vertex_groups import REN_VERT_OT_operator
 from ..cleanup.clean_verts import CLEAN_VERTS_OT_operator
+from ..organize.fix_rotation import ORG_FIXROTATION_OT_operator
 
 class CLEANUP_PT_panel(bpy.types.Panel):
     bl_label = "Clean Up"
-    bl_idname = "CleanUpPanel"
+    bl_idname = "TIDYMONKEY_PT_CleanUp"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TitlePanel'
+    bl_parent_id = 'TIDYMONKEY_PT_Base'
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):

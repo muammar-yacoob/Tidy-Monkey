@@ -13,38 +13,72 @@ except ImportError as e:
     print(f"  ERROR importing base_panel: {e}")
     traceback.print_exc()
 
+# Import Organize Modules
 try:
-    from .organize import organize_panel, organize_ops
-    modules_to_process.append(organize_panel)
-    modules_to_process.append(organize_ops)
-    print("  Imported: organize_panel, organize_ops")
+    from .organize import (
+        organize_panel,
+        origin_to_selected,
+        center_origins,
+        origin_to_bottom,
+        align,
+        fix_rotation,
+        apply_modifiers,
+        select_similar,
+        checker_edge,
+        select_bottom,
+        select_similar_mesh
+    )
+    modules_to_process.extend([
+        organize_panel, origin_to_selected, center_origins, origin_to_bottom,
+        align, fix_rotation, apply_modifiers, select_similar, checker_edge,
+        select_bottom, select_similar_mesh
+    ])
+    print("  Imported: organize modules")
 except ImportError as e:
     print(f"  ERROR importing organize modules: {e}")
     traceback.print_exc()
 
+# Import Cleanup Modules
 try:
-    from .cleanup import cleanup_panel, cleanup_ops
-    modules_to_process.append(cleanup_panel)
-    modules_to_process.append(cleanup_ops)
-    print("  Imported: cleanup_panel, cleanup_ops")
+    from .cleanup import (
+        cleanup_panel,
+        fix_normals,
+        clear_materials,
+        generate_actions,
+        clean_textures,
+        rename_bones,
+        rename_vertex_groups,
+        clean_verts
+        # cleanup_ops # This likely doesn't exist, remove if causing issues
+    )
+    modules_to_process.extend([
+        cleanup_panel, fix_normals, clear_materials, generate_actions,
+        clean_textures, rename_bones, rename_vertex_groups, clean_verts
+    ])
+    print("  Imported: cleanup modules")
 except ImportError as e:
     print(f"  ERROR importing cleanup modules: {e}")
     traceback.print_exc()
 
+# Import Export Modules
 try:
-    from .export import export_panel, export_ops
-    modules_to_process.append(export_panel)
-    modules_to_process.append(export_ops)
-    print("  Imported: export_panel, export_ops")
+    from .export import (
+        export_panel,
+        export_fbx,
+        share_love
+        # export_ops # This likely doesn't exist
+    )
+    modules_to_process.extend([export_panel, export_fbx, share_love])
+    print("  Imported: export modules")
 except ImportError as e:
     print(f"  ERROR importing export modules: {e}")
     traceback.print_exc()
 
+# Import Support Modules
 try:
     from .support import support_panel, support_links
-    modules_to_process.append(support_panel)
-    modules_to_process.append(support_links)
-    print("  Imported: support_panel, support_links")
+    modules_to_process.extend([support_panel, support_links])
+    print("  Imported: support modules")
 except ImportError as e:
     print(f"  ERROR importing support modules: {e}")
     traceback.print_exc()
@@ -78,7 +112,6 @@ def register():
                     _registered_classes.add(cls) # Track registered class
                     print(f"      SUCCESS: Registered {class_name}")
                 except ValueError:
-                    # This often means it was already registered by Blender elsewhere or a previous run
                     print(f"      INFO: Class {class_name} is likely already registered. Skipping.")
                     _registered_classes.add(cls) # Assume it's registered
                 except Exception as e:
@@ -89,7 +122,6 @@ def register():
 
         # Handle module-specific registration functions
         if hasattr(module, 'register') and callable(module.register):
-            # Avoid calling this register function recursively
             if module_name != __name__:
                  try:
                      print(f"    Calling {module_name}.register()...")
@@ -108,7 +140,7 @@ def register():
                  print(f"    ERROR calling {module_name}.register_support_handlers(): {e}")
                  traceback.print_exc()
                  
-    print(f"--- Tidy Monkey: src.register() finished. Registered {_registered_classes} classes in this session. ---")
+    print(f"--- Tidy Monkey: src.register() finished. Registered {len(_registered_classes)} classes in this session. ---")
 
 # --- Unregistration Function --- 
 def unregister():
@@ -158,7 +190,6 @@ def unregister():
                         print(f"      ERROR unregistering class {class_name} from {module_name}: {e}")
                         traceback.print_exc()
                 else:
-                    # This class wasn't registered by this module in this session, potentially already unregistered or never registered
                     print(f"      INFO: Skipping unregistration of {cls.__name__} (not tracked as registered by src)." )
         else:
              print(f"    INFO: Module {module_name} does not have a 'classes' attribute.")

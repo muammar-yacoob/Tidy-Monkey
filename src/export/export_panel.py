@@ -5,10 +5,10 @@ from ..export.share_love import SHARE_OT_operator
 
 class EXPORT_PT_panel(bpy.types.Panel):
     bl_label = "Export FBX"
-    bl_idname = "ExportPanel"
+    bl_idname = "TIDYMONKEY_PT_Export"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TitlePanel'
+    bl_parent_id = 'TIDYMONKEY_PT_Base'
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -44,7 +44,7 @@ class EXPORT_PT_panel(bpy.types.Panel):
             row.enabled = len(context.selected_objects) > 0
             
         except Exception as e:
-            print(f'Error in EXPORT_PT_panel: {str(e)}')
+            print(f'Error in EXPORT_PT_panel draw method: {str(e)}')
 
 classes = (
     EXPORT_PT_panel,
