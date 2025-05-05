@@ -72,10 +72,17 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 
                 row = layout.row()
                 
+                # Check if any selected object has modifiers
+                has_modifiers = False
+                for obj in context.selected_objects:
+                    if obj.type == 'MESH' and len(obj.modifiers) > 0:
+                        has_modifiers = True
+                        break
+                
                 modifier_label = "Apply Modifiers" if selection_count == 1 else f"Apply Modifiers for {selection_count}"
                 row.operator(APPLY_MODS_OT_operator.bl_idname, icon='MODIFIER_DATA', 
                            text=modifier_label)
-                row.enabled = context.active_object.type == 'MESH' and selection_count > 0
+                row.enabled = has_modifiers
                 
                 col = layout.column(align=True)
                 row = col.row(align=True)
