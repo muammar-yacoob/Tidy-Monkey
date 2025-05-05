@@ -2,7 +2,6 @@ import bpy
 from bpy.types import Panel
 from ..export.export_fbx import EXPORT_OT_operator
 from ..export.export_glb import EXPORT_GLB_OT_operator
-from ..export.share_love import SHARE_OT_operator
 
 class EXPORT_PT_panel(bpy.types.Panel):
     bl_label = "Export"

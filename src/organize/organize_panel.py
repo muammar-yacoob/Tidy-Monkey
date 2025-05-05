@@ -79,6 +79,6 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator(ALIGN_OT_operator.bl_idname, text="Z").algn = 'Z'
                 row.enabled = selection_count > 1
         except Exception as e:
-            print(f'Error in ORGANIZE_PT_panel draw method: {str(e)}')
+            pass
 
 classes = (ORGANIZE_PT_panel,) 

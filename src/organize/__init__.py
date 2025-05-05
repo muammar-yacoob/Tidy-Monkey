@@ -8,10 +8,7 @@ try:
 except ImportError as e:
      print(f"    ERROR importing organize_panel: {e}")
 
-# Attempt to import operator modules - errors here might indicate deeper issues
-# but we remove the direct dependency on organize_ops for the circular import
 try:
-    # from . import organize_ops # <-- Commented out to break potential cycle
     from . import origin_to_selected
     from . import center_origins
     from . import origin_to_bottom
@@ -26,5 +23,4 @@ try:
 except ImportError as e:
      print(f"    ERROR importing organize operator modules: {e}")
 
-# Removed the 'classes' tuple definition - registration is handled by src/__init__.py
 print(f"    Organize __init__.py finished.") 

@@ -10,7 +10,7 @@ class RenameBonesProps(bpy.types.PropertyGroup):
 class REN_BONES_OT_operator(bpy.types.Operator):
     bl_label = "Rename Bones"
     bl_idname = "renamebones.rename"
-    bl_description = "Removes a certain text from all bones"
+    bl_description = "Removes a certain text from all bones and related vertex groups to maintain animations"
     bl_options = {'REGISTER', 'UNDO'}
     
     old_text: bpy.props.StringProperty(name="old_text")
@@ -54,6 +54,8 @@ class REN_BONES_OT_operator(bpy.types.Operator):
                 if compare_old in compare_text:
                     pose_bone.name = old_name.replace(old_text, new_text, 1 if match_case else -1)
         
+        # Find all mesh objects with vertex groups and rename matching groups
+        # This is essential to maintain proper animation and skinning
         mesh_objects = [obj for obj in bpy.data.objects if obj.type == 'MESH' and obj.vertex_groups]
         group_count = 0
         
@@ -64,6 +66,7 @@ class REN_BONES_OT_operator(bpy.types.Operator):
                     vgroup.name = new_name
                     group_count += 1
         
+        # Also rename any animation data to keep animations working
         action_count = 0
         for action in bpy.data.actions:
             old_action_name = action.name

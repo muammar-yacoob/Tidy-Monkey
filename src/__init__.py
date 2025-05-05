@@ -1,7 +1,6 @@
 import bpy
 import traceback
 
-# --- Module Imports --- 
 modules_to_process = []
 
 try:
@@ -42,12 +41,11 @@ try:
         generate_actions,
         clean_textures,
         rename_bones,
-        rename_vertex_groups,
         clean_verts
     )
     modules_to_process.extend([
         cleanup_panel, fix_normals, clear_materials, generate_actions,
-        clean_textures, rename_bones, rename_vertex_groups, clean_verts
+        clean_textures, rename_bones, clean_verts
     ])
 except ImportError as e:
     pass
@@ -57,9 +55,9 @@ try:
     from .export import (
         export_panel,
         export_fbx,
-        share_love
+        export_glb
     )
-    modules_to_process.extend([export_panel, export_fbx, share_love])
+    modules_to_process.extend([export_panel, export_fbx, export_glb])
 except ImportError as e:
     pass
 
@@ -70,18 +68,15 @@ try:
 except ImportError as e:
     pass
 
-# Keep track of classes registered by this module to prevent duplicate registration attempts
 _registered_classes = set()
 
-# --- Registration Function --- 
 def register():
     global _registered_classes
-    _registered_classes.clear() # Clear on re-registration
+    _registered_classes.clear()
     
     for module in modules_to_process:
         module_name = module.__name__
         
-        # Register classes from the module's 'classes' tuple/list
         if hasattr(module, 'classes') and isinstance(module.classes, (list, tuple)):
             for cls in module.classes:
                 if cls in _registered_classes:
@@ -89,13 +84,12 @@ def register():
                 class_name = cls.__name__
                 try:
                     bpy.utils.register_class(cls)
-                    _registered_classes.add(cls) # Track registered class
+                    _registered_classes.add(cls)
                 except ValueError:
-                    _registered_classes.add(cls) # Assume it's registered
+                    _registered_classes.add(cls)
                 except Exception as e:
                     pass
 
-        # Handle module-specific registration functions
         if hasattr(module, 'register') and callable(module.register):
             if module_name != __name__:
                  try:
@@ -109,7 +103,6 @@ def register():
              except Exception as e:
                  pass
 
-# --- Unregistration Function --- 
 def unregister():
     global _registered_classes
     modules_to_unregister = list(reversed(modules_to_process))
@@ -117,7 +110,6 @@ def unregister():
     for module in modules_to_unregister:
         module_name = module.__name__
 
-        # Handle module-specific unregistration functions first
         if hasattr(module, 'unregister') and callable(module.unregister):
             if module_name != __name__:
                 try:
@@ -131,17 +123,16 @@ def unregister():
             except Exception as e:
                 pass
         
-        # Unregister classes from the module's 'classes' tuple/list
         if hasattr(module, 'classes') and isinstance(module.classes, (list, tuple)):
-            for cls in reversed(module.classes): # Unregister in reverse order
+            for cls in reversed(module.classes):
                 if cls in _registered_classes:
                     class_name = cls.__name__
                     try:
                         bpy.utils.unregister_class(cls)
-                        _registered_classes.remove(cls) # Untrack
+                        _registered_classes.remove(cls)
                     except RuntimeError:
                          if cls in _registered_classes: _registered_classes.remove(cls)
                     except Exception as e:
                         pass
              
-    _registered_classes.clear() # Ensure clear even if errors happened 
+    _registered_classes.clear() 

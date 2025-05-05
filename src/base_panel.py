@@ -15,11 +15,9 @@ class TITLE_PT_panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         
-        # Check if there's an active object
         if context.active_object:
             try: 
                 mode = context.active_object.mode
-                # Create a row for the mode display
                 if mode == 'OBJECT':
                     row = layout.row(align=True)
                     row.alignment = 'LEFT'

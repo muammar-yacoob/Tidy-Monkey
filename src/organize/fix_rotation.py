@@ -1,6 +1,7 @@
 import bpy
 from bpy.types import Operator
 import bmesh
+from mathutils import Vector, Matrix, Quaternion
 
 class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Orient Face to Bottom"
@@ -13,74 +14,42 @@ class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
         obj = context.active_object
         return (obj and obj.type == 'MESH' and 
                 context.mode == 'EDIT_MESH' and 
-                context.tool_settings.mesh_select_mode[2] and  # Face select mode
-                context.edit_object.data.total_face_sel > 0)   # At least one face selected
+                context.tool_settings.mesh_select_mode[2] and 
+                context.edit_object.data.total_face_sel > 0)
     
     def execute(self, context):
-        # Get the active object and its mesh
         obj = context.active_object
-        mesh = obj.data
         
-        # Create a bmesh to access face data
-        bm = bmesh.from_edit_mesh(mesh)
-        
-        # Get selected faces and calculate average normal
+        bm = bmesh.from_edit_mesh(obj.data)
         selected_faces = [f for f in bm.faces if f.select]
+        
         if not selected_faces:
             self.report({'ERROR'}, "No faces selected")
             return {'CANCELLED'}
         
-        # Use the normal of the first selected face (or calculate average if needed)
-        face_normal = selected_faces[0].normal.copy()
-        face_normal.normalize()
+        if bm.faces.active and bm.faces.active.select:
+            face_normal = bm.faces.active.normal.copy()
+        else:
+            face_normal = selected_faces[0].normal.copy()
         
-        # Convert to world space
-        face_normal = obj.matrix_world.to_3x3() @ face_normal
+        face_normal_world = obj.matrix_world.to_3x3() @ face_normal
+        face_normal_world.normalize()
         
-        # Switch to object mode
         bpy.ops.object.mode_set(mode='OBJECT')
         
-        # Use a temporary object to do the alignment
-        cursor_loc = context.scene.cursor.location.copy()
-        cursor_rot = context.scene.cursor.rotation_euler.copy()
+        orig_loc = obj.location.copy()
         
-        # Set cursor to object's location
-        context.scene.cursor.location = obj.location
+        negative_z = Vector((0, 0, -1))
         
-        # Create an empty and align it to face normal (facing -Z direction)
-        bpy.ops.object.empty_add(type='ARROWS', align='WORLD')
-        empty = context.active_object
+        rotation = negative_z.rotation_difference(face_normal_world)
         
-        # Align the empty so that its -Z axis points in the direction of the face normal
-        empty.rotation_euler = face_normal.to_track_quat('Z', 'Y').to_euler()
+        obj.rotation_mode = 'QUATERNION'
+        obj.rotation_quaternion = rotation
         
-        # Select the original object and make it active
-        bpy.ops.object.select_all(action='DESELECT')
-        obj.select_set(True)
-        context.view_layer.objects.active = obj
-        
-        # Parent the object to the empty
-        bpy.ops.object.parent_set(type='OBJECT')
-        
-        # Clear the rotation of the empty (making selected face face down)
-        empty.rotation_euler = (0, 0, 0)
-        
-        # Clear parent relationship while keeping transform
-        bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-        
-        # Apply rotation to make it permanent
         bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
         
-        # Delete the empty
-        bpy.ops.object.select_all(action='DESELECT')
-        empty.select_set(True)
-        bpy.ops.object.delete()
+        obj.location = orig_loc
         
-        # Restore cursor position and rotation
-        context.scene.cursor.location = cursor_loc
-        context.scene.cursor.rotation_euler = cursor_rot
-        
-        # Return to object mode (we're already in object mode)
         self.report({'INFO'}, "Object oriented with face facing down")
         return {'FINISHED'}
 

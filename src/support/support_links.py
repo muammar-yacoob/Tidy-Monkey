@@ -8,8 +8,8 @@ _support_cache = {
     "category_key": None,
     "category": None,
     "message": None,
-    "last_update": 0,
-    "sidebar_opened": False
+    "sidebar_visible": False,  # Track if the sidebar was visible in previous frame
+    "last_check_time": 0       # Track when we last checked visibility
 }
 
 # Support links URLs
@@ -98,12 +98,22 @@ def update_support_message():
 def create_support_section(layout, options=["rate", "github", "website", "donate"]):
     global _support_cache
     
-    # Check if this is the first time opening the sidebar this session
-    # or if we need to refresh the message
-    sidebar_visible = is_sidebar_visible()
-    if sidebar_visible and not _support_cache["sidebar_opened"]:
+    # Force message update on every draw
+    current_time = bpy.context.scene.frame_current  # Use as a proxy for time
+    
+    # Check if sidebar is currently visible
+    current_visibility = is_sidebar_visible()
+    
+    # Update message when:
+    # 1. Sidebar is visible and wasn't before, OR
+    # 2. Sidebar is visible and it's been a while since last check (handles N key toggle)
+    if (current_visibility and not _support_cache["sidebar_visible"]) or \
+       (current_visibility and current_time != _support_cache["last_check_time"]):
         update_support_message()
-        _support_cache["sidebar_opened"] = True
+    
+    # Update tracking variables
+    _support_cache["sidebar_visible"] = current_visibility
+    _support_cache["last_check_time"] = current_time
     
     # If we have no message yet, generate one
     if _support_cache["message"] is None:

@@ -7,7 +7,6 @@ from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
-from ..cleanup.rename_vertex_groups import REN_VERT_OT_operator
 from ..cleanup.clean_verts import CLEAN_VERTS_OT_operator
 from ..organize.fix_rotation import ORG_FIXROTATION_OT_operator
 
@@ -66,10 +65,6 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                         op.match_case = props.match_case
                 elif has_armature:
                      layout.label(text="Rename Bones properties not registered.", icon='ERROR')
-                
-                row = layout.row()
-                row.operator(REN_VERT_OT_operator.bl_idname, icon='GROUP_BONE')
-                row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
             
             if in_edit_mesh:
                 row = layout.row()
