@@ -4,23 +4,13 @@ import webbrowser
 from bpy.types import Operator
 import time
 
+# Support links URLs and categories with messages
 URLS = {
-    "rate": "https://blendermarket.com/products/tidy-monkey/ratings",
     "github": "https://github.com/muammar-yacoob/Tidy-Monkey",
-    "website": "https://spark-games.co.uk",
     "donate": "https://www.buymeacoffee.com/spark88"
 }
 
 CATEGORIES = {
-    "rate": {
-        "title": "Rate Addon",
-        "emoji": "⭐",
-        "messages": [
-            "Please rate on Blender Market!",
-            "Rate the addon to support future updates",
-            "Enjoying Tidy Monkey? Please rate!",
-        ]
-    },
     "github": {
         "title": "Star on GitHub",
         "emoji": "🌟",
@@ -28,15 +18,6 @@ CATEGORIES = {
             "Star us on GitHub!",
             "Find the code on GitHub",
             "Report issues on our GitHub repo",
-        ]
-    },
-    "website": {
-        "title": "Visit Website",
-        "emoji": "🚀",
-        "messages": [
-            "Check more tools on our website!",
-            "Visit our website for more addons",
-            "Need help? Visit our website",
         ]
     },
     "donate": {
@@ -50,6 +31,7 @@ CATEGORIES = {
     }
 }
 
+# Cache for current message
 _cache = {
     "key": None,
     "message": None,
@@ -69,7 +51,7 @@ def create_support_section(layout, options=None):
     global _cache
     current_time = time.time()
     
-    if _cache["key"] is None or current_time - _cache["last_update"] > 120:
+    if _cache["key"] is None or current_time - _cache["last_update"] > 3:
         key, category, message = get_random_support_message()
         _cache["key"] = key
         _cache["category"] = category
@@ -109,7 +91,13 @@ def unregister():
     pass
 
 def register_support_handlers():
-    pass
+    # Initialize the message on first load
+    if _cache["key"] is None:
+        key, category, message = get_random_support_message()
+        _cache["key"] = key
+        _cache["category"] = category
+        _cache["message"] = message
+        _cache["last_update"] = time.time()
 
 def unregister_support_handlers():
     pass 
