@@ -15,18 +15,28 @@ CATEGORIES = {
         "title": "Star on GitHub",
         "emoji": "🌟",
         "messages": [
-            "Star us on GitHub!",
-            "Find the code on GitHub",
-            "Report issues on our GitHub repo",
+            "Star us today!",
+            "Stars wanted, apply!",
+            "Star power needed!",
+            "Give us stars!",
+            "Stars fuel development!",
+            "Please star us!",
+            "Stars make smiles!",
+            "Star-t supporting us!",
         ]
     },
     "donate": {
         "title": "Support Us",
         "emoji": "☕",
         "messages": [
-            "Support development with a coffee!",
-            "Buy us a coffee to fuel development",
-            "Help support future updates",
+            "Bean there, donated?",
+            "Coffee fuels code!",
+            "Espresso your support!",
+            "Buy developer juice!",
+            "Feeling brew-tiful today?",
+            "Code needs caffeine!",
+            "Donut deny us!",
+            "Latte love appreciated!",
         ]
     }
 }
@@ -51,7 +61,7 @@ def create_support_section(layout, options=None):
     global _cache
     current_time = time.time()
     
-    if _cache["key"] is None or current_time - _cache["last_update"] > 3:
+    if _cache["key"] is None or current_time - _cache["last_update"] > 300:
         key, category, message = get_random_support_message()
         _cache["key"] = key
         _cache["category"] = category
