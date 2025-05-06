@@ -33,7 +33,8 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             if not in_edit_mode:
                 row = layout.row()
-                row.operator("organize.aligntoview", text="Align object to View", icon='ORIENTATION_GIMBAL')
+                align_label = "Align Object to View" if selection_count == 1 else f"Align {selection_count} Objects to View"
+                row.operator("organize.aligntoview", text=align_label, icon='ORIENTATION_GIMBAL')
                 row.enabled = in_object_mode and selection_count > 0
             
             if in_edit_mode:

@@ -5,19 +5,19 @@ import mathutils
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
     bl_label = "Align to View"
     bl_idname = "organize.aligntoview"
-    bl_description = "Aligns current object to match view rotation"
+    bl_description = "Aligns objects to match view rotation"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        if context.object is None:
+        selected_objects = context.selected_objects
+        if not selected_objects:
             return {'CANCELLED'}
             
-        orig_mode = context.object.rotation_mode
-        
-        context.object.rotation_mode = 'QUATERNION'
-        context.object.rotation_quaternion = context.region_data.view_rotation
-        
-        context.object.rotation_mode = orig_mode
+        for obj in selected_objects:
+            orig_mode = obj.rotation_mode
+            obj.rotation_mode = 'QUATERNION'
+            obj.rotation_quaternion = context.region_data.view_rotation
+            obj.rotation_mode = orig_mode
         
         return {"FINISHED"}
 
