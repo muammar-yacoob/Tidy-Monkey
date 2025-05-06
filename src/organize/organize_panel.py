@@ -53,7 +53,17 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator("organize.selectbottom", text="Select Bottom", icon='TRIA_DOWN_BAR')
                 
                 row = box.row()
-                row.operator("organize.selectmaterial", icon='RESTRICT_SELECT_OFF')
+                op = row.operator("organize.selectmaterial", icon='RESTRICT_SELECT_OFF')
+                
+                if context.tool_settings.mesh_select_mode[2]:  # Face select mode
+                    obj = context.edit_object
+                    if obj and obj.type == 'MESH':
+                        mesh = bmesh.from_edit_mesh(obj.data)
+                        row.enabled = any(f.select for f in mesh.faces)
+                    else:
+                        row.enabled = False
+                else:
+                    row.enabled = False
                 
                 row = box.row()
                 row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')

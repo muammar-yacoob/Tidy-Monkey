@@ -2,17 +2,8 @@ import bpy
 import random
 import webbrowser
 from bpy.types import Operator
+import time
 
-# This cache will store the current support message
-_support_cache = {
-    "category_key": None,
-    "category": None,
-    "message": None,
-    "sidebar_visible": False,  # Track if the sidebar was visible in previous frame
-    "last_check_time": 0       # Track when we last checked visibility
-}
-
-# Support links URLs
 URLS = {
     "rate": "https://blendermarket.com/products/tidy-monkey/ratings",
     "github": "https://github.com/muammar-yacoob/Tidy-Monkey",
@@ -20,8 +11,7 @@ URLS = {
     "donate": "https://www.buymeacoffee.com/spark88"
 }
 
-# Support categories with their messages
-support_categories = {
+CATEGORIES = {
     "rate": {
         "title": "Rate Addon",
         "emoji": "⭐",
@@ -60,82 +50,40 @@ support_categories = {
     }
 }
 
-def get_random_message(messages):
-    return messages[random.randint(0, len(messages) - 1)]
+_cache = {
+    "key": None,
+    "message": None,
+    "last_update": 0
+}
 
-def get_random_category(options):
-    available_categories = [key for key in options if key in support_categories]
-    if not available_categories:
-        return None
-    
-    random_key = available_categories[random.randint(0, len(available_categories) - 1)]
-    return {
-        "key": random_key,
-        "category": support_categories[random_key]
-    }
+def get_random_support_message():
+    """Get a random support message and category"""
+    keys = list(CATEGORIES.keys())
+    key = random.choice(keys)
+    category = CATEGORIES[key]
+    message = random.choice(category["messages"])
+    return key, category, message
 
-def is_sidebar_visible():
-    for window in bpy.context.window_manager.windows:
-        for area in window.screen.areas:
-            if area.type != 'VIEW_3D':
-                continue
-            for region in area.regions:
-                if region.type == 'UI' and region.width > 1:
-                    return True
-    return False
-
-def update_support_message():
-    global _support_cache
-    # Choose a random support category
-    category_info = get_random_category(["rate", "github", "website", "donate"])
-    if not category_info:
-        return
-        
-    _support_cache["category_key"] = category_info["key"]
-    _support_cache["category"] = category_info["category"]
-    _support_cache["message"] = get_random_message(category_info["category"]["messages"])
-
-def create_support_section(layout, options=["rate", "github", "website", "donate"]):
-    global _support_cache
+def create_support_section(layout, options=None):
+    """Create the support section in the UI"""
+    global _cache
+    current_time = time.time()
     
-    # Force message update on every draw
-    current_time = bpy.context.scene.frame_current  # Use as a proxy for time
+    if _cache["key"] is None or current_time - _cache["last_update"] > 120:
+        key, category, message = get_random_support_message()
+        _cache["key"] = key
+        _cache["category"] = category
+        _cache["message"] = message
+        _cache["last_update"] = current_time
     
-    # Check if sidebar is currently visible
-    current_visibility = is_sidebar_visible()
-    
-    # Update message when:
-    # 1. Sidebar is visible and wasn't before, OR
-    # 2. Sidebar is visible and it's been a while since last check (handles N key toggle)
-    if (current_visibility and not _support_cache["sidebar_visible"]) or \
-       (current_visibility and current_time != _support_cache["last_check_time"]):
-        update_support_message()
-    
-    # Update tracking variables
-    _support_cache["sidebar_visible"] = current_visibility
-    _support_cache["last_check_time"] = current_time
-    
-    # If we have no message yet, generate one
-    if _support_cache["message"] is None:
-        update_support_message()
-    
-    # Get the current support info
-    category_key = _support_cache["category_key"]
-    category = _support_cache["category"]
-    message = _support_cache["message"]
-    
-    if not category or not message:
-        return
-        
-    # Create a simple compact UI
     row = layout.row()
     row.alignment = 'CENTER'
-    row.label(text=message)
+    row.label(text=_cache["message"])
     
     row = layout.row()
     row.scale_y = 1.1
-    url = URLS[category_key]
-    op = row.operator("wm.url_open", text=f"{category['title']} {category['emoji']}", icon='URL')
+    url = URLS[_cache["key"]]
+    op = row.operator("wm.url_open", text=f"{_cache['category']['title']} {_cache['category']['emoji']}", icon='URL')
     op.url = url
 
 class TDMK_OT_Share(Operator):
@@ -152,9 +100,7 @@ class TDMK_OT_Share(Operator):
             webbrowser.open("https://spark-games.co.uk")
         return {'FINISHED'}
 
-classes = (
-    TDMK_OT_Share,
-)
+classes = (TDMK_OT_Share,)
 
 def register():
     pass
@@ -163,9 +109,7 @@ def unregister():
     pass
 
 def register_support_handlers():
-    # No need for handlers with this simpler approach
     pass
 
 def unregister_support_handlers():
-    # No need for handlers cleanup
     pass 

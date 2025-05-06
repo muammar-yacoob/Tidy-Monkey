@@ -73,6 +73,18 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("cleanup.selectsimilarverts", icon='STICKY_UVS_DISABLE')
                 
+                # Only enable when exactly one vertex is selected
+                if context.tool_settings.mesh_select_mode[0]:  # Vertex select mode
+                    obj = context.edit_object
+                    if obj and obj.type == 'MESH':
+                        mesh = bmesh.from_edit_mesh(obj.data)
+                        selected_verts = [v for v in mesh.verts if v.select]
+                        row.enabled = len(selected_verts) == 1
+                    else:
+                        row.enabled = False
+                else:
+                    row.enabled = False
+            
             if in_edit_mesh or in_edit_armature:
                 row = layout.row()
                 op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
