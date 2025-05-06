@@ -1,5 +1,6 @@
 import bpy
 import traceback
+import bmesh
 from bpy.types import Panel
 from ..base_panel import TITLE_PT_panel
 from ..organize.origin_to_selected import ORG_SELECTED_OT_operator
@@ -30,6 +31,13 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if in_edit_mode:
                 row = layout.row()
                 row.operator("organize.origintoselected", icon='PIVOT_CURSOR')
+                
+                obj = context.edit_object
+                if obj and obj.type == 'MESH':
+                    mesh = bmesh.from_edit_mesh(obj.data)
+                    row.enabled = any(v.select for v in mesh.verts)
+                else:
+                    row.enabled = False
             
             if not in_edit_mode:
                 row = layout.row()
@@ -51,7 +59,18 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
                 
                 row = box.row()
-                row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
+                op = row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
+                
+                if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
+                    obj = context.edit_object
+                    if obj and obj.type == 'MESH':
+                        mesh = bmesh.from_edit_mesh(obj.data)
+                        selected_edges = sum(1 for e in mesh.edges if e.select)
+                        row.enabled = selected_edges > 0 and selected_edges % 3 == 0
+                    else:
+                        row.enabled = False
+                else:
+                    row.enabled = False
             
             if not in_edit_mode and in_object_mode:
                 row = layout.row()

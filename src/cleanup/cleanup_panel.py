@@ -2,6 +2,7 @@ import bpy
 import traceback
 from bpy.types import Panel, PropertyGroup
 import bpy.props
+import bmesh
 
 from ..cleanup.fix_normals import FIX_NORMALS_OT_operator
 from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
@@ -74,8 +75,25 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 
             if in_edit_mesh or in_edit_armature:
                 row = layout.row()
-                row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
+                op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
                 
+                # Only enable the button if something is selected
+                if in_edit_mesh:
+                    obj = context.edit_object
+                    if obj and obj.type == 'MESH':
+                        mesh = bmesh.from_edit_mesh(obj.data)
+                        
+                        if context.tool_settings.mesh_select_mode[2]:  # Face mode
+                            row.enabled = any(f.select for f in mesh.faces)
+                        elif context.tool_settings.mesh_select_mode[1]:  # Edge mode
+                            row.enabled = any(e.select for e in mesh.edges)
+                        elif context.tool_settings.mesh_select_mode[0]:  # Vertex mode
+                            row.enabled = any(v.select for v in mesh.verts)
+                        else:
+                            row.enabled = False
+                    else:
+                        row.enabled = False
+            
         except Exception as e:
             pass
 
