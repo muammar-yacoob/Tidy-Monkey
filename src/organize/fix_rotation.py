@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Operator
 import bmesh
-from mathutils import Vector, Matrix, Quaternion
+from mathutils import Vector
 
 class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Orient Face to Bottom"
@@ -27,11 +27,9 @@ class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
             self.report({'ERROR'}, "No faces selected")
             return {'CANCELLED'}
         
-        if bm.faces.active and bm.faces.active.select:
-            face_normal = bm.faces.active.normal.copy()
-        else:
-            face_normal = selected_faces[0].normal.copy()
+        face = bm.faces.active if bm.faces.active and bm.faces.active.select else selected_faces[0]
         
+        face_normal = face.normal.copy()
         face_normal_world = obj.matrix_world.to_3x3() @ face_normal
         face_normal_world.normalize()
         
@@ -39,9 +37,8 @@ class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
         
         orig_loc = obj.location.copy()
         
-        negative_z = Vector((0, 0, -1))
-        
-        rotation = negative_z.rotation_difference(face_normal_world)
+        target_axis = Vector((0, 0, -1))
+        rotation = face_normal_world.rotation_difference(target_axis)
         
         obj.rotation_mode = 'QUATERNION'
         obj.rotation_quaternion = rotation

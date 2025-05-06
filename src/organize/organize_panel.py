@@ -3,7 +3,8 @@ from bpy.types import Panel
 from ..organize.origin_to_selected import ORG_SELECTED_OT_operator
 from ..organize.center_origins import ORG_CENTER_OT_operator
 from ..organize.origin_to_bottom import ORG_BOTTOMCENTER_OT_operator
-from ..organize.align import ORG_ALIGNTOVIEW_OT_operator, ALIGN_OT_operator
+from ..organize.align_to_view import ORG_ALIGNTOVIEW_OT_operator
+from ..organize.align_objects import ALIGN_OT_operator
 from ..organize.apply_modifiers import APPLY_MODS_OT_operator
 from ..organize.select_similar import (
     SELECT_MAT_OT_operator, 
@@ -34,7 +35,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if not in_edit_mode:
                 row = layout.row()
                 row.operator(ORG_ALIGNTOVIEW_OT_operator.bl_idname, text="Align to View", icon='ORIENTATION_GIMBAL')
-                row.enabled = in_object_mode and selection_count == 1
+                row.enabled = in_object_mode and selection_count > 0
             
             if in_edit_mode:
                 box = layout.box()
@@ -72,7 +73,6 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 
                 row = layout.row()
                 
-                # Check if any selected object has modifiers
                 has_modifiers = False
                 for obj in context.selected_objects:
                     if obj.type == 'MESH' and len(obj.modifiers) > 0:

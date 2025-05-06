@@ -17,6 +17,8 @@ try:
         center_origins,
         origin_to_bottom,
         align,
+        align_to_view,
+        align_objects,
         fix_rotation,
         apply_modifiers,
         select_similar,
@@ -26,7 +28,7 @@ try:
     )
     modules_to_process.extend([
         organize_panel, origin_to_selected, center_origins, origin_to_bottom,
-        align, fix_rotation, apply_modifiers, select_similar, checker_edge,
+        align, align_to_view, align_objects, fix_rotation, apply_modifiers, select_similar, checker_edge,
         select_bottom, select_similar_mesh
     ])
 except ImportError as e:

@@ -19,11 +19,8 @@ class BUTTS_OT_operator(bpy.types.Operator):
         bm = bmesh.from_edit_mesh(me)
         
         bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+        bpy.ops.mesh.select_all(action='DESELECT')
         
-        # Deselect all vertices
-        for vert in bm.verts:
-            vert.select = False
-            
         # Find lowest Z coordinate in global space
         lowest_z = float('inf')
         for vert in bm.verts:
