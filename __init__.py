@@ -2,8 +2,8 @@ bl_info = {
     "name": "Tidy Monkey",
     "author": "Spark Games",
     "description": "Scene Organization Tool",
-    "blender": (3, 5, 1),
-    "version": (1, 5, 0),
+    "blender": (4, 4, 0),
+    "version": (2, 0, 0),
     "location": "View3D > Sidebar > Tidy Monkey",
     "warning": "For the Export FBX to work, make sure you save the .blend file first",
     "doc_url": "https://spark-games.co.uk",
@@ -13,64 +13,59 @@ bl_info = {
 #https://blendermarket.com/products/tidy-monkey
 
 #region Imports
-import bpy
-from . tdmk_pt import *
-from . tdmk_op import *
+# Keep imports minimal here to reduce risk of load-time errors
+try:
+    import bpy
+    import traceback
+except Exception as e:
+    # This is unlikely but critical if it fails
+    raise e 
 #endregion
 
 #region Registration
-classes = (
-    RenameBonesProps,
-    TITLE_PT_panel,
-    ORGANIZE_PT_panel,
-    CLEANUP_PT_panel,
-    EXPORT_PT_panel,
-    ORG_SELECTED_OT_operator,
-    ORG_ALIGNTOVIEW_OT_operator,
-    ORG_CENTER_OT_operator,
-    BUTTS_OT_operator,
-    ALIGN_OT_operator,
-    REN_BONES_OT_operator,
-    REN_VERT_OT_operator,
-    SELECT_SAME_OT_operator,
-    CLEAR_MATS_OT_operator,
-    CLEAN_TEX_OT_operator,
-    GEN_ACTS_OT_operator,
-    EXPORT_OT_operator,
-    SHARE_OT_operator,
-    ORG_FIXROTATION_OT_operator,
-    FIX_NORMALS_OT_operator,
-    SELECT_MAT_OT_operator,
-    SELECT_PER_OT_operator,
-    SELECT_NORM_OT_operator,
-    SELECT_AREA_OT_operator,
-    SELECT_COPLANAR_OT_operator,
-    CHECKER_EDGE_OT_operator,
-    CLEAN_VERTS_OT_operator,
-    APPLY_MODS_OT_operator
-)
+# Root module delegates registration to the src module.
+
+# These functions are required by Blender 4.x extension system
+def __register__():
+    register()
+
+def __unregister__():
+    unregister()
 
 def register():
-    for cls in classes:
-        try:
-            bpy.utils.register_class(cls)
-        except Exception as e:
-            print(f"Failed to register {cls.__name__}: {str(e)}")
-            
-    bpy.types.Scene.rename_bones_props = bpy.props.PointerProperty(type=RenameBonesProps)
+    try:
+        # Import and call src register dynamically
+        from . import src
+        # Check if src has a register function before calling
+        if hasattr(src, 'register') and callable(src.register):
+            src.register()
+        else:
+             pass
+    except ImportError as e:
+        pass
+    except Exception as e:
+        pass
 
 def unregister():
-    for cls in reversed(classes):
-        try:
-            bpy.utils.unregister_class(cls)
-        except Exception as e:
-            print(f"Failed to unregister {cls.__name__}: {str(e)}")
-            
-    if hasattr(bpy.types.Scene, "rename_bones_props"):
-        del bpy.types.Scene.rename_bones_props
-
-#register, unregister = bpy.utils.register_classes_factory(classes)
+    try:
+        # Import and call src unregister dynamically
+        from . import src
+         # Check if src has an unregister function before calling
+        if hasattr(src, 'unregister') and callable(src.unregister):
+            src.unregister()
+        else:
+             pass
+    except ImportError as e:
+        pass
+    except Exception as e:
+        pass
     
 if __name__ == "__main__":
-    register()
+    # This part should ideally not run when installed as an addon
+    # Attempt registration for standalone testing, might fail without full Blender context
+    try:
+        register()
+    except Exception as e:
+        pass
+
 #endregion
