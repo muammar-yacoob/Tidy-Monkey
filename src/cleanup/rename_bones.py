@@ -3,7 +3,7 @@ from bpy.types import Operator, PropertyGroup
 
 # Property group for bone renaming
 class RenameBonesProps(bpy.types.PropertyGroup):
-    old_text: bpy.props.StringProperty(name="Old Text", default="mixamo")
+    old_text: bpy.props.StringProperty(name="Old Text", default="mixamo:")
     new_text: bpy.props.StringProperty(name="New Text")
     match_case: bpy.props.BoolProperty(name="Match Case", default=False)
 

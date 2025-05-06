@@ -1,4 +1,5 @@
 import bpy
+import traceback
 from bpy.types import Panel, PropertyGroup
 import bpy.props
 
@@ -9,13 +10,14 @@ from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
 from ..cleanup.clean_verts import CLEAN_VERTS_OT_operator
 from ..cleanup.fix_rotation import FIXROTATION_OT_operator
+from ..base_panel import TITLE_PT_panel
 
 class CLEANUP_PT_panel(bpy.types.Panel):
     bl_label = "Clean Up"
     bl_idname = "CLEANUP_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TITLE_PT_panel'
+    bl_parent_id = TITLE_PT_panel.bl_idname
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -28,18 +30,18 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         try:
             if not in_edit_mode:
                 row = layout.row()
-                row.operator(FIX_NORMALS_OT_operator.bl_idname, text=f"Fix Normals for {selection_count}", icon='NORMALS_FACE')
+                row.operator("cleanup.fixnormals", text=f"Fix Normals for {selection_count}", icon='NORMALS_FACE')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()
-                row.operator(CLEAR_MATS_OT_operator.bl_idname, text=f"Clear Unused Mats from {selection_count}", icon='NODE_MATERIAL')
+                row.operator("cleanup.clearmats", text=f"Clear Unused Mats from {selection_count}", icon='NODE_MATERIAL')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()
-                row.operator(GEN_ACTS_OT_operator.bl_idname, text="Generate Actions", icon='ARMATURE_DATA')
+                row.operator("cleanup.generateactions", text="Generate Actions", icon='ARMATURE_DATA')
                 
                 row = layout.row()
-                row.operator(CLEAN_TEX_OT_operator.bl_idname, icon='RENDER_RESULT')
+                row.operator("cleanup.cleantextures", icon='RENDER_RESULT')
                 row.enabled = context.active_object and context.active_object.type == 'MESH'
                 
                 has_armature = any(obj.type == 'ARMATURE' for obj in context.selected_objects)
@@ -58,7 +60,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                     row.prop(props, "match_case")
                     
                     row = box.row()
-                    op = row.operator(REN_BONES_OT_operator.bl_idname, icon='BONE_DATA')
+                    op = row.operator("cleanup.renamebones", icon='BONE_DATA')
                     if props:
                         op.old_text = props.old_text
                         op.new_text = props.new_text
@@ -68,11 +70,11 @@ class CLEANUP_PT_panel(bpy.types.Panel):
             
             if in_edit_mesh:
                 row = layout.row()
-                row.operator(CLEAN_VERTS_OT_operator.bl_idname, icon='STICKY_UVS_DISABLE')
+                row.operator("cleanup.cleanverts", icon='STICKY_UVS_DISABLE')
                 
             if in_edit_mesh or in_edit_armature:
                 row = layout.row()
-                row.operator(FIXROTATION_OT_operator.bl_idname, text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
+                row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
                 
         except Exception as e:
             pass

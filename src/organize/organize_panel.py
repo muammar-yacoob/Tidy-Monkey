@@ -1,15 +1,14 @@
 import bpy
+import traceback
 from bpy.types import Panel
+from ..base_panel import TITLE_PT_panel
 from ..organize.origin_to_selected import ORG_SELECTED_OT_operator
 from ..organize.center_origins import ORG_CENTER_OT_operator
 from ..organize.origin_to_bottom import ORG_BOTTOMCENTER_OT_operator
 from ..organize.align_to_view import ORG_ALIGNTOVIEW_OT_operator
 from ..organize.align_objects import ALIGN_OT_operator
 from ..organize.apply_modifiers import APPLY_MODS_OT_operator
-from ..organize.select_similar import (
-    SELECT_MAT_OT_operator, 
-    SELECT_PER_OT_operator
-)
+from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_operator)
 from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
 from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
@@ -19,7 +18,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_idname = "ORGANIZE_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_parent_id = 'TITLE_PT_panel'
+    bl_parent_id = TITLE_PT_panel.bl_idname
     
     def draw(self, context):
         layout = self.layout
@@ -30,11 +29,11 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
         try:
             if in_edit_mode:
                 row = layout.row()
-                row.operator(ORG_SELECTED_OT_operator.bl_idname, icon='PIVOT_CURSOR')
+                row.operator("organize.origintoselected", icon='PIVOT_CURSOR')
             
             if not in_edit_mode:
                 row = layout.row()
-                row.operator(ORG_ALIGNTOVIEW_OT_operator.bl_idname, text="Align to View", icon='ORIENTATION_GIMBAL')
+                row.operator("organize.aligntoview", text="Align to View", icon='ORIENTATION_GIMBAL')
                 row.enabled = in_object_mode and selection_count > 0
             
             if in_edit_mode:
@@ -42,33 +41,33 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 box.label(text="Selection Tools")
                 
                 row = box.row()
-                row.operator(BUTTS_OT_operator.bl_idname, text="Select Bottom", icon='TRIA_DOWN_BAR')
+                row.operator("organize.selectbottom", text="Select Bottom", icon='TRIA_DOWN_BAR')
                 
                 row = box.row()
-                row.operator(SELECT_MAT_OT_operator.bl_idname, icon='RESTRICT_SELECT_OFF')
+                row.operator("organize.selectmaterial", icon='RESTRICT_SELECT_OFF')
                 
                 row = box.row()
-                row.operator(SELECT_PER_OT_operator.bl_idname, icon='RESTRICT_SELECT_OFF')
+                row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
                 
                 row = box.row()
-                row.operator(CHECKER_EDGE_OT_operator.bl_idname, icon='ALIGN_JUSTIFY')
+                row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
             
             if not in_edit_mode and in_object_mode:
                 row = layout.row()
                 
                 center_label = "Center Origin" if selection_count == 1 else f"Center Origins of {selection_count}"
-                row.operator(ORG_CENTER_OT_operator.bl_idname, 
+                row.operator("organize.centerorigins", 
                             text=center_label, 
                             icon='ANCHOR_CENTER')
                 row.enabled = selection_count > 0
                 
                 row = layout.row()
                 bottom_label = "Origin to Bottom" if selection_count == 1 else f"Origin to Bottom for {selection_count}"
-                row.operator(ORG_BOTTOMCENTER_OT_operator.bl_idname, text=bottom_label, icon='ANCHOR_BOTTOM')
+                row.operator("organize.origintobottomcenter", text=bottom_label, icon='ANCHOR_BOTTOM')
                 row.enabled = selection_count > 0
                 
                 row = layout.row()
-                row.operator(SELECT_SAME_OT_operator.bl_idname, icon='MOD_MESHDEFORM')
+                row.operator("organize.selectsimilarmesh", icon='MOD_MESHDEFORM')
                 row.enabled = context.active_object.type == 'MESH' and selection_count == 1
                 
                 row = layout.row()
@@ -80,17 +79,19 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                         break
                 
                 modifier_label = "Apply Modifiers" if selection_count == 1 else f"Apply Modifiers for {selection_count}"
-                row.operator(APPLY_MODS_OT_operator.bl_idname, icon='MODIFIER_DATA', 
+                row.operator("organize.applymodifiers", icon='MODIFIER_DATA', 
                            text=modifier_label)
                 row.enabled = has_modifiers
                 
                 col = layout.column(align=True)
                 row = col.row(align=True)
-                row.operator(ALIGN_OT_operator.bl_idname, text="X").algn = 'X'
-                row.operator(ALIGN_OT_operator.bl_idname, text="Y").algn = 'Y'
-                row.operator(ALIGN_OT_operator.bl_idname, text="Z").algn = 'Z'
+                row.operator("organize.alignobjects", text="X").algn = 'X'
+                row.operator("organize.alignobjects", text="Y").algn = 'Y'
+                row.operator("organize.alignobjects", text="Z").algn = 'Z'
                 row.enabled = selection_count > 1
         except Exception as e:
-            pass
+            print(f"ERROR in ORGANIZE_PT_panel.draw(): {str(e)}")
+            traceback.print_exc()
+            layout.label(text=f"Error: {str(e)}")
 
 classes = (ORGANIZE_PT_panel,) 
