@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class GEN_ACTS_OT_operator(bpy.types.Operator):
     bl_label = "Generate Actions"
-    bl_idname = "generate.actions"
+    bl_idname = "cleanup.generateactions"
     bl_description = "Pushes Animations to the NLA Stack"
     bl_options = {'REGISTER', 'UNDO'}
     

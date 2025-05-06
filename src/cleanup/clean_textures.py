@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class CLEAN_TEX_OT_operator(bpy.types.Operator):
     bl_label = "Delete Unused Textures"
-    bl_idname = "deletetextures.delete"
+    bl_idname = "cleanup.cleantextures"
     bl_description = "Removes unused textures"
     bl_options = {'REGISTER', 'UNDO'}
     

@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
     bl_label = "Beautify"
-    bl_idname = "fixnormals.fix"
+    bl_idname = "cleanup.fixnormals"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):

@@ -4,7 +4,7 @@ from bpy.types import Operator
 
 class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     bl_label = "Checker Edge"
-    bl_idname = "checker.edge"
+    bl_idname = "organize.checkeredge"
     bl_description = "Checker Select Edges"
     bl_options = {'REGISTER', 'UNDO'}
     

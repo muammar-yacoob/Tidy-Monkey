@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class SELECT_SAME_OT_operator(bpy.types.Operator):
     bl_label = "Select Similar Mesh"
-    bl_idname = "samemesh.similar"
+    bl_idname = "organize.selectsimilarmesh"
     bl_description = "Selects objects with similar vertex count"
     bl_options = {'REGISTER', 'UNDO'}
         

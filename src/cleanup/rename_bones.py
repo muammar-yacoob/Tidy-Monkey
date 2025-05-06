@@ -9,7 +9,7 @@ class RenameBonesProps(bpy.types.PropertyGroup):
 
 class REN_BONES_OT_operator(bpy.types.Operator):
     bl_label = "Rename Bones"
-    bl_idname = "renamebones.rename"
+    bl_idname = "cleanup.renamebones"
     bl_description = "Removes a certain text from all bones and related vertex groups to maintain animations"
     bl_options = {'REGISTER', 'UNDO'}
     

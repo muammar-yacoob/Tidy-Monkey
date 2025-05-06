@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class ORG_SELECTED_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Selected"
-    bl_idname = "origin.toselected"
+    bl_idname = "organize.origintoselected"
     bl_description = "Sets object origin to selection"
     bl_options = {'REGISTER', 'UNDO'}
     

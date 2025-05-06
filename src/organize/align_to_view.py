@@ -4,7 +4,7 @@ import mathutils
 
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
     bl_label = "Align to View"
-    bl_idname = "align.toview"
+    bl_idname = "organize.aligntoview"
     bl_description = "Aligns object to view"
     bl_options = {'REGISTER', 'UNDO'}
     

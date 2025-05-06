@@ -13,6 +13,7 @@ try:
     from . import rename_bones
     from . import rename_vertex_groups
     from . import clean_verts
+    from . import fix_rotation
     print("    Imported cleanup ops modules (excluding self-import check)." )
 except ImportError as e:
      print(f"    ERROR importing cleanup operator modules: {e}")

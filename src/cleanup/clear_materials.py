@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class CLEAR_MATS_OT_operator(bpy.types.Operator):
     bl_label = "Clear Unused Materials"
-    bl_idname = "clearmats.clear"
+    bl_idname = "cleanup.clearmats"
     bl_description = "Clears unused materials"
     bl_options = {'REGISTER', 'UNDO'}
     

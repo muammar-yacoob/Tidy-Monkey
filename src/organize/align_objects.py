@@ -4,7 +4,7 @@ import mathutils
 
 class ALIGN_OT_operator(bpy.types.Operator):
     bl_label = "Align Objects"
-    bl_idname = "alignobjects.align"
+    bl_idname = "organize.alignobjects"
     bl_description = "Aligns objects along a specific axis using current pivot"
     bl_options = {'REGISTER', 'UNDO'}
     

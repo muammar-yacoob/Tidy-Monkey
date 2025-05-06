@@ -1,8 +1,6 @@
 import bpy
 import traceback
 
-from .cleanup import fix_rotation
-
 modules_to_process = []
 
 try:
@@ -29,7 +27,7 @@ try:
     )
     modules_to_process.extend([
         organize_panel, origin_to_selected, center_origins, origin_to_bottom,
-        align, align_to_view, align_objects, fix_rotation, apply_modifiers, select_similar, checker_edge,
+        align, align_to_view, align_objects, apply_modifiers, select_similar, checker_edge,
         select_bottom, select_similar_mesh
     ])
 except ImportError as e:
@@ -44,11 +42,12 @@ try:
         generate_actions,
         clean_textures,
         rename_bones,
-        clean_verts
+        clean_verts,
+        fix_rotation
     )
     modules_to_process.extend([
         cleanup_panel, fix_normals, clear_materials, generate_actions,
-        clean_textures, rename_bones, clean_verts
+        clean_textures, rename_bones, clean_verts, fix_rotation
     ])
 except ImportError as e:
     pass

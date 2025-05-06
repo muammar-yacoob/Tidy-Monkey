@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class APPLY_MODS_OT_operator(bpy.types.Operator):
     bl_label = "Apply Modifiers"
-    bl_idname = "apply.mods"
+    bl_idname = "organize.applymodifiers"
     bl_options = {'REGISTER', 'UNDO'}
         
     def execute(self, context):

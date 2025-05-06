@@ -4,7 +4,7 @@ from bpy.types import Operator
 
 class CLEAN_VERTS_OT_operator(bpy.types.Operator):
     bl_label = "Dissolve Similar Verts"
-    bl_idname = "clean.verts"
+    bl_idname = "cleanup.cleanverts"
     bl_description = "Dissolves Verts with similar connections"
     bl_options = {'REGISTER', 'UNDO'}
     

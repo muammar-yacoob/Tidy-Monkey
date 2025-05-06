@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class ORG_BOTTOMCENTER_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Bottom Center"
-    bl_idname = "origin.tobottomcenter"
+    bl_idname = "organize.origintobottomcenter"
     bl_description = "Sets origin to bottom center (average X/Y, lowest Z)"
     bl_options = {'REGISTER', 'UNDO'}
     

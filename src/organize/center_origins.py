@@ -3,7 +3,7 @@ from bpy.types import Operator
 
 class ORG_CENTER_OT_operator(bpy.types.Operator):
     bl_label = "Center Origins"
-    bl_idname = "centerregions.center"
+    bl_idname = "organize.centerorigins"
     bl_description = "Centers the origin of selected objects"
     bl_options = {'REGISTER', 'UNDO'}
     

@@ -12,8 +12,8 @@ try:
     from . import origin_to_selected
     from . import center_origins
     from . import origin_to_bottom
-    from . import align
-    from ..cleanup import fix_rotation
+    from . import align_to_view
+    from . import align_objects
     from . import apply_modifiers
     from . import select_similar
     from . import checker_edge

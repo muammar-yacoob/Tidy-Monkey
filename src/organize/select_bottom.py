@@ -5,7 +5,7 @@ from bpy.types import Operator
 
 class BUTTS_OT_operator(bpy.types.Operator):
     bl_label = "Select Bottom"
-    bl_idname = "bottoms.select"
+    bl_idname = "organize.selectbottom"
     bl_description = "Selects lower most vertices"
     bl_options = {'REGISTER', 'UNDO'}
     
