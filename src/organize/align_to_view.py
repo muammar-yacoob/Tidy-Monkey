@@ -5,22 +5,8 @@ import mathutils
 class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
     bl_label = "Align to View"
     bl_idname = "organize.aligntoview"
-    bl_description = "Aligns object to view"
+    bl_description = "Aligns object to view (Hold Alt to skip rotation)"
     bl_options = {'REGISTER', 'UNDO'}
-    
-    apply_rotation: bpy.props.BoolProperty(
-        name="Apply Rotation",
-        description="Apply the rotation or just show the rotation values",
-        default=True
-    )
-    
-    def invoke(self, context, event):
-        wm = context.window_manager
-        return wm.invoke_props_dialog(self)
-    
-    def draw(self, context):
-        layout = self.layout
-        layout.prop(self, "apply_rotation")
     
     def execute(self, context):
         view_rotation = context.region_data.view_rotation
@@ -30,21 +16,24 @@ class ORG_ALIGNTOVIEW_OT_operator(bpy.types.Operator):
             self.report({'ERROR'}, "No objects selected")
             return {'CANCELLED'}
         
-        if self.apply_rotation:
-            for obj in selected_objects:
-                original_location = obj.location.copy()
+        # Check if Alt key is pressed - if it is, don't apply rotation
+        apply_rotation = not self.alt_pressed
+        
+        for obj in selected_objects:
+            original_location = obj.location.copy()
+            
+            if apply_rotation:
                 obj.rotation_mode = 'QUATERNION'
                 obj.rotation_quaternion = view_rotation
-                obj.location = original_location
             
-            self.report({'INFO'}, f"Aligned {len(selected_objects)} objects to current view")
-        else:
-            rotation_euler = view_rotation.to_euler()
-            x = round(rotation_euler.x * 57.2958, 2)
-            y = round(rotation_euler.y * 57.2958, 2)
-            z = round(rotation_euler.z * 57.2958, 2)
-            self.report({'INFO'}, f"View rotation: X={x}°, Y={y}°, Z={z}°")
+            obj.location = original_location
         
+        action_text = "Positioned" if not apply_rotation else "Aligned"
+        self.report({'INFO'}, f"{action_text} {len(selected_objects)} objects to current view")
         return {"FINISHED"}
+    
+    def invoke(self, context, event):
+        self.alt_pressed = event.alt
+        return self.execute(context)
 
 classes = (ORG_ALIGNTOVIEW_OT_operator,) 

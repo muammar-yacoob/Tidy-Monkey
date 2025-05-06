@@ -53,7 +53,6 @@ try:
         fix_normals, clear_materials, generate_actions,
         clean_textures, rename_bones, clean_verts, fix_rotation
     ])
-    # Add panel at the end to ensure operators are registered first
     modules_to_process.append(cleanup_panel)
 except ImportError as e:
     print(f"ERROR importing cleanup modules: {e}")
@@ -98,75 +97,58 @@ def register():
     global _registered_classes
     _registered_classes.clear()
     
-    print("Starting registration of Tidy Monkey modules...")
-    print_module_classes()
-    
     for module in modules_to_process:
         module_name = module.__name__
-        print(f"Processing module: {module_name}")
         
         if hasattr(module, 'classes') and isinstance(module.classes, (list, tuple)):
             for cls in module.classes:
                 if cls in _registered_classes:
-                    print(f"  Class {cls.__name__} already registered, skipping")
                     continue
                 class_name = cls.__name__
                 try:
-                    print(f"  Registering class: {class_name}")
                     bpy.utils.register_class(cls)
                     _registered_classes.add(cls)
-                    print(f"  Successfully registered: {class_name}")
                 except ValueError as ve:
-                    print(f"  Class already registered by Blender: {class_name}")
                     _registered_classes.add(cls)
                 except Exception as e:
-                    print(f"  ERROR registering class {class_name}: {str(e)}")
+                    print(f"ERROR registering class {class_name}: {str(e)}")
                     traceback.print_exc()
 
         if hasattr(module, 'register') and callable(module.register):
             if module_name != __name__:
                  try:
-                     print(f"  Calling register() for {module_name}")
                      module.register()
                  except Exception as e:
-                     print(f"  ERROR in {module_name}.register(): {str(e)}")
+                     print(f"ERROR in {module_name}.register(): {str(e)}")
                      traceback.print_exc()
                      
         if hasattr(module, 'register_support_handlers') and callable(module.register_support_handlers):
              try:
-                 print(f"  Calling register_support_handlers() for {module_name}")
                  module.register_support_handlers()
              except Exception as e:
-                 print(f"  ERROR in {module_name}.register_support_handlers(): {str(e)}")
+                 print(f"ERROR in {module_name}.register_support_handlers(): {str(e)}")
                  traceback.print_exc()
-    
-    print(f"Completed registration of {len(_registered_classes)} classes")
 
 def unregister():
     global _registered_classes
     modules_to_unregister = list(reversed(modules_to_process))
     
-    print("Starting unregistration of Tidy Monkey modules...")
-    
     for module in modules_to_unregister:
         module_name = module.__name__
-        print(f"Unregistering module: {module_name}")
 
         if hasattr(module, 'unregister') and callable(module.unregister):
             if module_name != __name__:
                 try:
-                    print(f"  Calling unregister() for {module_name}")
                     module.unregister()
                 except Exception as e:
-                    print(f"  ERROR in {module_name}.unregister(): {str(e)}")
+                    print(f"ERROR in {module_name}.unregister(): {str(e)}")
                     traceback.print_exc()
                     
         if hasattr(module, 'unregister_support_handlers') and callable(module.unregister_support_handlers):
             try:
-                print(f"  Calling unregister_support_handlers() for {module_name}")
                 module.unregister_support_handlers()
             except Exception as e:
-                print(f"  ERROR in {module_name}.unregister_support_handlers(): {str(e)}")
+                print(f"ERROR in {module_name}.unregister_support_handlers(): {str(e)}")
                 traceback.print_exc()
         
         if hasattr(module, 'classes') and isinstance(module.classes, (list, tuple)):
@@ -174,16 +156,12 @@ def unregister():
                 if cls in _registered_classes:
                     class_name = cls.__name__
                     try:
-                        print(f"  Unregistering class: {class_name}")
                         bpy.utils.unregister_class(cls)
                         _registered_classes.remove(cls)
-                        print(f"  Successfully unregistered: {class_name}")
                     except RuntimeError:
-                        print(f"  Class already unregistered: {class_name}")
                         if cls in _registered_classes: _registered_classes.remove(cls)
                     except Exception as e:
-                        print(f"  ERROR unregistering class {class_name}: {str(e)}")
+                        print(f"ERROR unregistering class {class_name}: {str(e)}")
                         traceback.print_exc()
     
-    print(f"Completed unregistration, {len(_registered_classes)} classes remaining")
     _registered_classes.clear() 
