@@ -3,9 +3,9 @@ from bpy.types import Operator
 import bmesh
 from mathutils import Vector
 
-class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
+class FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Orient Face to Bottom"
-    bl_idname = "fix.rotation"
+    bl_idname = "cleanup.fixrotation"
     bl_description = "Orients the object with selected face facing down"
     bl_options = {'REGISTER', 'UNDO'}
     
@@ -50,4 +50,4 @@ class ORG_FIXROTATION_OT_operator(bpy.types.Operator):
         self.report({'INFO'}, "Object oriented with face facing down")
         return {'FINISHED'}
 
-classes = (ORG_FIXROTATION_OT_operator,) 
+classes = (FIXROTATION_OT_operator,) 

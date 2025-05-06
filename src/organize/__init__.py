@@ -13,7 +13,7 @@ try:
     from . import center_origins
     from . import origin_to_bottom
     from . import align
-    from . import fix_rotation
+    from ..cleanup import fix_rotation
     from . import apply_modifiers
     from . import select_similar
     from . import checker_edge

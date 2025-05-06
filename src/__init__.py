@@ -1,6 +1,8 @@
 import bpy
 import traceback
 
+from .cleanup import fix_rotation
+
 modules_to_process = []
 
 try:
@@ -19,7 +21,6 @@ try:
         align,
         align_to_view,
         align_objects,
-        fix_rotation,
         apply_modifiers,
         select_similar,
         checker_edge,
