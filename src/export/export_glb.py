@@ -2,6 +2,8 @@ import bpy
 from bpy.types import Operator
 import os
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class EXPORT_GLB_OT_operator(bpy.types.Operator):
     bl_idname = "exportglb.export"
     bl_label = "Export GLB"
@@ -81,7 +83,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                     export_normals=True,
                     export_tangents=True,
                     export_materials='EXPORT',
-                    export_colors=True,
                     export_cameras=False,
                     export_lights=False,
                     export_extras=False,
@@ -144,7 +145,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                     export_normals=True,
                     export_tangents=True,
                     export_materials='EXPORT',
-                    export_colors=True,
                     export_cameras=False,
                     export_lights=False,
                     export_extras=False,
