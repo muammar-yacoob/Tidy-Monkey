@@ -9,7 +9,7 @@ class SELECT_MAT_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.similar.select(select_type='MATERIAL')
+        bpy.ops.mesh.select_similar(type='FACE_MATERIAL')
         return {"FINISHED"}
 
 class SELECT_PER_OT_operator(bpy.types.Operator):
@@ -19,7 +19,7 @@ class SELECT_PER_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
-        bpy.ops.similar.select(select_type='PERIMETER')
+        bpy.ops.mesh.select_similar(type='FACE_PERIMETER')
         return {"FINISHED"}
 
 
