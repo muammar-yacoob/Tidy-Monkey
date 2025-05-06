@@ -4,7 +4,7 @@ import bmesh
 class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     bl_label = "Checker Edge"
     bl_idname = "organize.checkeredge"
-    bl_description = "Checker select edges (number of selected edges must be divisible by 3)"
+    bl_description = "Checker select edges (number of selected edges must be divisible by 8)"
     bl_options = {'REGISTER', 'UNDO'}
     
     initial_selection = []

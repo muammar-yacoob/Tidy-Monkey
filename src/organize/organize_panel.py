@@ -66,7 +66,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                     if obj and obj.type == 'MESH':
                         mesh = bmesh.from_edit_mesh(obj.data)
                         selected_edges = sum(1 for e in mesh.edges if e.select)
-                        row.enabled = selected_edges > 0 and selected_edges % 3 == 0
+                        row.enabled = selected_edges > 0 and selected_edges % 8 == 0
                     else:
                         row.enabled = False
                 else:
