@@ -45,13 +45,13 @@ try:
         generate_actions,
         clean_textures,
         rename_bones,
-        clean_verts,
+        select_similar_verts,
         fix_rotation
     )
     # First register all operator modules
     modules_to_process.extend([
         fix_normals, clear_materials, generate_actions,
-        clean_textures, rename_bones, clean_verts, fix_rotation
+        clean_textures, rename_bones, select_similar_verts, fix_rotation
     ])
     modules_to_process.append(cleanup_panel)
 except ImportError as e:

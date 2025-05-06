@@ -9,7 +9,7 @@ from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
-from ..cleanup.clean_verts import CLEAN_VERTS_OT_operator
+from ..cleanup.select_similar_verts import SELECT_SIMILAR_VERTS_OT_operator
 from ..cleanup.fix_rotation import FIXROTATION_OT_operator
 from ..base_panel import TITLE_PT_panel
 
@@ -71,7 +71,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
             
             if in_edit_mesh:
                 row = layout.row()
-                row.operator("cleanup.cleanverts", icon='STICKY_UVS_DISABLE')
+                row.operator("cleanup.selectsimilarverts", icon='STICKY_UVS_DISABLE')
                 
             if in_edit_mesh or in_edit_armature:
                 row = layout.row()

@@ -12,7 +12,7 @@ try:
     from . import clean_textures
     from . import rename_bones
     from . import rename_vertex_groups
-    from . import clean_verts
+    from . import select_similar_verts
     from . import fix_rotation
     print("    Imported cleanup ops modules (excluding self-import check)." )
 except ImportError as e:
