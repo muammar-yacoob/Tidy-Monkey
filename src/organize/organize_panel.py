@@ -1,5 +1,4 @@
 import bpy
-import traceback
 import bmesh
 from bpy.types import Panel
 from ..base_panel import TITLE_PT_panel
@@ -126,7 +125,6 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = selection_count > 1
         except Exception as e:
             print(f"ERROR in ORGANIZE_PT_panel.draw(): {str(e)}")
-            traceback.print_exc()
             layout.label(text=f"Error: {str(e)}")
 
 classes = (ORGANIZE_PT_panel,) 

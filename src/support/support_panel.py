@@ -2,6 +2,8 @@ import bpy
 from bpy.types import Panel
 from ..support import support_links
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class SUPPORT_PT_panel(bpy.types.Panel):
     bl_label = ""
     bl_idname = "SUPPORT_PT_panel"

@@ -4,6 +4,8 @@ import webbrowser
 from bpy.types import Operator
 import time
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 # Support links URLs and categories with messages
 URLS = {
     "github": "https://github.com/muammar-yacoob/Tidy-Monkey",

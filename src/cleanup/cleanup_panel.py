@@ -1,5 +1,4 @@
 import bpy
-import traceback
 from bpy.types import Panel, PropertyGroup
 import bpy.props
 import bmesh
