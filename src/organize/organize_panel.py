@@ -9,7 +9,7 @@ from ..organize.origin_to_bottom import ORG_BOTTOMCENTER_OT_operator
 from ..organize.align_to_view import ORG_ALIGNTOVIEW_OT_operator
 from ..organize.align_objects import ALIGN_OT_operator
 from ..organize.apply_modifiers import APPLY_MODS_OT_operator
-from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_operator)
+from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_operator, SELECT_UV_OT_operator)
 from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
 from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
@@ -67,6 +67,9 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 
                 row = box.row()
                 row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
+                
+                row = box.row()
+                row.operator("organize.selectuv", icon='UV')
                 
                 row = box.row()
                 op = row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
