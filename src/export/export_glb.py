@@ -71,44 +71,12 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj_path = os.path.join(directory, arm.name + ".glb")
             
             try:
+                # Use minimal set of parameters to avoid compatibility issues
                 bpy.ops.export_scene.gltf(
                     filepath=obj_path,
                     export_format='GLB',
                     use_selection=True,
-                    export_animations=True,
-                    export_frame_range=True,
-                    export_frame_step=1,
-                    export_apply=False,  # Don't apply transformations
-                    export_texcoords=True,
-                    export_normals=True,
-                    export_tangents=True,
-                    export_materials='EXPORT',
-                    export_cameras=False,
-                    export_lights=False,
-                    export_extras=False,
-                    export_yup=True,
-                    export_force_sampling=True,
-                    export_nla_strips=True,
-                    export_skins=True,
-                    export_all_influences=False,
-                    export_morph=True,
-                    export_morph_normal=True,
-                    export_morph_tangent=False,
-                    export_attributes=False,
-                    export_image_format='AUTO',
-                    export_texture_dir="textures",
-                    export_keep_originals=False,
-                    export_texcoords_from_uv_map="",
-                    export_materials_for_motion_blur=False,
-                    export_current_frame=False,
-                    export_draco_mesh_compression_enable=False,
-                    export_draco_mesh_compression_level=6,
-                    export_draco_position_quantization=14,
-                    export_draco_normal_quantization=10,
-                    export_draco_texcoord_quantization=12,
-                    export_draco_color_quantization=10,
-                    export_draco_generic_quantization=12,
-                    export_anim_single_armature=True,
+                    export_apply=False
                 )
                 exported_count += 1
                 self.report({'INFO'}, f"Exported armature: {arm.name}")
@@ -131,37 +99,12 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj_path = os.path.join(directory, obj.name + ".glb")
             
             try:
+                # Use minimal set of parameters to avoid compatibility issues
                 bpy.ops.export_scene.gltf(
                     filepath=obj_path,
                     export_format='GLB',
                     use_selection=True,
-                    export_animations=has_morph,
-                    export_frame_range=has_morph,
-                    export_frame_step=1,
-                    export_apply=False,  # Don't apply transformations
-                    export_texcoords=True,
-                    export_normals=True,
-                    export_tangents=True,
-                    export_materials='EXPORT',
-                    export_cameras=False,
-                    export_lights=False,
-                    export_extras=False,
-                    export_yup=True,
-                    export_force_sampling=True,
-                    export_nla_strips=has_morph,
-                    export_skins=True,
-                    export_all_influences=False,
-                    export_morph=has_morph,
-                    export_morph_normal=has_morph,
-                    export_morph_tangent=False,
-                    export_attributes=False,
-                    export_image_format='AUTO',
-                    export_texture_dir="textures",
-                    export_keep_originals=False,
-                    export_texcoords_from_uv_map="",
-                    export_materials_for_motion_blur=False,
-                    export_current_frame=False,
-                    export_draco_mesh_compression_enable=False,
+                    export_apply=False
                 )
                 exported_count += 1
             except Exception as e:
