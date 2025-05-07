@@ -1,6 +1,10 @@
 # This file makes 'organize' a Python package
 # It imports the necessary modules so they can be accessed via src.organize
 
+import bpy
+
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 print("  Importing src.organize submodules...")
 
 try:

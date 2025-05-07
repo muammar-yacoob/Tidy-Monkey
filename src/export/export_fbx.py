@@ -1,6 +1,10 @@
 import bpy
 from bpy.types import Operator
 import os
+import platform
+import subprocess
+
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
 class EXPORT_OT_operator(bpy.types.Operator):
     bl_idname = "exportfbx.export"
@@ -15,9 +19,9 @@ class EXPORT_OT_operator(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
         
         blend_file_path = bpy.data.filepath
-        directory = os.path.dirname(blend_file_path) + "/FBXs"
+        directory = os.path.join(os.path.dirname(blend_file_path), "FBXs")
         if not os.path.exists(directory):
-            os.mkdir(directory)
+            os.makedirs(directory, exist_ok=True)
 
         sel_objs = [obj for obj in context.selected_objects]
         if not sel_objs:
@@ -31,13 +35,36 @@ class EXPORT_OT_operator(bpy.types.Operator):
             armature_children[arm] = [obj for obj in bpy.data.objects 
                                      if obj.parent == arm and obj.type == 'MESH']
         
+        # Store original selection state
+        original_active = context.view_layer.objects.active
+        
+        # Call cleanup operators once before export
+        bpy.ops.cleanup.cleantextures()
+        bpy.ops.cleanup.clearmats()
+        
+        # Generate actions from animations
+        try:
+            bpy.ops.cleanup.generateactions()
+        except Exception as e:
+            self.report({'INFO'}, "No actions to generate")
+        
+        # Apply modifiers to selected objects
+        try:
+            bpy.ops.organize.applymodifiers()
+        except Exception as e:
+            self.report({'INFO'}, "No modifiers to apply")
+        
+        # Re-select all objects
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.outliner.orphans_purge()
+        for obj in sel_objs:
+            obj.select_set(True)
+        if original_active:
+            context.view_layer.objects.active = original_active
         
         try:
             bpy.ops.file.pack_all()
         except Exception as e:
-            self.report({'WARNING'}, f"Could not pack all textures\n{str(e)}")
+            self.report({'WARNING'}, f"Could not pack all textures: {str(e)}")
         
         try:
             bpy.ops.file.unpack_all(method='USE_LOCAL')
@@ -64,8 +91,6 @@ class EXPORT_OT_operator(bpy.types.Operator):
                 
             context.view_layer.objects.active = arm
             
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
             obj_path = os.path.join(directory, arm.name + ".fbx")
             
             try:
@@ -74,26 +99,31 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     use_selection=True,
                     check_existing=False,
                     global_scale=1.0,
-                    apply_scale_options='FBX_SCALE_UNITS',
-                    axis_forward='-Z',
-                    axis_up='Y',
+                    apply_scale_options='FBX_SCALE_NONE',
+                    apply_unit_scale=True,
+                    bake_space_transform=False,
+                    object_types={'ARMATURE', 'MESH'},
                     use_mesh_modifiers=True,
                     mesh_smooth_type='FACE',
                     use_mesh_edges=False,
-                    use_tspace=True,  # Important for normal maps
+                    use_tspace=True,
                     use_custom_props=True,
-                    bake_space_transform=False,  # Don't bake transforms to preserve positions
-                    bake_anim=True,
-                    bake_anim_use_nla_strips=True,
-                    bake_anim_use_all_actions=True,
                     add_leaf_bones=False,
                     primary_bone_axis='Y',
                     secondary_bone_axis='X',
-                    use_armature_deform_only=False,  # Include all modifiers
-                    path_mode='COPY',  # Copy textures
-                    embed_textures=True,  # Embed textures
+                    use_armature_deform_only=False,
+                    armature_nodetype='NULL',
+                    bake_anim=True,
+                    bake_anim_use_all_bones=True,
+                    bake_anim_use_nla_strips=True,
+                    bake_anim_use_all_actions=True,
+                    bake_anim_force_startend_keying=True,
+                    path_mode='COPY',
+                    embed_textures=True,
                     batch_mode='OFF',
                     use_metadata=True,
+                    axis_forward='-Z',
+                    axis_up='Y',
                 )
                 exported_count += 1
                 self.report({'INFO'}, f"Exported armature: {arm.name}")
@@ -108,7 +138,6 @@ class EXPORT_OT_operator(bpy.types.Operator):
             obj.select_set(True)
             context.view_layer.objects.active = obj
             
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
             has_animation = False
             if obj.type == 'MESH' and hasattr(obj.data, 'shape_keys') and obj.data.shape_keys:
                 if obj.data.shape_keys.key_blocks and len(obj.data.shape_keys.key_blocks) > 0:
@@ -127,26 +156,31 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     use_selection=True,
                     check_existing=False,
                     global_scale=1.0,
-                    apply_scale_options='FBX_SCALE_UNITS',
-                    axis_forward='-Z',
-                    axis_up='Y',
+                    apply_scale_options='FBX_SCALE_NONE',
+                    apply_unit_scale=True,
+                    bake_space_transform=False,
+                    object_types={'MESH'},
                     use_mesh_modifiers=True,
                     mesh_smooth_type='FACE',
                     use_mesh_edges=False,
-                    use_tspace=True,  # Important for normal maps
+                    use_tspace=True,
                     use_custom_props=True,
-                    bake_space_transform=False,  # Don't bake transforms to preserve positions
-                    bake_anim=has_animation,
-                    bake_anim_use_nla_strips=has_animation,
-                    bake_anim_use_all_actions=has_animation,
                     add_leaf_bones=False,
                     primary_bone_axis='Y',
                     secondary_bone_axis='X',
-                    use_armature_deform_only=False,  # Include all modifiers
-                    path_mode='COPY',  # Copy textures
-                    embed_textures=True,  # Embed textures
+                    use_armature_deform_only=False,
+                    armature_nodetype='NULL',
+                    bake_anim=has_animation,
+                    bake_anim_use_all_bones=has_animation,
+                    bake_anim_use_nla_strips=has_animation,
+                    bake_anim_use_all_actions=has_animation,
+                    bake_anim_force_startend_keying=has_animation,
+                    path_mode='COPY',
+                    embed_textures=True,
                     batch_mode='OFF',
                     use_metadata=True,
+                    axis_forward='-Z',
+                    axis_up='Y',
                 )
                 exported_count += 1
             except Exception as e:
@@ -158,7 +192,17 @@ class EXPORT_OT_operator(bpy.types.Operator):
             obj.select_set(True)
         
         self.report({'INFO'}, f"{exported_count} objects were exported to {directory}")
-        os.system("start " + directory)
+        
+        try:
+            if platform.system() == "Windows":
+                os.startfile(directory)
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.run(["open", directory])
+            else:  # Linux and others
+                subprocess.run(["xdg-open", directory])
+        except Exception as e:
+            self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
+            
         return {'FINISHED'}
 
 classes = (EXPORT_OT_operator,) 

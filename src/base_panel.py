@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Panel
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class TITLE_PT_panel(bpy.types.Panel):
     bl_label = "Tidy Monkey"
     bl_idname = "TITLE_PT_panel"

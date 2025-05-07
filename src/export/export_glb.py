@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Operator
 import os
+import platform
+import subprocess
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
@@ -17,9 +19,9 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
         
         blend_file_path = bpy.data.filepath
-        directory = os.path.dirname(blend_file_path) + "/GLBs"
+        directory = os.path.join(os.path.dirname(blend_file_path), "GLBs")
         if not os.path.exists(directory):
-            os.mkdir(directory)
+            os.makedirs(directory, exist_ok=True)
             
         sel_objs = [obj for obj in context.selected_objects]
         if not sel_objs:
@@ -32,9 +34,32 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         for arm in armatures:
             armature_children[arm] = [obj for obj in bpy.data.objects 
                                      if obj.parent == arm and obj.type == 'MESH']
-            
+        
+        # Store original selection state
+        original_active = context.view_layer.objects.active
+        
+        # Call cleanup operators once before export
+        bpy.ops.cleanup.cleantextures()
+        bpy.ops.cleanup.clearmats()
+        
+        # Generate actions from animations
+        try:
+            bpy.ops.cleanup.generateactions()
+        except Exception as e:
+            self.report({'INFO'}, "No actions to generate")
+        
+        # Apply modifiers to selected objects
+        try:
+            bpy.ops.organize.applymodifiers()
+        except Exception as e:
+            self.report({'INFO'}, "No modifiers to apply")
+        
+        # Re-select all objects
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.outliner.orphans_purge()
+        for obj in sel_objs:
+            obj.select_set(True)
+        if original_active:
+            context.view_layer.objects.active = original_active
         
         try:
             bpy.ops.file.pack_all()
@@ -52,7 +77,7 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         context.scene.frame_set(context.scene.frame_start)
         
         exported_count = 0
-        
+            
         for arm in armatures:
             children = armature_children[arm]
             if not children:
@@ -66,49 +91,21 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                 
             context.view_layer.objects.active = arm
             
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
             obj_path = os.path.join(directory, arm.name + ".glb")
             
             try:
+                # Use minimal set of parameters to avoid compatibility issues
                 bpy.ops.export_scene.gltf(
                     filepath=obj_path,
                     export_format='GLB',
                     use_selection=True,
-                    export_animations=True,
-                    export_frame_range=True,
-                    export_frame_step=1,
-                    export_apply=False,  # Don't apply transformations
-                    export_texcoords=True,
-                    export_normals=True,
-                    export_tangents=True,
-                    export_materials='EXPORT',
-                    export_cameras=False,
-                    export_lights=False,
-                    export_extras=False,
+                    use_visible=True,
+                    export_apply=True,
                     export_yup=True,
-                    export_force_sampling=True,
-                    export_nla_strips=True,
-                    export_skins=True,
-                    export_all_influences=False,
                     export_morph=True,
                     export_morph_normal=True,
-                    export_morph_tangent=False,
-                    export_attributes=False,
-                    export_image_format='AUTO',
-                    export_texture_dir="textures",
-                    export_keep_originals=False,
-                    export_texcoords_from_uv_map="",
-                    export_materials_for_motion_blur=False,
-                    export_current_frame=False,
-                    export_draco_mesh_compression_enable=False,
-                    export_draco_mesh_compression_level=6,
-                    export_draco_position_quantization=14,
-                    export_draco_normal_quantization=10,
-                    export_draco_texcoord_quantization=12,
-                    export_draco_color_quantization=10,
-                    export_draco_generic_quantization=12,
-                    export_anim_single_armature=True,
+                    export_morph_animation=True,
+                    export_animations=True
                 )
                 exported_count += 1
                 self.report({'INFO'}, f"Exported armature: {arm.name}")
@@ -123,8 +120,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj.select_set(True)
             context.view_layer.objects.active = obj
             
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
             has_morph = False
             if obj.type == 'MESH' and hasattr(obj.data, 'shape_keys') and obj.data.shape_keys:
                 if obj.data.shape_keys.key_blocks:
@@ -133,49 +128,41 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj_path = os.path.join(directory, obj.name + ".glb")
             
             try:
+                # Use minimal set of parameters to avoid compatibility issues
                 bpy.ops.export_scene.gltf(
                     filepath=obj_path,
                     export_format='GLB',
                     use_selection=True,
-                    export_animations=has_morph,
-                    export_frame_range=has_morph,
-                    export_frame_step=1,
-                    export_apply=False,  # Don't apply transformations
-                    export_texcoords=True,
-                    export_normals=True,
-                    export_tangents=True,
-                    export_materials='EXPORT',
-                    export_cameras=False,
-                    export_lights=False,
-                    export_extras=False,
+                    use_visible=True,
+                    export_apply=True,
                     export_yup=True,
-                    export_force_sampling=True,
-                    export_nla_strips=has_morph,
-                    export_skins=True,
-                    export_all_influences=False,
-                    export_morph=has_morph,
-                    export_morph_normal=has_morph,
-                    export_morph_tangent=False,
-                    export_attributes=False,
-                    export_image_format='AUTO',
-                    export_texture_dir="textures",
-                    export_keep_originals=False,
-                    export_texcoords_from_uv_map="",
-                    export_materials_for_motion_blur=False,
-                    export_current_frame=False,
-                    export_draco_mesh_compression_enable=False,
+                    export_morph=True,
+                    export_morph_normal=True,
+                    export_morph_animation=True,
+                    export_animations=True
                 )
                 exported_count += 1
             except Exception as e:
                 self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
-            
+                
         context.scene.frame_set(current_frame)
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
             
         self.report({'INFO'}, f"{exported_count} objects were exported to {directory}")
-        os.system("start " + directory)
+        
+        # Cross-platform directory opening
+        try:
+            if platform.system() == "Windows":
+                os.startfile(directory)
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.run(["open", directory])
+            else:  # Linux and others
+                subprocess.run(["xdg-open", directory])
+        except Exception as e:
+            self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
+            
         return {'FINISHED'}
 
 classes = (EXPORT_GLB_OT_operator,) 

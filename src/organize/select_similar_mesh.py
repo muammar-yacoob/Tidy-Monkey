@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class SELECT_SAME_OT_operator(bpy.types.Operator):
     bl_label = "Select Similar Mesh"
     bl_idname = "organize.selectsimilarmesh"

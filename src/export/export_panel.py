@@ -3,6 +3,8 @@ from bpy.types import Panel
 from ..export.export_fbx import EXPORT_OT_operator
 from ..export.export_glb import EXPORT_GLB_OT_operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class EXPORT_PT_panel(bpy.types.Panel):
     bl_label = "Export"
     bl_idname = "EXPORT_PT_panel"
@@ -29,29 +31,61 @@ class EXPORT_PT_panel(bpy.types.Panel):
                     "keys": len(active_obj.data.shape_keys.key_blocks) if active_obj.data.shape_keys and active_obj.data.shape_keys.key_blocks else 0
                 }
                 
-                row = layout.row()
-                row.label(text=active_obj.name + " details", icon='INFO')
+                try:
+                    row = layout.row()
+                    row.label(text=active_obj.name + " details", icon='INFO')
+                    
+                    box = layout.box()
+                except Exception as e:
+                    print(f"Error displaying mesh details: {e}")
+                    box = layout.box()
                 
-                row = layout.row()
-                row.label(text=f"Verts: {mesh_data['verts']}")
-                row.label(text=f"Mats: {mesh_data['mats']}")
+                row = box.row()
+                # Verts column
+                split = row.split(factor=0.5)
+                col1 = split.column()
+                if mesh_data['verts'] > 10000:
+                    col1.alert = True
+                    col1.label(text=f"Verts: {mesh_data['verts']:,}")
+                else:
+                    col1.label(text=f"Verts: {mesh_data['verts']:,}")
                 
-                row = layout.row()
-                row.label(text=f"Acts: {mesh_data['acts']}")
-                row.label(text=f"Keys: {mesh_data['keys']}")
+                # Mats column
+                col2 = split.column()
+                if mesh_data['mats'] > 3:
+                    col2.alert = True
+                    col2.label(text=f"Mats: {mesh_data['mats']}")
+                else:
+                    col2.label(text=f"Mats: {mesh_data['mats']}")
+                
+                row = box.row()
+                # Acts column
+                split = row.split(factor=0.5)
+                col1 = split.column()
+                if mesh_data['acts'] > 10:
+                    col1.alert = True
+                    col1.label(text=f"Acts: {mesh_data['acts']}")
+                else:
+                    col1.label(text=f"Acts: {mesh_data['acts']}")
+                
+                # Keys column
+                col2 = split.column()
+                if mesh_data['keys'] > 10:
+                    col2.alert = True
+                    col2.label(text=f"Keys: {mesh_data['keys']}")
+                else:
+                    col2.label(text=f"Keys: {mesh_data['keys']}")
             elif len(context.selected_objects) > 1:
                 row = layout.row()
                 row.label(text="Multiple Objects", icon='INFO')
 
-            box = layout.box()
-            box.label(text="Export Options", icon='EXPORT')
-            
-            row = box.row()
-            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({len(context.selected_objects)})", icon='EXPORT')
+            # Export buttons - no header
+            row = layout.row(align=True)
+            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({len(context.selected_objects)})", icon='MESH_CUBE')
             row.enabled = len(context.selected_objects) > 0
             
-            row = box.row()
-            row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({len(context.selected_objects)})", icon='FILE_3D')
+            row = layout.row(align=True)
+            row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({len(context.selected_objects)})", icon='FACE_MAPS')
             row.enabled = len(context.selected_objects) > 0
             
         except Exception as e:

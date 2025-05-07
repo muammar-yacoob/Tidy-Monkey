@@ -1,5 +1,4 @@
 import bpy
-import traceback
 
 modules_to_process = []
 
@@ -8,7 +7,6 @@ try:
     modules_to_process.append(base_panel)
 except ImportError as e:
     print(f"ERROR importing base_panel: {e}")
-    traceback.print_exc()
 
 # Import Organize Modules
 try:
@@ -34,7 +32,6 @@ try:
     modules_to_process.append(organize_panel)
 except ImportError as e:
     print(f"ERROR importing organize modules: {e}")
-    traceback.print_exc()
 
 # Import Cleanup Modules
 try:
@@ -56,7 +53,6 @@ try:
     modules_to_process.append(cleanup_panel)
 except ImportError as e:
     print(f"ERROR importing cleanup modules: {e}")
-    traceback.print_exc()
 
 # Import Export Modules
 try:
@@ -69,7 +65,6 @@ try:
     modules_to_process.append(export_panel)
 except ImportError as e:
     print(f"ERROR importing export modules: {e}")
-    traceback.print_exc()
 
 # Import Support Modules
 try:
@@ -78,7 +73,8 @@ try:
     modules_to_process.append(support_panel)
 except ImportError as e:
     print(f"ERROR importing support modules: {e}")
-    traceback.print_exc()
+
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
 _registered_classes = set()
 
@@ -112,7 +108,6 @@ def register():
                     _registered_classes.add(cls)
                 except Exception as e:
                     print(f"ERROR registering class {class_name}: {str(e)}")
-                    traceback.print_exc()
 
         if hasattr(module, 'register') and callable(module.register):
             if module_name != __name__:
@@ -120,14 +115,12 @@ def register():
                      module.register()
                  except Exception as e:
                      print(f"ERROR in {module_name}.register(): {str(e)}")
-                     traceback.print_exc()
-                     
+
         if hasattr(module, 'register_support_handlers') and callable(module.register_support_handlers):
              try:
                  module.register_support_handlers()
              except Exception as e:
                  print(f"ERROR in {module_name}.register_support_handlers(): {str(e)}")
-                 traceback.print_exc()
 
 def unregister():
     global _registered_classes
@@ -142,14 +135,12 @@ def unregister():
                     module.unregister()
                 except Exception as e:
                     print(f"ERROR in {module_name}.unregister(): {str(e)}")
-                    traceback.print_exc()
                     
         if hasattr(module, 'unregister_support_handlers') and callable(module.unregister_support_handlers):
             try:
                 module.unregister_support_handlers()
             except Exception as e:
                 print(f"ERROR in {module_name}.unregister_support_handlers(): {str(e)}")
-                traceback.print_exc()
         
         if hasattr(module, 'classes') and isinstance(module.classes, (list, tuple)):
             for cls in reversed(module.classes):
@@ -162,6 +153,5 @@ def unregister():
                         if cls in _registered_classes: _registered_classes.remove(cls)
                     except Exception as e:
                         print(f"ERROR unregistering class {class_name}: {str(e)}")
-                        traceback.print_exc()
     
     _registered_classes.clear() 

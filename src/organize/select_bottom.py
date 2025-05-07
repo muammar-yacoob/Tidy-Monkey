@@ -3,6 +3,8 @@ import bmesh
 from mathutils import Vector
 from bpy.types import Operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class BUTTS_OT_operator(bpy.types.Operator):
     bl_label = "Select Bottom"
     bl_idname = "organize.selectbottom"

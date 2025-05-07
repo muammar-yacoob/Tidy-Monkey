@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class APPLY_MODS_OT_operator(bpy.types.Operator):
     bl_label = "Apply Modifiers"
     bl_idname = "organize.applymodifiers"

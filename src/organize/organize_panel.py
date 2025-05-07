@@ -1,5 +1,4 @@
 import bpy
-import traceback
 import bmesh
 from bpy.types import Panel
 from ..base_panel import TITLE_PT_panel
@@ -9,10 +8,12 @@ from ..organize.origin_to_bottom import ORG_BOTTOMCENTER_OT_operator
 from ..organize.align_to_view import ORG_ALIGNTOVIEW_OT_operator
 from ..organize.align_objects import ALIGN_OT_operator
 from ..organize.apply_modifiers import APPLY_MODS_OT_operator
-from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_operator)
+from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_operator, SELECT_UV_OT_operator)
 from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
 from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
+
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
@@ -69,6 +70,9 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
                 
                 row = box.row()
+                row.operator("organize.selectuv", icon='RESTRICT_SELECT_OFF')
+                
+                row = box.row()
                 op = row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
                 
                 if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
@@ -121,7 +125,6 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = selection_count > 1
         except Exception as e:
             print(f"ERROR in ORGANIZE_PT_panel.draw(): {str(e)}")
-            traceback.print_exc()
             layout.label(text=f"Error: {str(e)}")
 
 classes = (ORGANIZE_PT_panel,) 

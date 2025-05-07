@@ -1,5 +1,4 @@
 import bpy
-import traceback
 from bpy.types import Panel, PropertyGroup
 import bpy.props
 import bmesh
@@ -12,6 +11,8 @@ from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
 from ..cleanup.select_similar_verts import SELECT_SIMILAR_VERTS_OT_operator
 from ..cleanup.fix_rotation import FIXROTATION_OT_operator
 from ..base_panel import TITLE_PT_panel
+
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
 class CLEANUP_PT_panel(bpy.types.Panel):
     bl_label = "Clean Up"

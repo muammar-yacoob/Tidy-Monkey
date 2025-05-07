@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Operator, PropertyGroup
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 # Property group for bone renaming
 class RenameBonesProps(bpy.types.PropertyGroup):
     old_text: bpy.props.StringProperty(name="Old Text", default="mixamo:")
