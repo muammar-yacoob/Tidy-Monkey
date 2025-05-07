@@ -69,7 +69,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
                 
                 row = box.row()
-                row.operator("organize.selectuv", icon='UV')
+                row.operator("organize.selectuv", icon='RESTRICT_SELECT_OFF')
                 
                 row = box.row()
                 op = row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
