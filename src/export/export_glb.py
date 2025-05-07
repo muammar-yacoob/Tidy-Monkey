@@ -36,6 +36,7 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                                      if obj.parent == arm and obj.type == 'MESH']
         
         original_active = context.view_layer.objects.active
+        original_area_type = context.area.type
         
         bpy.ops.cleanup.cleantextures()
         bpy.ops.cleanup.clearmats()
@@ -139,6 +140,9 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                 self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
                 
         context.scene.frame_set(current_frame)
+        
+        context.area.type = 'VIEW_3D'
+        
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
