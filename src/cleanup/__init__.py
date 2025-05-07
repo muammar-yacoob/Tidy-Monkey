@@ -10,7 +10,7 @@ except ImportError as e:
      print(f"    ERROR importing cleanup_panel: {e}")
 
 try:
-    from . import fix_normals
+    from . import beautify
     from . import clear_materials
     from . import generate_actions
     from . import clean_textures

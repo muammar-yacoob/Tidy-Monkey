@@ -35,14 +35,12 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             armature_children[arm] = [obj for obj in bpy.data.objects 
                                      if obj.parent == arm and obj.type == 'MESH']
         
-        # Store original selection state
         original_active = context.view_layer.objects.active
+        original_area_type = context.area.type
         
-        # Call cleanup operators once before export
         bpy.ops.cleanup.cleantextures()
         bpy.ops.cleanup.clearmats()
         
-        # Generate actions from animations
         try:
             bpy.ops.cleanup.generateactions()
         except Exception as e:
@@ -54,7 +52,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         except Exception as e:
             self.report({'INFO'}, "No modifiers to apply")
         
-        # Re-select all objects
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
@@ -73,7 +70,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             self.report({'WARNING'}, "Error processing textures")
             
         current_frame = context.scene.frame_current
-        bpy.ops.screen.animation_cancel(restore_frame=True)
         context.scene.frame_set(context.scene.frame_start)
         
         exported_count = 0
@@ -94,7 +90,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj_path = os.path.join(directory, arm.name + ".glb")
             
             try:
-                # Use minimal set of parameters to avoid compatibility issues
                 bpy.ops.export_scene.gltf(
                     filepath=obj_path,
                     export_format='GLB',
@@ -128,7 +123,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj_path = os.path.join(directory, obj.name + ".glb")
             
             try:
-                # Use minimal set of parameters to avoid compatibility issues
                 bpy.ops.export_scene.gltf(
                     filepath=obj_path,
                     export_format='GLB',
@@ -146,13 +140,15 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                 self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
                 
         context.scene.frame_set(current_frame)
+        
+        context.area.type = 'VIEW_3D'
+        
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
             
         self.report({'INFO'}, f"{exported_count} objects were exported to {directory}")
         
-        # Cross-platform directory opening
         try:
             if platform.system() == "Windows":
                 os.startfile(directory)
