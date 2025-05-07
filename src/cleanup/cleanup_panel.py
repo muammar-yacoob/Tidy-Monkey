@@ -31,20 +31,19 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         
         try:
             if not in_edit_mode:
-                # Compose text messages based on selection count
-                fix_normals_text = "Beautify"
-                clear_mats_text = "Clear Materials"
-                if selection_count > 1:
-                    fix_normals_text = f"Beautify ({selection_count})"
-                    clear_mats_text = f"Clear Materials ({selection_count})"
-                
                 # Create the operator rows
                 row = layout.row()
-                row.operator("cleanup.beautify", text=fix_normals_text, icon='SHADERFX')
+                if selection_count > 1:
+                    row.operator("cleanup.beautify", text=f"Beautify ({selection_count})", icon='SHADERFX')
+                else:
+                    row.operator("cleanup.beautify", text="Beautify", icon='SHADERFX')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()
-                row.operator("cleanup.clearmats", text=clear_mats_text, icon='NODE_MATERIAL')
+                if selection_count > 1:
+                    row.operator("cleanup.clearmats", text=f"Clear Materials ({selection_count})", icon='NODE_MATERIAL')
+                else:
+                    row.operator("cleanup.clearmats", text="Clear Materials", icon='NODE_MATERIAL')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()

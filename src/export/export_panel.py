@@ -79,14 +79,22 @@ class EXPORT_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.label(text="Multiple Objects", icon='INFO')
 
-            # Export buttons - no header
-            row = layout.row(align=True)
-            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({len(context.selected_objects)})", icon='MESH_CUBE')
-            row.enabled = len(context.selected_objects) > 0
+            # Export buttons
+            selection_count = len(context.selected_objects)
             
             row = layout.row(align=True)
-            row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({len(context.selected_objects)})", icon='FACE_MAPS')
-            row.enabled = len(context.selected_objects) > 0
+            if selection_count > 1:
+                row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({selection_count})", icon='MESH_CUBE')
+            else:
+                row.operator(EXPORT_OT_operator.bl_idname, text="FBX Export", icon='MESH_CUBE')
+            row.enabled = selection_count > 0
+            
+            row = layout.row(align=True)
+            if selection_count > 1:
+                row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({selection_count})", icon='FACE_MAPS')
+            else:
+                row.operator(EXPORT_GLB_OT_operator.bl_idname, text="GLB Export", icon='FACE_MAPS')
+            row.enabled = selection_count > 0
             
         except Exception as e:
             pass
