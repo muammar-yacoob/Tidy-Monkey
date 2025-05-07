@@ -4,9 +4,9 @@ from bpy.types import Operator
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
-class FIX_NORMALS_OT_operator(bpy.types.Operator):
-    bl_label = "Fix Mesh & Normals"
-    bl_idname = "cleanup.fixnormals"
+class BEAUTIFY_OT_operator(bpy.types.Operator):
+    bl_label = "Beautify"
+    bl_idname = "cleanup.beautify"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
@@ -71,4 +71,4 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
         self.report({'INFO'}, f"Fixed mesh and normals on {len(selected_objects)} objects")
         return {"FINISHED"}
 
-classes = (FIX_NORMALS_OT_operator,) 
+classes = (BEAUTIFY_OT_operator,) 

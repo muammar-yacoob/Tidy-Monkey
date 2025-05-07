@@ -1,4 +1,5 @@
 import bpy
+from .cleanup import beautify
 
 modules_to_process = []
 
@@ -37,7 +38,6 @@ except ImportError as e:
 try:
     from .cleanup import (
         cleanup_panel,
-        fix_normals,
         clear_materials,
         generate_actions,
         clean_textures,
@@ -47,7 +47,7 @@ try:
     )
     # First register all operator modules
     modules_to_process.extend([
-        fix_normals, clear_materials, generate_actions,
+        beautify, clear_materials, generate_actions,
         clean_textures, rename_bones, select_similar_verts, fix_rotation
     ])
     modules_to_process.append(cleanup_panel)

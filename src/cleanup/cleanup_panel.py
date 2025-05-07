@@ -3,7 +3,7 @@ from bpy.types import Panel, PropertyGroup
 import bpy.props
 import bmesh
 
-from ..cleanup.fix_normals import FIX_NORMALS_OT_operator
+from .beautify import BEAUTIFY_OT_operator
 from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
@@ -40,7 +40,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 
                 # Create the operator rows
                 row = layout.row()
-                row.operator("cleanup.fixnormals", text=fix_normals_text, icon='SHADERFX')
+                row.operator("cleanup.beautify", text=fix_normals_text, icon='SHADERFX')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()
