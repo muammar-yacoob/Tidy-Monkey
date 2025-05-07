@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Operator
 import os
+import platform
+import subprocess
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
@@ -17,9 +19,9 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         bpy.ops.object.mode_set(mode='OBJECT')
         
         blend_file_path = bpy.data.filepath
-        directory = os.path.dirname(blend_file_path) + "/GLBs"
+        directory = os.path.join(os.path.dirname(blend_file_path), "GLBs")
         if not os.path.exists(directory):
-            os.mkdir(directory)
+            os.makedirs(directory, exist_ok=True)
             
         sel_objs = [obj for obj in context.selected_objects]
         if not sel_objs:
@@ -52,7 +54,7 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         context.scene.frame_set(context.scene.frame_start)
         
         exported_count = 0
-        
+            
         for arm in armatures:
             children = armature_children[arm]
             if not children:
@@ -65,8 +67,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                 child.select_set(True)
                 
             context.view_layer.objects.active = arm
-            
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
             
             obj_path = os.path.join(directory, arm.name + ".glb")
             
@@ -123,8 +123,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             obj.select_set(True)
             context.view_layer.objects.active = obj
             
-            bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-            
             has_morph = False
             if obj.type == 'MESH' and hasattr(obj.data, 'shape_keys') and obj.data.shape_keys:
                 if obj.data.shape_keys.key_blocks:
@@ -168,14 +166,25 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                 exported_count += 1
             except Exception as e:
                 self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
-            
+                
         context.scene.frame_set(current_frame)
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
             
         self.report({'INFO'}, f"{exported_count} objects were exported to {directory}")
-        os.system("start " + directory)
+        
+        # Cross-platform directory opening
+        try:
+            if platform.system() == "Windows":
+                os.startfile(directory)
+            elif platform.system() == "Darwin":  # macOS
+                subprocess.run(["open", directory])
+            else:  # Linux and others
+                subprocess.run(["xdg-open", directory])
+        except Exception as e:
+            self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
+            
         return {'FINISHED'}
 
 classes = (EXPORT_GLB_OT_operator,) 
