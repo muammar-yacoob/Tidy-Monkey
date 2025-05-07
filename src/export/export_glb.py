@@ -3,7 +3,6 @@ from bpy.types import Operator
 import os
 import platform
 import subprocess
-from ..utils import clean_unused_materials, clean_unused_textures
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
@@ -35,10 +34,32 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         for arm in armatures:
             armature_children[arm] = [obj for obj in bpy.data.objects 
                                      if obj.parent == arm and obj.type == 'MESH']
-            
-        # Clean up all textures and materials first
-        clean_unused_textures()
-        clean_unused_materials(sel_objs)
+        
+        # Store original selection state
+        original_active = context.view_layer.objects.active
+        
+        # Call cleanup operators once before export
+        bpy.ops.cleanup.cleantextures()
+        bpy.ops.cleanup.clearmats()
+        
+        # Generate actions from animations
+        try:
+            bpy.ops.cleanup.generateactions()
+        except Exception as e:
+            self.report({'INFO'}, "No actions to generate")
+        
+        # Apply modifiers to selected objects
+        try:
+            bpy.ops.organize.applymodifiers()
+        except Exception as e:
+            self.report({'INFO'}, "No modifiers to apply")
+        
+        # Re-select all objects
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in sel_objs:
+            obj.select_set(True)
+        if original_active:
+            context.view_layer.objects.active = original_active
         
         try:
             bpy.ops.file.pack_all()

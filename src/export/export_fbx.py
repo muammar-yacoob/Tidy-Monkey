@@ -4,6 +4,8 @@ import os
 import platform
 import subprocess
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class EXPORT_OT_operator(bpy.types.Operator):
     bl_idname = "exportfbx.export"
     bl_label = "Export FBX"
@@ -33,23 +35,31 @@ class EXPORT_OT_operator(bpy.types.Operator):
             armature_children[arm] = [obj for obj in bpy.data.objects 
                                      if obj.parent == arm and obj.type == 'MESH']
         
-        bpy.ops.object.select_all(action='DESELECT')
+        # Store original selection state
+        original_active = context.view_layer.objects.active
         
-        # Clean unused textures
+        # Call cleanup operators once before export
         bpy.ops.cleanup.cleantextures()
+        bpy.ops.cleanup.clearmats()
         
-        # Clean unused materials for mesh objects
-        mesh_objs = [obj for obj in sel_objs if obj.type == 'MESH']
-        for obj in mesh_objs:
-            bpy.ops.object.select_all(action='DESELECT')
-            obj.select_set(True)
-            context.view_layer.objects.active = obj
-            bpy.ops.cleanup.clearmats()
+        # Generate actions from animations
+        try:
+            bpy.ops.cleanup.generateactions()
+        except Exception as e:
+            self.report({'INFO'}, "No actions to generate")
+        
+        # Apply modifiers to selected objects
+        try:
+            bpy.ops.organize.applymodifiers()
+        except Exception as e:
+            self.report({'INFO'}, "No modifiers to apply")
         
         # Re-select all objects
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
             obj.select_set(True)
+        if original_active:
+            context.view_layer.objects.active = original_active
         
         try:
             bpy.ops.file.pack_all()
@@ -183,7 +193,6 @@ class EXPORT_OT_operator(bpy.types.Operator):
         
         self.report({'INFO'}, f"{exported_count} objects were exported to {directory}")
         
-        # Cross-platform directory opening
         try:
             if platform.system() == "Windows":
                 os.startfile(directory)
