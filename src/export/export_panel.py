@@ -29,29 +29,50 @@ class EXPORT_PT_panel(bpy.types.Panel):
                     "keys": len(active_obj.data.shape_keys.key_blocks) if active_obj.data.shape_keys and active_obj.data.shape_keys.key_blocks else 0
                 }
                 
-                row = layout.row()
+                box = layout.box()
+                row = box.row()
+                row.alignment = 'CENTER'
                 row.label(text=active_obj.name + " details", icon='INFO')
                 
-                row = layout.row()
-                row.label(text=f"Verts: {mesh_data['verts']}")
-                row.label(text=f"Mats: {mesh_data['mats']}")
+                row = box.row()
+                vert_text = f"Verts: {mesh_data['verts']:,}"
+                if mesh_data['verts'] > 10000:
+                    row.label(text=vert_text, icon='ERROR')
+                else:
+                    row.label(text=vert_text)
+                    
+                mat_text = f"Mats: {mesh_data['mats']}"
+                if mesh_data['mats'] > 3:
+                    row.label(text=mat_text, icon='ERROR')
+                else:
+                    row.label(text=mat_text)
                 
-                row = layout.row()
-                row.label(text=f"Acts: {mesh_data['acts']}")
-                row.label(text=f"Keys: {mesh_data['keys']}")
+                row = box.row()
+                act_text = f"Acts: {mesh_data['acts']}"
+                if mesh_data['acts'] > 10:
+                    row.label(text=act_text, icon='ERROR')
+                else:
+                    row.label(text=act_text)
+                    
+                key_text = f"Keys: {mesh_data['keys']}"
+                if mesh_data['keys'] > 10:
+                    row.label(text=key_text, icon='ERROR')
+                else:
+                    row.label(text=key_text)
             elif len(context.selected_objects) > 1:
                 row = layout.row()
                 row.label(text="Multiple Objects", icon='INFO')
 
-            box = layout.box()
-            box.label(text="Export Options", icon='EXPORT')
+            row = layout.row()
+            row.alignment = 'CENTER'
+            row.label(text="EXPORT", icon='EXPORT')
             
-            row = box.row()
-            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({len(context.selected_objects)})", icon='EXPORT')
+            row = layout.row(align=True)
+            row.operator(EXPORT_OT_operator.bl_idname, text=f"FBX Export ({len(context.selected_objects)})", icon='MESH_CUBE')
             row.enabled = len(context.selected_objects) > 0
             
-            row = box.row()
-            row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({len(context.selected_objects)})", icon='FILE_3D')
+            row = layout.row(align=True)
+            row.operator(EXPORT_GLB_OT_operator.bl_idname, text=f"GLB Export ({len(context.selected_objects)})", icon='FACE_MAPS')
             row.enabled = len(context.selected_objects) > 0
             
         except Exception as e:
