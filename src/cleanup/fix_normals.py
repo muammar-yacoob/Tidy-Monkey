@@ -1,10 +1,11 @@
 import bpy
+import math
 from bpy.types import Operator
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
 class FIX_NORMALS_OT_operator(bpy.types.Operator):
-    bl_label = "Beautify"
+    bl_label = "Fix Mesh & Normals"
     bl_idname = "cleanup.fixnormals"
     bl_options = {'REGISTER', 'UNDO'}
     
@@ -17,15 +18,27 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
         
         for obj in selected_objects:
             context.view_layer.objects.active = obj
+            
             bpy.ops.object.mode_set(mode='EDIT')
             bpy.ops.mesh.select_all(action='SELECT')
+
+            # Make Normals Consistent
             bpy.ops.mesh.normals_make_consistent(inside=False)
-            bpy.ops.mesh.dissolve_degenerate(threshold=0.0001)
-            bpy.ops.mesh.delete_loose(use_verts=True, use_edges=True, use_faces=False)
+
+            # Cleanup Mesh
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.remove_doubles()
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.delete_loose()
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.tris_convert_to_quads()
+
+
+            
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.mesh.customdata_custom_splitnormals_clear()
             bpy.ops.object.shade_smooth()
-            bpy.ops.object.shade_auto_smooth(angle=1.0472)
+            bpy.ops.object.shade_auto_smooth(angle=math.radians(40))
             
             if 'Weld' not in obj.modifiers:
                 weld_mod = obj.modifiers.new(name='Weld', type='WELD')
@@ -55,7 +68,7 @@ class FIX_NORMALS_OT_operator(bpy.types.Operator):
         for obj in selected_objects:
             obj.select_set(True)
             
-        self.report({'INFO'}, f"Fixed normals on {len(selected_objects)} objects")
+        self.report({'INFO'}, f"Fixed mesh and normals on {len(selected_objects)} objects")
         return {"FINISHED"}
 
 classes = (FIX_NORMALS_OT_operator,) 
