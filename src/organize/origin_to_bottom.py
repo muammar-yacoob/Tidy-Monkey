@@ -1,5 +1,8 @@
 import bpy
+import bmesh
 from bpy.types import Operator
+
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
 class ORG_BOTTOMCENTER_OT_operator(bpy.types.Operator):
     bl_label = "Origin to Bottom Center"
