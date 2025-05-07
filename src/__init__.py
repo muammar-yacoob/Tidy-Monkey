@@ -80,6 +80,8 @@ except ImportError as e:
     print(f"ERROR importing support modules: {e}")
     traceback.print_exc()
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 _registered_classes = set()
 
 def print_module_classes():

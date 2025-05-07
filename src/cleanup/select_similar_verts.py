@@ -2,6 +2,8 @@ import bpy
 import bmesh
 from bpy.types import Operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class SELECT_SIMILAR_VERTS_OT_operator(bpy.types.Operator):
     bl_label = "Select Similar Vertices"
     bl_idname = "cleanup.selectsimilarverts"

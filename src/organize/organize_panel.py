@@ -14,6 +14,8 @@ from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
 from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class ORGANIZE_PT_panel(bpy.types.Panel):
     bl_label = "Organize"
     bl_idname = "ORGANIZE_PT_panel"

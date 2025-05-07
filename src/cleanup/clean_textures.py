@@ -1,6 +1,8 @@
 import bpy
 from bpy.types import Operator
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class CLEAN_TEX_OT_operator(bpy.types.Operator):
     bl_label = "Delete Unused Textures"
     bl_idname = "cleanup.cleantextures"

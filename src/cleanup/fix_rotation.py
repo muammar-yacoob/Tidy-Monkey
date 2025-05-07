@@ -3,6 +3,8 @@ from bpy.types import Operator
 import bmesh
 from mathutils import Vector
 
+# Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
+
 class FIXROTATION_OT_operator(bpy.types.Operator):
     bl_label = "Orient Face to Bottom"
     bl_idname = "cleanup.fixrotation"
