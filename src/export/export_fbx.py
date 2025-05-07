@@ -34,12 +34,27 @@ class EXPORT_OT_operator(bpy.types.Operator):
                                      if obj.parent == arm and obj.type == 'MESH']
         
         bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.outliner.orphans_purge()
+        
+        # Clean unused textures
+        bpy.ops.cleanup.cleantextures()
+        
+        # Clean unused materials for mesh objects
+        mesh_objs = [obj for obj in sel_objs if obj.type == 'MESH']
+        for obj in mesh_objs:
+            bpy.ops.object.select_all(action='DESELECT')
+            obj.select_set(True)
+            context.view_layer.objects.active = obj
+            bpy.ops.cleanup.clearmats()
+        
+        # Re-select all objects
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in sel_objs:
+            obj.select_set(True)
         
         try:
             bpy.ops.file.pack_all()
         except Exception as e:
-            self.report({'WARNING'}, f"Could not pack all textures\n{str(e)}")
+            self.report({'WARNING'}, f"Could not pack all textures: {str(e)}")
         
         try:
             bpy.ops.file.unpack_all(method='USE_LOCAL')

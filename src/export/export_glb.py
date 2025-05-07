@@ -3,6 +3,7 @@ from bpy.types import Operator
 import os
 import platform
 import subprocess
+from ..utils import clean_unused_materials, clean_unused_textures
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
@@ -35,8 +36,9 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             armature_children[arm] = [obj for obj in bpy.data.objects 
                                      if obj.parent == arm and obj.type == 'MESH']
             
-        bpy.ops.object.select_all(action='DESELECT')
-        bpy.ops.outliner.orphans_purge()
+        # Clean up all textures and materials first
+        clean_unused_textures()
+        clean_unused_materials(sel_objs)
         
         try:
             bpy.ops.file.pack_all()
@@ -76,7 +78,13 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                     filepath=obj_path,
                     export_format='GLB',
                     use_selection=True,
-                    export_apply=False
+                    use_visible=True,
+                    export_apply=True,
+                    export_yup=True,
+                    export_morph=True,
+                    export_morph_normal=True,
+                    export_morph_animation=True,
+                    export_animations=True
                 )
                 exported_count += 1
                 self.report({'INFO'}, f"Exported armature: {arm.name}")
@@ -104,7 +112,13 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                     filepath=obj_path,
                     export_format='GLB',
                     use_selection=True,
-                    export_apply=False
+                    use_visible=True,
+                    export_apply=True,
+                    export_yup=True,
+                    export_morph=True,
+                    export_morph_normal=True,
+                    export_morph_animation=True,
+                    export_animations=True
                 )
                 exported_count += 1
             except Exception as e:
