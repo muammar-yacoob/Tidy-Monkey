@@ -21,33 +21,30 @@ class TITLE_PT_panel(bpy.types.Panel):
             try: 
                 mode = context.active_object.mode
                 if mode == 'OBJECT':
-                    row = layout.row(align=True)
+                    row = layout.row()
                     row.alignment = 'LEFT'
-                    row.label(text="Mode:", icon='OBJECT_DATA')
-                    row.label(text=mode)
+                    row.label(text=f"Mode: {mode}", icon='OBJECT_DATA')
                 elif mode == 'EDIT':
-                    row = layout.row(align=True)
+                    row = layout.row()
                     row.alignment = 'LEFT'
-                    row.label(text="Mode:", icon='EDITMODE_HLT')
-                    edit_label = row.row()
-                    edit_label.alert = True
-                    edit_label.label(text=mode)
+                    edit_row = row.row()
+                    edit_row.alert = True
+                    edit_row.label(text=f"Mode: {mode}", icon='EDITMODE_HLT')
                 elif mode == 'POSE':
-                    row = layout.row(align=True)
+                    row = layout.row()
                     row.alignment = 'LEFT'
-                    row.label(text="Mode:", icon='ARMATURE_DATA')
-                    row.label(text=mode)
+                    row.label(text=f"Mode: {mode}", icon='ARMATURE_DATA')
                 else:
-                    row = layout.row(align=True)
+                    row = layout.row()
                     row.alignment = 'LEFT'
-                    row.label(text=f"Mode:{mode}")
+                    row.label(text=f"Mode: {mode}")
             except:
-                row = layout.row(align=True)
+                row = layout.row()
                 row.alignment = 'LEFT'
-                row.label(text="Mode:ERROR")
+                row.label(text="Mode: ERROR")
         else:
-            row = layout.row(align=True)
+            row = layout.row()
             row.alignment = 'LEFT'
-            row.label(text="Mode:N/A", icon='ERROR')
+            row.label(text="Mode: N/A", icon='ERROR')
 
 classes = (TITLE_PT_panel,) 

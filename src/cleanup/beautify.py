@@ -27,7 +27,7 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
 
             # Cleanup Mesh
             bpy.ops.mesh.select_all(action='SELECT')
-            bpy.ops.mesh.remove_doubles()
+            # bpy.ops.mesh.remove_doubles()
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.mesh.delete_loose()
             bpy.ops.mesh.select_all(action='SELECT')
@@ -42,6 +42,12 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
             bpy.ops.object.shade_smooth()
             bpy.ops.object.shade_auto_smooth(angle=math.radians(40))
             
+
+            # Add modifiers in proper order: Topology → Shape → Normals
+            if 'Weld' not in obj.modifiers:
+                weld_mod = obj.modifiers.new(name='Weld', type='WELD')
+                weld_mod.merge_threshold = 0.0001
+                
             if 'Bevel' not in obj.modifiers:
                 bevel_mod = obj.modifiers.new(name='Bevel', type='BEVEL')
                 bevel_mod.width = 0.01
@@ -56,32 +62,51 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
                 weighted_mod.weight = 100
                 weighted_mod.keep_sharp = True
                 weighted_mod.mode = 'FACE_AREA_WITH_ANGLE'
-            
-            if 'Weld' not in obj.modifiers:
-                weld_mod = obj.modifiers.new(name='Weld', type='WELD')
-                weld_mod.merge_threshold = 0.0001
         
         parent_objects = [obj for obj in selected_objects if obj.parent is None]
         
         def process_child_hierarchy(parent_obj, child_obj):
-            """Recursively process a child object and its children"""
             context.view_layer.objects.active = child_obj
             
             if child_obj.type == 'MESH':
-                if 'NormalTransfer' not in child_obj.modifiers:
-                    transfer_mod = child_obj.modifiers.new(name='NormalTransfer', type='DATA_TRANSFER')
-                    transfer_mod.object = parent_obj
-                    transfer_mod.use_loop_data = True
-                    transfer_mod.data_types_loops = {'CUSTOM_NORMAL'}
-                    transfer_mod.loop_mapping = 'NEAREST_POLYNOR'
-                    transfer_mod.mix_mode = 'REPLACE'
+                for pm in [m for m in parent_obj.modifiers if m.name != 'NormalTransfer' and m.name not in child_obj.modifiers]:
+                    cm = child_obj.modifiers.new(name=pm.name, type=pm.type)
                     
-                while child_obj.modifiers[0].name != 'NormalTransfer':
-                    bpy.ops.object.modifier_move_up(modifier='NormalTransfer')
+                    if pm.type == 'BEVEL':
+                        for prop in ['width', 'segments', 'limit_method', 'angle_limit', 'harden_normals', 'miter_outer']:
+                            if hasattr(pm, prop): setattr(cm, prop, getattr(pm, prop))
+                    elif pm.type == 'WEIGHTED_NORMAL':
+                        for prop in ['weight', 'keep_sharp', 'mode']:
+                            if hasattr(pm, prop): setattr(cm, prop, getattr(pm, prop))
+                    elif pm.type == 'WELD':
+                        for prop in ['merge_threshold']:
+                            if hasattr(pm, prop): setattr(cm, prop, getattr(pm, prop))
+                
+                if "SeamVerts" not in child_obj.vertex_groups:
+                    seam_group = child_obj.vertex_groups.new(name="SeamVerts")
+                    threshold = 0.02
+                    
+                    for v_idx, vert in enumerate(child_obj.data.vertices):
+                        world_pos = child_obj.matrix_world @ vert.co
+                        closest = parent_obj.closest_point_on_mesh(parent_obj.matrix_world.inverted() @ world_pos)
+                        
+                        if closest[0]:
+                            dist = (world_pos - (parent_obj.matrix_world @ closest[1])).length
+                            if dist < threshold:
+                                weight = 1.0 - (dist / threshold)
+                                if weight > 0: seam_group.add([v_idx], weight, 'REPLACE')
+                
+                if 'NormalTransfer' not in child_obj.modifiers:
+                    mod = child_obj.modifiers.new(name='NormalTransfer', type='DATA_TRANSFER')
+                    mod.object = parent_obj
+                    mod.use_loop_data = True
+                    mod.data_types_loops = {'CUSTOM_NORMAL'}
+                    mod.loop_mapping = 'NEAREST_POLYNOR'
+                    mod.mix_mode = 'REPLACE'
+                    mod.vertex_group = "SeamVerts"
             
-            for nested_child in bpy.data.objects:
-                if nested_child.parent == child_obj and nested_child.type == 'MESH':
-                    process_child_hierarchy(parent_obj, nested_child)
+            for nested_child in [obj for obj in bpy.data.objects if obj.parent == child_obj and obj.type == 'MESH']:
+                process_child_hierarchy(parent_obj, nested_child)
         
         for parent in parent_objects:
             for child in [obj for obj in bpy.data.objects if obj.parent == parent and obj.type == 'MESH']:

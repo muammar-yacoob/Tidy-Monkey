@@ -15,8 +15,7 @@
 <div align="center">
   <img src="./res/logo.png" width="300" alt="Tidy Monkey Logo">
 
-  <h3>A Productivity Tool for <br>
-  Blender 3D Artists and Game Devs</h3>
+  <h3>Productivity Tools for Blender 3D Artists</h3>
 
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](../../blob/main/LICENSE)
   [![Issues](https://img.shields.io/badge/issues-report-red?logo=github)](../../issues)
@@ -25,20 +24,43 @@
   [![Buy me a coffee](https://img.shields.io/badge/coffee-donate-yellow.svg)](https://buymeacoffee.com/spark88)
 </div>
 
-## ✨ Features
+## Features
 
-- Batch operations to select, clean up and organize objects in world space
-- Alternating edge loop selection for decimation
-- Easily change pivot point to mesh bottom or selected vertices/faces
-- Fix Rotation
-- Clean up unused Materials & Textures
-- One click FBX export objects
+- Topology cleanup and editing tools
+- Automated mesh decimation and simplification
+- Parent-child normal transfers
+- Export automation with texture packing
+- Material and texture management
 
-## 🚀 Installation
+## Tool Functions
 
-1. [Download the latest release](../../releases)
-2. Open Blender and drag the `TidyMonkey.zip` file into Blender workspace
-3. In Blender press `N` key to view the newly added sidebar
+### Object Mode
+
+- **Beautify**: Applies consistent normals, transforms tris to quads, adds bevel/weighted normal modifiers, and transfers normals data between parent-child objects.
+
+- **Clear Materials**: Removes all unused material from selected objects.
+
+- **Clean Textures**: Removes all unused image textures from the .blend file.
+
+- **Generate Actions**: Converts animation strips to individual action data blocks.
+
+- **Rename Bones**: Removes keywords like `mixamo` from bone names without breaking the animation.
+
+- **Export FBX/GLB**: Packs materials, textures and generates actions. Currently only supports FBX & GLB formats.
+
+### Edit Mode
+
+- **Checker Edge**: Selects alternating edges in connected loops with dissolve option for topology decimation.
+
+- **Clean Verts**: Identifies and dissolves vertices with exactly 2 edge connections.
+
+- **Fix Rotation**: Aligns selected elements' rotation to world or local coordinate space.
+
+## Installation
+
+1. [Download latest release](../../releases)
+2. Drag the `TidyMonkey.zip` file into Blender
+3. Press `N` key to view the sidebar panel
 
 <table>
 <tr>
@@ -57,8 +79,8 @@
 </tr>
 </table>
 
-## 🌱 Support & Contributions
+## Support
 
-- [Star ⭐ repo](../../stargazers) and I power up like Mario 🍄 
-- Devs run on [coffee](https://buymeacoffee.com/spark88) to fuel more dev tools
-- [Contributions](../../fork) are welcome
+- [⭐ Star the repo](../../stargazers) to support development
+- [☕ Buy me a coffee](https://buymeacoffee.com/spark88) to fuel more tools
+- [🔧 Contributions welcome](../../fork)

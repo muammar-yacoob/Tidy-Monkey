@@ -29,81 +29,45 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
         selection_count = len(context.selected_objects)
 
         try:
-            if in_edit_mode:
-                row = layout.row()
-                row.operator("organize.origintoselected", icon='PIVOT_CURSOR')
-                
-                obj = context.edit_object
-                if obj and obj.type == 'MESH':
-                    mesh = bmesh.from_edit_mesh(obj.data)
-                    row.enabled = any(v.select for v in mesh.verts)
-                else:
-                    row.enabled = False
-            
-            if not in_edit_mode:
-                row = layout.row()
-                if selection_count > 1:
-                    row.operator("organize.aligntoview", text=f"Align to View ({selection_count})", icon='ORIENTATION_GIMBAL')
-                else:
-                    row.operator("organize.aligntoview", text="Align to View", icon='ORIENTATION_GIMBAL')
-                row.enabled = in_object_mode and selection_count > 0
-            
-            if in_edit_mode:
+            # OBJECT MODE SECTION
+            if in_object_mode:
+                # Origin tools group
                 box = layout.box()
-                box.label(text="Selection Tools")
+                # box.label(text="Origin Tools")
                 
                 row = box.row()
-                row.operator("organize.selectbottom", text="Select Bottom", icon='TRIA_DOWN_BAR')
-                
-                row = box.row()
-                op = row.operator("organize.selectmaterial", icon='RESTRICT_SELECT_OFF')
-                
-                if context.tool_settings.mesh_select_mode[2]:  # Face select mode
-                    obj = context.edit_object
-                    if obj and obj.type == 'MESH':
-                        mesh = bmesh.from_edit_mesh(obj.data)
-                        row.enabled = any(f.select for f in mesh.faces)
-                    else:
-                        row.enabled = False
-                else:
-                    row.enabled = False
-                
-                row = box.row()
-                row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
-                
-                row = box.row()
-                row.operator("organize.selectuv", icon='RESTRICT_SELECT_OFF')
-                
-                row = box.row()
-                op = row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
-                
-                if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
-                    obj = context.edit_object
-                    if obj and obj.type == 'MESH':
-                        mesh = bmesh.from_edit_mesh(obj.data)
-                        selected_edges = sum(1 for e in mesh.edges if e.select)
-                        row.enabled = selected_edges > 0 and selected_edges % 8 == 0
-                    else:
-                        row.enabled = False
-                else:
-                    row.enabled = False
-            
-            if not in_edit_mode and in_object_mode:
-                row = layout.row()
-                
                 if selection_count > 1:
                     row.operator("organize.centerorigins", text=f"Center Origins ({selection_count})", icon='ANCHOR_CENTER')
                 else:
                     row.operator("organize.centerorigins", text="Center Origin", icon='ANCHOR_CENTER')
                 row.enabled = selection_count > 0
                 
-                row = layout.row()
+                row = box.row()
                 if selection_count > 1:
                     row.operator("organize.origintobottomcenter", text=f"Origin to Bottom ({selection_count})", icon='ANCHOR_BOTTOM')
                 else:
                     row.operator("organize.origintobottomcenter", text="Origin to Bottom", icon='ANCHOR_BOTTOM')
                 row.enabled = selection_count > 0
                 
+                # Alignment tools group
+                box = layout.box()
+                # box.label(text="Alignment Tools")
+                
+                row = box.row()
+                if selection_count > 1:
+                    row.operator("organize.aligntoview", text=f"Align to View ({selection_count})", icon='ORIENTATION_GIMBAL')
+                else:
+                    row.operator("organize.aligntoview", text="Align to View", icon='ORIENTATION_GIMBAL')
+                row.enabled = selection_count > 0
+                
+                col = box.column(align=True)
+                row = col.row(align=True)
+                row.operator("organize.alignobjects", text="X").algn = 'X'
+                row.operator("organize.alignobjects", text="Y").algn = 'Y'
+                row.operator("organize.alignobjects", text="Z").algn = 'Z'
+                row.enabled = selection_count > 1
+                
+                # Selection and Modifiers tools
                 row = layout.row()
                 row.operator("organize.selectsimilarmesh", icon='MOD_MESHDEFORM')
                 row.enabled = context.active_object.type == 'MESH' and selection_count == 1
@@ -121,13 +85,61 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 else:
                     row.operator("organize.applymodifiers", text="Apply Modifiers", icon='MODIFIER_DATA')
                 row.enabled = has_modifiers
+            
+            # EDIT MODE SECTION
+            if in_edit_mode:
+                # Origin tool for edit mode
+                row = layout.row()
+                row.operator("organize.origintoselected", icon='PIVOT_CURSOR')
                 
-                col = layout.column(align=True)
-                row = col.row(align=True)
-                row.operator("organize.alignobjects", text="X").algn = 'X'
-                row.operator("organize.alignobjects", text="Y").algn = 'Y'
-                row.operator("organize.alignobjects", text="Z").algn = 'Z'
-                row.enabled = selection_count > 1
+                obj = context.edit_object
+                if obj and obj.type == 'MESH':
+                    mesh = bmesh.from_edit_mesh(obj.data)
+                    row.enabled = any(v.select for v in mesh.verts)
+                else:
+                    row.enabled = False
+                
+                # Selection Tools box
+                box = layout.box()
+                # box.label(text="Selection Tools")
+                
+                # Geometry-based selections
+                row = box.row()
+                row.operator("organize.selectbottom", text="Select Bottom", icon='TRIA_DOWN_BAR')
+                
+                row = box.row()
+                row.operator("organize.selectperimeter", icon='RESTRICT_SELECT_OFF')
+                
+                # Topology-based selections
+                if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
+                    row = box.row()
+                    op = row.operator("organize.checkeredge", icon='ALIGN_JUSTIFY')
+                    
+                    obj = context.edit_object
+                    if obj and obj.type == 'MESH':
+                        mesh = bmesh.from_edit_mesh(obj.data)
+                        selected_edges = sum(1 for e in mesh.edges if e.select)
+                        row.enabled = selected_edges > 0 and selected_edges % 8 == 0
+                    else:
+                        row.enabled = False
+                
+                # Attribute-based selections
+                row = box.row()
+                row.operator("organize.selectuv", icon='RESTRICT_SELECT_OFF')
+                
+                row = box.row()
+                op = row.operator("organize.selectmaterial", icon='RESTRICT_SELECT_OFF')
+                
+                if context.tool_settings.mesh_select_mode[2]:  # Face select mode
+                    obj = context.edit_object
+                    if obj and obj.type == 'MESH':
+                        mesh = bmesh.from_edit_mesh(obj.data)
+                        row.enabled = any(f.select for f in mesh.faces)
+                    else:
+                        row.enabled = False
+                else:
+                    row.enabled = False
+                
         except Exception as e:
             print(f"ERROR in ORGANIZE_PT_panel.draw(): {str(e)}")
             layout.label(text=f"Error: {str(e)}")

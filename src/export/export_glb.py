@@ -73,6 +73,13 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         context.scene.frame_set(context.scene.frame_start)
         
         exported_count = 0
+        
+        def is_armature_child(obj, arm):
+            parent = obj.parent
+            while parent:
+                if parent == arm: return True
+                parent = parent.parent
+            return False
             
         for arm in armatures:
             children = armature_children[arm]
@@ -84,6 +91,9 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             arm.select_set(True)
             for child in children:
                 child.select_set(True)
+                
+            for obj in bpy.data.objects:
+                if is_armature_child(obj, arm): obj.select_set(True)
                 
             context.view_layer.objects.active = arm
             
@@ -113,6 +123,15 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         for obj in remaining_objs:
             bpy.ops.object.select_all(action='DESELECT')
             obj.select_set(True)
+            
+            def select_children_recursive(parent_obj):
+                for child in bpy.data.objects:
+                    if child.parent == parent_obj:
+                        child.select_set(True)
+                        select_children_recursive(child)
+            
+            select_children_recursive(obj)
+            
             context.view_layer.objects.active = obj
             
             has_morph = False

@@ -41,15 +41,11 @@ class EXPORT_OT_operator(bpy.types.Operator):
         bpy.ops.cleanup.cleantextures()
         bpy.ops.cleanup.clearmats()
         
-        try:
-            bpy.ops.cleanup.generateactions()
-        except Exception as e:
-            self.report({'INFO'}, "No actions to generate")
+        try: bpy.ops.cleanup.generateactions()
+        except Exception as e: self.report({'INFO'}, "No actions to generate")
         
-        try:
-            bpy.ops.organize.applymodifiers()
-        except Exception as e:
-            self.report({'INFO'}, "No modifiers to apply")
+        # try: bpy.ops.organize.applymodifiers()
+        # except Exception as e: self.report({'INFO'}, "No modifiers to apply")
         
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
@@ -57,21 +53,27 @@ class EXPORT_OT_operator(bpy.types.Operator):
         if original_active:
             context.view_layer.objects.active = original_active
         
-        try:
-            bpy.ops.file.pack_all()
-        except Exception as e:
-            self.report({'WARNING'}, f"Could not pack all textures: {str(e)}")
+        try: bpy.ops.file.pack_all()
+        except Exception as e: self.report({'WARNING'}, f"Could not pack all textures: {str(e)}")
         
         try:
             bpy.ops.file.unpack_all(method='USE_LOCAL')
             bpy.ops.file.make_paths_absolute()
-        except Exception as e:
-            self.report({'WARNING'}, "Error processing textures")
+        except Exception as e: self.report({'WARNING'}, "Error processing textures")
         
         current_frame = context.scene.frame_current
         context.scene.frame_set(context.scene.frame_start)
         
         exported_count = 0
+        
+        # Helper function to check if an object is a child of an armature in any parent level
+        def is_armature_child(obj, arm):
+            parent = obj.parent
+            while parent:
+                if parent == arm:
+                    return True
+                parent = parent.parent
+            return False
         
         for arm in armatures:
             children = armature_children[arm]
@@ -83,6 +85,11 @@ class EXPORT_OT_operator(bpy.types.Operator):
             arm.select_set(True)
             for child in children:
                 child.select_set(True)
+                
+            # Also select all nested children
+            for obj in bpy.data.objects:
+                if is_armature_child(obj, arm):
+                    obj.select_set(True)
                 
             context.view_layer.objects.active = arm
             
@@ -122,8 +129,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                 )
                 exported_count += 1
                 self.report({'INFO'}, f"Exported armature: {arm.name}")
-            except Exception as e:
-                self.report({'ERROR'}, f"Could not export armature {arm.name}\n{str(e)}")
+            except Exception as e: self.report({'ERROR'}, f"Could not export armature {arm.name}\n{str(e)}")
         
         remaining_objs = [obj for obj in sel_objs if obj not in armatures and 
                          obj.parent not in armatures]
@@ -131,6 +137,16 @@ class EXPORT_OT_operator(bpy.types.Operator):
         for obj in remaining_objs:
             bpy.ops.object.select_all(action='DESELECT')
             obj.select_set(True)
+            
+            # Select all child objects recursively
+            def select_children_recursive(parent_obj):
+                for child in bpy.data.objects:
+                    if child.parent == parent_obj:
+                        child.select_set(True)
+                        select_children_recursive(child)
+            
+            select_children_recursive(obj)
+            
             context.view_layer.objects.active = obj
             
             has_animation = False
@@ -154,7 +170,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     apply_scale_options='FBX_SCALE_NONE',
                     apply_unit_scale=True,
                     bake_space_transform=False,
-                    object_types={'MESH'},
+                    object_types={'MESH', 'EMPTY', 'CAMERA', 'LIGHT'},
                     use_mesh_modifiers=True,
                     mesh_smooth_type='FACE',
                     use_mesh_edges=False,
@@ -178,8 +194,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     axis_up='Y',
                 )
                 exported_count += 1
-            except Exception as e:
-                self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
+            except Exception as e: self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
         
         context.scene.frame_set(current_frame)
         
@@ -198,8 +213,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                 subprocess.run(["open", directory])
             else:
                 subprocess.run(["xdg-open", directory])
-        except Exception as e:
-            self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
+        except Exception as e: self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
             
         return {'FINISHED'}
 
