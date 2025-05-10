@@ -42,8 +42,10 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             
             if not in_edit_mode:
                 row = layout.row()
-                align_label = "Align Object to View" if selection_count == 1 else f"Align {selection_count} Objects to View"
-                row.operator("organize.aligntoview", text=align_label, icon='ORIENTATION_GIMBAL')
+                if selection_count > 1:
+                    row.operator("organize.aligntoview", text=f"Align to View ({selection_count})", icon='ORIENTATION_GIMBAL')
+                else:
+                    row.operator("organize.aligntoview", text="Align to View", icon='ORIENTATION_GIMBAL')
                 row.enabled = in_object_mode and selection_count > 0
             
             if in_edit_mode:
@@ -89,15 +91,17 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if not in_edit_mode and in_object_mode:
                 row = layout.row()
                 
-                center_label = "Center Origin" if selection_count == 1 else f"Center Origins of {selection_count}"
-                row.operator("organize.centerorigins", 
-                            text=center_label, 
-                            icon='ANCHOR_CENTER')
+                if selection_count > 1:
+                    row.operator("organize.centerorigins", text=f"Center Origins ({selection_count})", icon='ANCHOR_CENTER')
+                else:
+                    row.operator("organize.centerorigins", text="Center Origin", icon='ANCHOR_CENTER')
                 row.enabled = selection_count > 0
                 
                 row = layout.row()
-                bottom_label = "Origin to Bottom" if selection_count == 1 else f"Origin to Bottom for {selection_count}"
-                row.operator("organize.origintobottomcenter", text=bottom_label, icon='ANCHOR_BOTTOM')
+                if selection_count > 1:
+                    row.operator("organize.origintobottomcenter", text=f"Origin to Bottom ({selection_count})", icon='ANCHOR_BOTTOM')
+                else:
+                    row.operator("organize.origintobottomcenter", text="Origin to Bottom", icon='ANCHOR_BOTTOM')
                 row.enabled = selection_count > 0
                 
                 row = layout.row()
@@ -112,9 +116,10 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                         has_modifiers = True
                         break
                 
-                modifier_label = "Apply Modifiers" if selection_count == 1 else f"Apply Modifiers for {selection_count}"
-                row.operator("organize.applymodifiers", icon='MODIFIER_DATA', 
-                           text=modifier_label)
+                if selection_count > 1:
+                    row.operator("organize.applymodifiers", text=f"Apply Modifiers ({selection_count})", icon='MODIFIER_DATA')
+                else:
+                    row.operator("organize.applymodifiers", text="Apply Modifiers", icon='MODIFIER_DATA')
                 row.enabled = has_modifiers
                 
                 col = layout.column(align=True)

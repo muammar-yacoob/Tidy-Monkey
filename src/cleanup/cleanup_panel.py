@@ -8,7 +8,7 @@ from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
-from ..cleanup.select_similar_verts import SELECT_SIMILAR_VERTS_OT_operator
+from .clean_verts import SELECT_SIMILAR_VERTS_OT_operator
 from ..cleanup.fix_rotation import FIXROTATION_OT_operator
 from ..base_panel import TITLE_PT_panel
 
@@ -31,20 +31,19 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         
         try:
             if not in_edit_mode:
-                # Compose text messages based on selection count
-                fix_normals_text = "Beautify"
-                clear_mats_text = "Clear Materials"
-                if selection_count > 1:
-                    fix_normals_text = f"Beautify ({selection_count})"
-                    clear_mats_text = f"Clear Materials ({selection_count})"
-                
                 # Create the operator rows
                 row = layout.row()
-                row.operator("cleanup.beautify", text=fix_normals_text, icon='SHADERFX')
+                if selection_count > 1:
+                    row.operator("cleanup.beautify", text=f"Beautify ({selection_count})", icon='SHADERFX')
+                else:
+                    row.operator("cleanup.beautify", text="Beautify", icon='SHADERFX')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()
-                row.operator("cleanup.clearmats", text=clear_mats_text, icon='NODE_MATERIAL')
+                if selection_count > 1:
+                    row.operator("cleanup.clearmats", text=f"Clear Materials ({selection_count})", icon='NODE_MATERIAL')
+                else:
+                    row.operator("cleanup.clearmats", text="Clear Materials", icon='NODE_MATERIAL')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
                 
                 row = layout.row()
@@ -82,15 +81,11 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("cleanup.selectsimilarverts", icon='STICKY_UVS_DISABLE')
                 
-                # Only enable when exactly one vertex is selected
-                if context.tool_settings.mesh_select_mode[0]:  # Vertex select mode
-                    obj = context.edit_object
-                    if obj and obj.type == 'MESH':
-                        mesh = bmesh.from_edit_mesh(obj.data)
-                        selected_verts = [v for v in mesh.verts if v.select]
-                        row.enabled = len(selected_verts) == 1
-                    else:
-                        row.enabled = False
+                row = layout.row()
+                row.operator("organize.checkeredge", icon='STICKY_UVS_DISABLE')
+                if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
+                    mesh = bmesh.from_edit_mesh(context.edit_object.data)
+                    row.enabled = len([e for e in mesh.edges if e.select]) % 2 == 0 and len([e for e in mesh.edges if e.select]) >= 8
                 else:
                     row.enabled = False
             

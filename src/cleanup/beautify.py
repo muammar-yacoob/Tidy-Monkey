@@ -33,7 +33,7 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.mesh.tris_convert_to_quads()
 
-
+            bpy.ops.cleanup.selectsimilarverts()
             
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.mesh.customdata_custom_splitnormals_clear()
@@ -44,27 +44,38 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
                 weld_mod = obj.modifiers.new(name='Weld', type='WELD')
                 weld_mod.merge_threshold = 0.0001
         
+        # Process parent objects and their child hierarchies
         parent_objects = [obj for obj in selected_objects if obj.parent is None]
         
-        for parent in parent_objects:
-            child_objects = [obj for obj in selected_objects if obj.parent == parent]
+        def process_child_hierarchy(parent_obj, child_obj):
+            """Recursively process a child object and its children"""
+            context.view_layer.objects.active = child_obj
             
-            if not child_objects:
-                continue
-                
-            for child in child_objects:
-                context.view_layer.objects.active = child
-                
-                if 'NormalTransfer' not in child.modifiers:
-                    transfer_mod = child.modifiers.new(name='NormalTransfer', type='DATA_TRANSFER')
-                    transfer_mod.object = parent
+            if child_obj.type == 'MESH':
+                # Add data transfer modifier if it doesn't exist
+                if 'NormalTransfer' not in child_obj.modifiers:
+                    transfer_mod = child_obj.modifiers.new(name='NormalTransfer', type='DATA_TRANSFER')
+                    transfer_mod.object = parent_obj
                     transfer_mod.use_loop_data = True
                     transfer_mod.data_types_loops = {'CUSTOM_NORMAL'}
                     transfer_mod.loop_mapping = 'NEAREST_POLYNOR'
-                
-                while child.modifiers[0].name != 'NormalTransfer':
+                    transfer_mod.mix_mode = 'REPLACE'
+                    
+                # Move modifier to the top
+                while child_obj.modifiers[0].name != 'NormalTransfer':
                     bpy.ops.object.modifier_move_up(modifier='NormalTransfer')
+            
+            # Process child objects of this child (nested hierarchy)
+            for nested_child in bpy.data.objects:
+                if nested_child.parent == child_obj and nested_child.type == 'MESH':
+                    process_child_hierarchy(parent_obj, nested_child)
         
+        for parent in parent_objects:
+            # Direct children
+            for child in [obj for obj in bpy.data.objects if obj.parent == parent and obj.type == 'MESH']:
+                process_child_hierarchy(parent, child)
+        
+        # Reselect all objects
         for obj in selected_objects:
             obj.select_set(True)
             
