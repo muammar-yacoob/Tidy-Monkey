@@ -42,6 +42,12 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
             bpy.ops.object.shade_smooth()
             bpy.ops.object.shade_auto_smooth(angle=math.radians(40))
             
+
+            # Add modifiers in proper order: Topology → Shape → Normals
+            if 'Weld' not in obj.modifiers:
+                weld_mod = obj.modifiers.new(name='Weld', type='WELD')
+                weld_mod.merge_threshold = 0.0001
+                
             if 'Bevel' not in obj.modifiers:
                 bevel_mod = obj.modifiers.new(name='Bevel', type='BEVEL')
                 bevel_mod.width = 0.01
@@ -56,10 +62,6 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
                 weighted_mod.weight = 100
                 weighted_mod.keep_sharp = True
                 weighted_mod.mode = 'FACE_AREA_WITH_ANGLE'
-            
-            if 'Weld' not in obj.modifiers:
-                weld_mod = obj.modifiers.new(name='Weld', type='WELD')
-                weld_mod.merge_threshold = 0.0001
         
         parent_objects = [obj for obj in selected_objects if obj.parent is None]
         
@@ -67,12 +69,23 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
             context.view_layer.objects.active = child_obj
             
             if child_obj.type == 'MESH':
-                # Create vertex group for seam vertices
+                for pm in [m for m in parent_obj.modifiers if m.name != 'NormalTransfer' and m.name not in child_obj.modifiers]:
+                    cm = child_obj.modifiers.new(name=pm.name, type=pm.type)
+                    
+                    if pm.type == 'BEVEL':
+                        for prop in ['width', 'segments', 'limit_method', 'angle_limit', 'harden_normals', 'miter_outer']:
+                            if hasattr(pm, prop): setattr(cm, prop, getattr(pm, prop))
+                    elif pm.type == 'WEIGHTED_NORMAL':
+                        for prop in ['weight', 'keep_sharp', 'mode']:
+                            if hasattr(pm, prop): setattr(cm, prop, getattr(pm, prop))
+                    elif pm.type == 'WELD':
+                        for prop in ['merge_threshold']:
+                            if hasattr(pm, prop): setattr(cm, prop, getattr(pm, prop))
+                
                 if "SeamVerts" not in child_obj.vertex_groups:
                     seam_group = child_obj.vertex_groups.new(name="SeamVerts")
                     threshold = 0.02
                     
-                    # Select vertices near parent
                     for v_idx, vert in enumerate(child_obj.data.vertices):
                         world_pos = child_obj.matrix_world @ vert.co
                         closest = parent_obj.closest_point_on_mesh(parent_obj.matrix_world.inverted() @ world_pos)
@@ -83,7 +96,6 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
                                 weight = 1.0 - (dist / threshold)
                                 if weight > 0: seam_group.add([v_idx], weight, 'REPLACE')
                 
-                # Add normal transfer modifier
                 if 'NormalTransfer' not in child_obj.modifiers:
                     mod = child_obj.modifiers.new(name='NormalTransfer', type='DATA_TRANSFER')
                     mod.object = parent_obj
@@ -92,46 +104,14 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
                     mod.loop_mapping = 'NEAREST_POLYNOR'
                     mod.mix_mode = 'REPLACE'
                     mod.vertex_group = "SeamVerts"
-                    
-                    # Move to top
-                    while child_obj.modifiers[0].name != 'NormalTransfer':
-                        bpy.ops.object.modifier_move_up(modifier='NormalTransfer')
-                
-                # Copy all other modifiers from parent to child
-                for parent_mod in parent_obj.modifiers:
-                    # Skip NormalTransfer since we handle it separately
-                    if parent_mod.name != 'NormalTransfer' and parent_mod.name not in child_obj.modifiers:
-                        # Copy modifier settings
-                        if parent_mod.type == 'BEVEL':
-                            mod = child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
-                            mod.width = parent_mod.width
-                            mod.segments = parent_mod.segments
-                            mod.limit_method = parent_mod.limit_method
-                            mod.angle_limit = parent_mod.angle_limit
-                            mod.harden_normals = parent_mod.harden_normals
-                            mod.miter_outer = parent_mod.miter_outer
-                        elif parent_mod.type == 'WEIGHTED_NORMAL':
-                            mod = child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
-                            mod.weight = parent_mod.weight
-                            mod.keep_sharp = parent_mod.keep_sharp
-                            mod.mode = parent_mod.mode
-                        elif parent_mod.type == 'WELD':
-                            mod = child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
-                            mod.merge_threshold = parent_mod.merge_threshold
-                        else:
-                            # For other modifier types
-                            child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
             
-            # Process nested children
             for nested_child in [obj for obj in bpy.data.objects if obj.parent == child_obj and obj.type == 'MESH']:
                 process_child_hierarchy(parent_obj, nested_child)
         
-        # Process children of parent objects
         for parent in parent_objects:
             for child in [obj for obj in bpy.data.objects if obj.parent == parent and obj.type == 'MESH']:
                 process_child_hierarchy(parent, child)
         
-        # Reselect objects
         for obj in selected_objects:
             obj.select_set(True)
             
