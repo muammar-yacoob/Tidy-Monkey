@@ -10,35 +10,25 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     bl_description = "Deselect every other edge in the current selection"
     bl_options = {'REGISTER', 'UNDO'}
     
-    dissolve: bpy.props.BoolProperty(
-        name="Dissolve Edges",
-        description="Dissolve selected edges after operation",
-        default=False
-    )
+    dissolve: bpy.props.BoolProperty(name="Dissolve Edges", description="Dissolve selected edges", default=True) # type: ignore
     
     @classmethod
-    def poll(cls, context):
-        return context.mode == 'EDIT_MESH'
+    def poll(cls, context): return context.mode == 'EDIT_MESH'
     
     def execute(self, context):
         obj = context.edit_object
-        if not obj or obj.type != 'MESH':
-            return {'CANCELLED'}
+        if not obj or obj.type != 'MESH': return {'CANCELLED'}
             
         bm = bmesh.from_edit_mesh(obj.data)
-        selected_edges = [e for e in bm.edges if e.select]
+        edges = [e for e in bm.edges if e.select]
         
-        if not selected_edges:
-            return {'CANCELLED'}
+        if not edges: return {'CANCELLED'}
         
-        selected_edges.sort(key=lambda e: e.index)
+        edges.sort(key=lambda e: e.index)
         
-        for i, edge in enumerate(selected_edges): 
-            if i % 2 == 1:
-                edge.select = False
+        for i, e in enumerate(edges): e.select = i % 2 == 0
         
-        if self.dissolve:
-            bpy.ops.mesh.dissolve_edges()
+        if self.dissolve: bpy.ops.mesh.dissolve_edges()
         
         bmesh.update_edit_mesh(obj.data)
         return {'FINISHED'}
