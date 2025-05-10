@@ -33,7 +33,7 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.mesh.tris_convert_to_quads()
 
-            bpy.ops.cleanup.selectsimilarverts()
+            bpy.ops.cleanup.cleanverts()
             
             bpy.ops.object.mode_set(mode='OBJECT')
             bpy.ops.mesh.customdata_custom_splitnormals_clear()

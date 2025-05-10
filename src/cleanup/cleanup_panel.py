@@ -8,7 +8,7 @@ from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
-from .clean_verts import SELECT_SIMILAR_VERTS_OT_operator
+from .clean_verts import CLEAN_VERTS_OT_operator
 from ..cleanup.fix_rotation import FIXROTATION_OT_operator
 from ..base_panel import TITLE_PT_panel
 
@@ -79,21 +79,12 @@ class CLEANUP_PT_panel(bpy.types.Panel):
             
             if in_edit_mesh:
                 row = layout.row()
-                row.operator("cleanup.selectsimilarverts", icon='STICKY_UVS_DISABLE')
+                row.operator("cleanup.cleanverts", icon='STICKY_UVS_DISABLE')
                 
-                row = layout.row()
-                row.operator("organize.checkeredge", icon='STICKY_UVS_DISABLE')
-                if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
-                    mesh = bmesh.from_edit_mesh(context.edit_object.data)
-                    row.enabled = len([e for e in mesh.edges if e.select]) % 2 == 0 and len([e for e in mesh.edges if e.select]) >= 8
-                else:
-                    row.enabled = False
-            
             if in_edit_mesh or in_edit_armature:
                 row = layout.row()
                 op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
                 
-                # Only enable the button if something is selected
                 if in_edit_mesh:
                     obj = context.edit_object
                     if obj and obj.type == 'MESH':
