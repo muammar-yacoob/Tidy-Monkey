@@ -31,13 +31,12 @@ class CLEANUP_PT_panel(bpy.types.Panel):
         
         try:
             if not in_edit_mode:
-                # Create the operator rows
+                selected_mesh_count = len([obj for obj in context.selected_objects if obj.type == 'MESH'])
+                
                 row = layout.row()
-                if selection_count > 1:
-                    row.operator("cleanup.beautify", text=f"Beautify ({selection_count})", icon='SHADERFX')
-                else:
-                    row.operator("cleanup.beautify", text="Beautify", icon='SHADERFX')
-                row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
+                if selected_mesh_count > 1: row.operator("cleanup.beautify", text=f"Beautify ({selected_mesh_count})", icon='SHADERFX')
+                else: row.operator("cleanup.beautify", text="Beautify", icon='SHADERFX')
+                row.enabled = selected_mesh_count > 0
                 
                 row = layout.row()
                 if selection_count > 1:

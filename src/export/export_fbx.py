@@ -41,15 +41,11 @@ class EXPORT_OT_operator(bpy.types.Operator):
         bpy.ops.cleanup.cleantextures()
         bpy.ops.cleanup.clearmats()
         
-        try:
-            bpy.ops.cleanup.generateactions()
-        except Exception as e:
-            self.report({'INFO'}, "No actions to generate")
+        try: bpy.ops.cleanup.generateactions()
+        except Exception as e: self.report({'INFO'}, "No actions to generate")
         
-        try:
-            bpy.ops.organize.applymodifiers()
-        except Exception as e:
-            self.report({'INFO'}, "No modifiers to apply")
+        # try: bpy.ops.organize.applymodifiers()
+        # except Exception as e: self.report({'INFO'}, "No modifiers to apply")
         
         bpy.ops.object.select_all(action='DESELECT')
         for obj in sel_objs:
@@ -57,16 +53,13 @@ class EXPORT_OT_operator(bpy.types.Operator):
         if original_active:
             context.view_layer.objects.active = original_active
         
-        try:
-            bpy.ops.file.pack_all()
-        except Exception as e:
-            self.report({'WARNING'}, f"Could not pack all textures: {str(e)}")
+        try: bpy.ops.file.pack_all()
+        except Exception as e: self.report({'WARNING'}, f"Could not pack all textures: {str(e)}")
         
         try:
             bpy.ops.file.unpack_all(method='USE_LOCAL')
             bpy.ops.file.make_paths_absolute()
-        except Exception as e:
-            self.report({'WARNING'}, "Error processing textures")
+        except Exception as e: self.report({'WARNING'}, "Error processing textures")
         
         current_frame = context.scene.frame_current
         context.scene.frame_set(context.scene.frame_start)
@@ -122,8 +115,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                 )
                 exported_count += 1
                 self.report({'INFO'}, f"Exported armature: {arm.name}")
-            except Exception as e:
-                self.report({'ERROR'}, f"Could not export armature {arm.name}\n{str(e)}")
+            except Exception as e: self.report({'ERROR'}, f"Could not export armature {arm.name}\n{str(e)}")
         
         remaining_objs = [obj for obj in sel_objs if obj not in armatures and 
                          obj.parent not in armatures]
@@ -178,8 +170,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     axis_up='Y',
                 )
                 exported_count += 1
-            except Exception as e:
-                self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
+            except Exception as e: self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
         
         context.scene.frame_set(current_frame)
         
@@ -198,8 +189,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                 subprocess.run(["open", directory])
             else:
                 subprocess.run(["xdg-open", directory])
-        except Exception as e:
-            self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
+        except Exception as e: self.report({'WARNING'}, f"Could not open export directory: {str(e)}")
             
         return {'FINISHED'}
 
