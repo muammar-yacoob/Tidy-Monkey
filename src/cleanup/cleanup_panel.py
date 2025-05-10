@@ -79,7 +79,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
             
             if in_edit_mesh:
                 edit_box = layout.box()
-                edit_box.label(text="Edit Mode Tools")
+                # edit_box.label(text=  "Edit Mode Tools")
                 
                 row = edit_box.row()
                 row.operator("cleanup.cleanverts", icon='STICKY_UVS_DISABLE')
