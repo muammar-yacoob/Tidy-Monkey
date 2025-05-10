@@ -18,41 +18,50 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     def execute(self, context):
         obj = context.edit_object
         if not obj or obj.type != 'MESH': return {'CANCELLED'}
-            
-        # Work in object mode for reliable edge access
-        bpy.ops.object.mode_set(mode='OBJECT')
+              
+        # Start in edit mode with BMesh
+        bm = bmesh.from_edit_mesh(obj.data)
+        initial_selected = [e for e in bm.edges if e.select]
+        if not initial_selected: return {'CANCELLED'}
         
-        # Get initially selected edges by index
-        initial_edges = [i for i, e in enumerate(obj.data.edges) if e.select]
-        if not initial_edges: return {'CANCELLED'}
+        # Sort edges for consistent results
+        initial_selected.sort(key=lambda e: e.index)
         
-        # Store all unselected edges to select later
-        unselected_edges = [i for i, e in enumerate(obj.data.edges) if not e.select]
+        # Store vertices of alternating edges to keep
+        verts_to_keep = set()
+        for i, edge in enumerate(initial_selected):
+            if i % 2 == 1:  # Store odd-indexed edges (the ones we deselect)
+                v1 = tuple(round(float(c), 4) for c in edge.verts[0].co)
+                v2 = tuple(round(float(c), 4) for c in edge.verts[1].co)
+                verts_to_keep.add(v1)
+                verts_to_keep.add(v2)
         
-        # Deselect every other edge
-        for i, idx in enumerate(initial_edges):
-            obj.data.edges[idx].select = i % 2 == 0
-            
-        # Apply changes and dissolve
-        bpy.ops.object.mode_set(mode='EDIT')
-        bpy.ops.mesh.select_mode(type='EDGE')
+        # Apply checker pattern
+        for i, edge in enumerate(initial_selected):
+            edge.select = i % 2 == 0  # Keep even-indexed edges selected
         
-        # Deselected edges from initial selection - to select after dissolve
-        odd_indices = [initial_edges[i] for i in range(len(initial_edges)) if i % 2 == 1]
+        # Update the mesh
+        bmesh.update_edit_mesh(obj.data)
         
-        if self.dissolve: 
+        if self.dissolve:
+            # Dissolve selected edges
             bpy.ops.mesh.dissolve_edges()
             
-            # Get back to object mode to select remaining edges
-            bpy.ops.object.mode_set(mode='OBJECT')
+            # Get fresh BMesh after topology change
+            bm = bmesh.from_edit_mesh(obj.data)
             
-            # Select odd-indexed edges from initial selection
-            for idx in odd_indices:
-                if idx < len(obj.data.edges):
-                    obj.data.edges[idx].select = True
-                    
-            # Return to edit mode
-            bpy.ops.object.mode_set(mode='EDIT')
+            # First deselect all
+            bpy.ops.mesh.select_all(action='DESELECT')
+            
+            # Select edges where both vertices were in our original deselected edges
+            for edge in bm.edges:
+                v1 = tuple(round(float(c), 4) for c in edge.verts[0].co)
+                v2 = tuple(round(float(c), 4) for c in edge.verts[1].co)
+                if v1 in verts_to_keep and v2 in verts_to_keep:
+                    edge.select = True
+            
+            # Update the mesh
+            bmesh.update_edit_mesh(obj.data)
         
         return {'FINISHED'}
     
