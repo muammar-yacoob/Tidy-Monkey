@@ -19,18 +19,41 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
         obj = context.edit_object
         if not obj or obj.type != 'MESH': return {'CANCELLED'}
             
-        bm = bmesh.from_edit_mesh(obj.data)
-        edges = [e for e in bm.edges if e.select]
+        # Work in object mode for reliable edge access
+        bpy.ops.object.mode_set(mode='OBJECT')
         
-        if not edges: return {'CANCELLED'}
+        # Get initially selected edges by index
+        initial_edges = [i for i, e in enumerate(obj.data.edges) if e.select]
+        if not initial_edges: return {'CANCELLED'}
         
-        edges.sort(key=lambda e: e.index)
+        # Store all unselected edges to select later
+        unselected_edges = [i for i, e in enumerate(obj.data.edges) if not e.select]
         
-        for i, e in enumerate(edges): e.select = i % 2 == 0
+        # Deselect every other edge
+        for i, idx in enumerate(initial_edges):
+            obj.data.edges[idx].select = i % 2 == 0
+            
+        # Apply changes and dissolve
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_mode(type='EDGE')
         
-        if self.dissolve: bpy.ops.mesh.dissolve_edges()
+        # Deselected edges from initial selection - to select after dissolve
+        odd_indices = [initial_edges[i] for i in range(len(initial_edges)) if i % 2 == 1]
         
-        bmesh.update_edit_mesh(obj.data)
+        if self.dissolve: 
+            bpy.ops.mesh.dissolve_edges()
+            
+            # Get back to object mode to select remaining edges
+            bpy.ops.object.mode_set(mode='OBJECT')
+            
+            # Select odd-indexed edges from initial selection
+            for idx in odd_indices:
+                if idx < len(obj.data.edges):
+                    obj.data.edges[idx].select = True
+                    
+            # Return to edit mode
+            bpy.ops.object.mode_set(mode='EDIT')
+        
         return {'FINISHED'}
     
     def draw(self, context):
