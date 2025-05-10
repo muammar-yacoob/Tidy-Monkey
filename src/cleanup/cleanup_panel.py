@@ -8,7 +8,7 @@ from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
 from ..cleanup.rename_bones import REN_BONES_OT_operator, RenameBonesProps
-from .clean_verts import SELECT_SIMILAR_VERTS_OT_operator
+from .clean_verts import CLEAN_VERTS_OT_operator
 from ..cleanup.fix_rotation import FIXROTATION_OT_operator
 from ..base_panel import TITLE_PT_panel
 
