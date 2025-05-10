@@ -96,6 +96,31 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
                     # Move to top
                     while child_obj.modifiers[0].name != 'NormalTransfer':
                         bpy.ops.object.modifier_move_up(modifier='NormalTransfer')
+                
+                # Copy all other modifiers from parent to child
+                for parent_mod in parent_obj.modifiers:
+                    # Skip NormalTransfer since we handle it separately
+                    if parent_mod.name != 'NormalTransfer' and parent_mod.name not in child_obj.modifiers:
+                        # Copy modifier settings
+                        if parent_mod.type == 'BEVEL':
+                            mod = child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
+                            mod.width = parent_mod.width
+                            mod.segments = parent_mod.segments
+                            mod.limit_method = parent_mod.limit_method
+                            mod.angle_limit = parent_mod.angle_limit
+                            mod.harden_normals = parent_mod.harden_normals
+                            mod.miter_outer = parent_mod.miter_outer
+                        elif parent_mod.type == 'WEIGHTED_NORMAL':
+                            mod = child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
+                            mod.weight = parent_mod.weight
+                            mod.keep_sharp = parent_mod.keep_sharp
+                            mod.mode = parent_mod.mode
+                        elif parent_mod.type == 'WELD':
+                            mod = child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
+                            mod.merge_threshold = parent_mod.merge_threshold
+                        else:
+                            # For other modifier types
+                            child_obj.modifiers.new(name=parent_mod.name, type=parent_mod.type)
             
             # Process nested children
             for nested_child in [obj for obj in bpy.data.objects if obj.parent == child_obj and obj.type == 'MESH']:
