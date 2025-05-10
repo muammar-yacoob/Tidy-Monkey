@@ -33,36 +33,12 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
         
         selected_edges.sort(key=lambda e: e.index)
         
-        # Simple approach: just deselect odd-indexed edges
         for i, edge in enumerate(selected_edges): 
             if i % 2 == 1:
                 edge.select = False
         
         if self.dissolve:
-            # Store vertex coordinates of endpoints for even-indexed edges
-            kept_verts = set()
-            for i, edge in enumerate(selected_edges):
-                if i % 2 == 0:  # These are the edges we're keeping
-                    v1 = tuple(round(c, 4) for c in edge.verts[0].co)
-                    v2 = tuple(round(c, 4) for c in edge.verts[1].co)
-                    kept_verts.add(v1)
-                    kept_verts.add(v2)
-            
-            # Dissolve selected edges
             bpy.ops.mesh.dissolve_edges()
-            
-            # Clear selection
-            bpy.ops.mesh.select_all(action='DESELECT')
-            
-            # Get updated bmesh
-            bm = bmesh.from_edit_mesh(obj.data)
-            
-            # Only select edges that have both vertices in our kept set
-            for edge in bm.edges:
-                v1 = tuple(round(c, 4) for c in edge.verts[0].co)
-                v2 = tuple(round(c, 4) for c in edge.verts[1].co)
-                if v1 in kept_verts and v2 in kept_verts:
-                    edge.select = True
         
         bmesh.update_edit_mesh(obj.data)
         return {'FINISHED'}
