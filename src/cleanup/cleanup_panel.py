@@ -85,7 +85,7 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row.operator("organize.checkeredge", icon='STICKY_UVS_DISABLE')
                 if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
                     mesh = bmesh.from_edit_mesh(context.edit_object.data)
-                    # row.enabled = len([e for e in mesh.edges if e.select]) % 2 == 0
+                    row.enabled = len([e for e in mesh.edges if e.select]) % 2 == 0 and len([e for e in mesh.edges if e.select]) >= 8
                 else:
                     row.enabled = False
             

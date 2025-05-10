@@ -10,6 +10,10 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
     bl_description = "Deselect every other edge in the current selection"
     bl_options = {'REGISTER', 'UNDO'}
     
+    @classmethod
+    def poll(cls, context):
+        return context.mode == 'EDIT_MESH'
+    
     def execute(self, context):
         obj = context.edit_object
         if not obj or obj.type != 'MESH':
@@ -18,17 +22,17 @@ class CHECKER_EDGE_OT_operator(bpy.types.Operator):
             
         bm = bmesh.from_edit_mesh(obj.data)
         
-        # Get currently selected edges - works on any selection state
         selected_edges = [e for e in bm.edges if e.select]
         
         if not selected_edges:
             self.report({'ERROR'}, "No edges selected")
             return {'CANCELLED'}
+            
+        selected_edges.sort(key=lambda e: e.index)
         
-        # Deselect every other edge (odd-indexed)
-        for i, edge in enumerate(selected_edges):
-            if i % 2 == 1:
-                edge.select = False
+        for i in range(len(selected_edges)):
+            if i % 2 == 1:  # Deselect odd positions (every other one)
+                selected_edges[i].select = False
         
         bmesh.update_edit_mesh(obj.data)
         return {'FINISHED'}
