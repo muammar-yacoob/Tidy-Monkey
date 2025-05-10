@@ -36,23 +36,21 @@
 
 ### Object Mode
 
-- **Beautify**: Applies consistent normals, transforms tris to quads, adds bevel/weighted normal modifiers, and transfers normals between parent-child objects.
+- **Beautify**: Applies consistent normals, transforms tris to quads, adds bevel/weighted normal modifiers, and transfers normals data between parent-child objects.
 
-- **Clear Materials**: Removes all material assignments from selected objects.
+- **Clear Materials**: Removes all unused material from selected objects.
+
+- **Clean Textures**: Removes all unused image textures from the .blend file.
 
 - **Generate Actions**: Converts animation strips to individual action data blocks.
 
-- **Clean Textures**: Purges unused image textures from the .blend file.
+- **Rename Bones**: Removes keywords like `mixamo` from bone names without breaking the animation.
 
-- **Rename Bones**: Batch processes bone names with find/replace patterns.
-
-- **Export FBX/GLB**: Two-mode export system that packs only used materials and textures:
-  - Individual: Exports each selected object as separate file
-  - Combined: Exports all selected objects in a single file
+- **Export FBX/GLB**: Packs materials, textures and generates actions. Currently only supports FBX & GLB formats.
 
 ### Edit Mode
 
-- **Checker Edge**: Selects alternating edges in connected loops with dissolve option for efficient topology reduction.
+- **Checker Edge**: Selects alternating edges in connected loops with dissolve option for topology decimation.
 
 - **Clean Verts**: Identifies and dissolves vertices with exactly 2 edge connections.
 

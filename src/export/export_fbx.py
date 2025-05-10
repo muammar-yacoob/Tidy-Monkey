@@ -66,6 +66,15 @@ class EXPORT_OT_operator(bpy.types.Operator):
         
         exported_count = 0
         
+        # Helper function to check if an object is a child of an armature in any parent level
+        def is_armature_child(obj, arm):
+            parent = obj.parent
+            while parent:
+                if parent == arm:
+                    return True
+                parent = parent.parent
+            return False
+        
         for arm in armatures:
             children = armature_children[arm]
             if not children:
@@ -76,6 +85,11 @@ class EXPORT_OT_operator(bpy.types.Operator):
             arm.select_set(True)
             for child in children:
                 child.select_set(True)
+                
+            # Also select all nested children
+            for obj in bpy.data.objects:
+                if is_armature_child(obj, arm):
+                    obj.select_set(True)
                 
             context.view_layer.objects.active = arm
             
@@ -123,6 +137,16 @@ class EXPORT_OT_operator(bpy.types.Operator):
         for obj in remaining_objs:
             bpy.ops.object.select_all(action='DESELECT')
             obj.select_set(True)
+            
+            # Select all child objects recursively
+            def select_children_recursive(parent_obj):
+                for child in bpy.data.objects:
+                    if child.parent == parent_obj:
+                        child.select_set(True)
+                        select_children_recursive(child)
+            
+            select_children_recursive(obj)
+            
             context.view_layer.objects.active = obj
             
             has_animation = False
@@ -146,7 +170,7 @@ class EXPORT_OT_operator(bpy.types.Operator):
                     apply_scale_options='FBX_SCALE_NONE',
                     apply_unit_scale=True,
                     bake_space_transform=False,
-                    object_types={'MESH'},
+                    object_types={'MESH', 'EMPTY', 'CAMERA', 'LIGHT'},
                     use_mesh_modifiers=True,
                     mesh_smooth_type='FACE',
                     use_mesh_edges=False,

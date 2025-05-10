@@ -33,24 +33,25 @@ class CLEANUP_PT_panel(bpy.types.Panel):
             if not in_edit_mode:
                 selected_mesh_count = len([obj for obj in context.selected_objects if obj.type == 'MESH'])
                 
-                row = layout.row()
+                box = layout.box()
+                # box.label(text="Mesh Cleanup")
+                
+                row = box.row()
                 if selected_mesh_count > 1: row.operator("cleanup.beautify", text=f"Beautify ({selected_mesh_count})", icon='SHADERFX')
                 else: row.operator("cleanup.beautify", text="Beautify", icon='SHADERFX')
                 row.enabled = selected_mesh_count > 0
                 
-                row = layout.row()
-                if selection_count > 1:
-                    row.operator("cleanup.clearmats", text=f"Clear Materials ({selection_count})", icon='NODE_MATERIAL')
-                else:
-                    row.operator("cleanup.clearmats", text="Clear Materials", icon='NODE_MATERIAL')
+                row = box.row()
+                if selection_count > 1: row.operator("cleanup.clearmats", text=f"Clear Materials ({selection_count})", icon='NODE_MATERIAL')
+                else: row.operator("cleanup.clearmats", text="Clear Materials", icon='NODE_MATERIAL')
                 row.enabled = context.active_object and context.active_object.type == 'MESH' and selection_count > 0
+            
+                row = box.row()
+                row.operator("cleanup.cleantextures", icon='RENDER_RESULT')
+                row.enabled = context.active_object and context.active_object.type == 'MESH'
                 
                 row = layout.row()
                 row.operator("cleanup.generateactions", text="Generate Actions", icon='ARMATURE_DATA')
-                
-                row = layout.row()
-                row.operator("cleanup.cleantextures", icon='RENDER_RESULT')
-                row.enabled = context.active_object and context.active_object.type == 'MESH'
                 
                 has_armature = any(obj.type == 'ARMATURE' for obj in context.selected_objects)
                 if has_armature and hasattr(context.scene, "rename_bones_props"):
@@ -77,28 +78,32 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                      layout.label(text="Rename Bones properties not registered.", icon='ERROR')
             
             if in_edit_mesh:
-                row = layout.row()
+                edit_box = layout.box()
+                edit_box.label(text="Edit Mode Tools")
+                
+                row = edit_box.row()
                 row.operator("cleanup.cleanverts", icon='STICKY_UVS_DISABLE')
                 
-            if in_edit_mesh or in_edit_armature:
-                row = layout.row()
-                op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
+                if in_edit_mesh or in_edit_armature:
+                    row = edit_box.row()
+                    op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
+                    
+                    if in_edit_mesh:
+                        obj = context.edit_object
+                        if obj and obj.type == 'MESH':
+                            mesh = bmesh.from_edit_mesh(obj.data)
+                            
+                            if context.tool_settings.mesh_select_mode[2]: row.enabled = any(f.select for f in mesh.faces)  # Face mode
+                            elif context.tool_settings.mesh_select_mode[1]: row.enabled = any(e.select for e in mesh.edges)  # Edge mode
+                            elif context.tool_settings.mesh_select_mode[0]: row.enabled = any(v.select for v in mesh.verts)  # Vertex mode
+                            else: row.enabled = False
+                        else: row.enabled = False
+            elif in_edit_armature:
+                edit_box = layout.box()
+                edit_box.label(text="Edit Mode Tools")
                 
-                if in_edit_mesh:
-                    obj = context.edit_object
-                    if obj and obj.type == 'MESH':
-                        mesh = bmesh.from_edit_mesh(obj.data)
-                        
-                        if context.tool_settings.mesh_select_mode[2]:  # Face mode
-                            row.enabled = any(f.select for f in mesh.faces)
-                        elif context.tool_settings.mesh_select_mode[1]:  # Edge mode
-                            row.enabled = any(e.select for e in mesh.edges)
-                        elif context.tool_settings.mesh_select_mode[0]:  # Vertex mode
-                            row.enabled = any(v.select for v in mesh.verts)
-                        else:
-                            row.enabled = False
-                    else:
-                        row.enabled = False
+                row = edit_box.row()
+                op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
             
         except Exception as e:
             pass
