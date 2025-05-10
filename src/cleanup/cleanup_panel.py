@@ -81,14 +81,6 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 row = layout.row()
                 row.operator("cleanup.selectsimilarverts", icon='STICKY_UVS_DISABLE')
                 
-                row = layout.row()
-                row.operator("organize.checkeredge", icon='STICKY_UVS_DISABLE')
-                if context.tool_settings.mesh_select_mode[1]:  # Edge select mode
-                    mesh = bmesh.from_edit_mesh(context.edit_object.data)
-                    row.enabled = len([e for e in mesh.edges if e.select]) % 2 == 0 and len([e for e in mesh.edges if e.select]) >= 8
-                else:
-                    row.enabled = False
-            
             if in_edit_mesh or in_edit_armature:
                 row = layout.row()
                 op = row.operator("cleanup.fixrotation", text="Fix Rotation", icon='EMPTY_SINGLE_ARROW')
