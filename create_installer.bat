@@ -3,15 +3,15 @@ setlocal enabledelayedexpansion
 
 :: Clear temporary directory
 rmdir /S /Q ".\temp" 2>nul
-mkdir ".\temp" 2>nul
+mkdir ".\temp\TidyMonkey" 2>nul
 
-:: Copy the root files directly to temp folder
-copy ".\__init__.py" ".\temp\" >nul
+:: Copy the root files to the addon subfolder
+copy ".\__init__.py" ".\temp\TidyMonkey\" >nul
 copy ".\blender_manifest.toml" ".\temp\" >nul
 
 :: Copy the src directory with all subdirectories (this includes all modules)
 if exist ".\src\" (
-    xcopy /S /E /Y ".\src" ".\temp\src\" >nul
+    xcopy /S /E /Y ".\src" ".\temp\TidyMonkey\src\" >nul
     echo Copied src directory with modules
 ) else (
     echo WARNING: src directory not found! Addon will not work correctly.
@@ -19,8 +19,8 @@ if exist ".\src\" (
 
 :: Copy icons folder if it exists
 if exist ".\icons\" (
-    mkdir ".\temp\icons" 2>nul
-    xcopy /S /E /Y ".\icons" ".\temp\icons\" >nul
+    mkdir ".\temp\TidyMonkey\icons" 2>nul
+    xcopy /S /E /Y ".\icons" ".\temp\TidyMonkey\icons\" >nul
     echo Copied icons folder
 )
 
