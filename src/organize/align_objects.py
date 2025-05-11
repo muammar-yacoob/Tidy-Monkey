@@ -11,6 +11,11 @@ class ALIGN_OT_operator(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
     
     algn: bpy.props.StringProperty(default='Z', options={'HIDDEN'})
+    spacing: bpy.props.FloatProperty(name="Spacing", description="Space between objects after alignment", default=0.0, unit='LENGTH')
+    
+    def invoke(self, context, event):
+        self.spacing = 0.0
+        return self.execute(context)
     
     def execute(self, context):
         selected_objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
@@ -20,57 +25,42 @@ class ALIGN_OT_operator(bpy.types.Operator):
         
         axis_index = {'X': 0, 'Y': 1, 'Z': 2}.get(self.algn, 2)
         
-        pivot_point = context.scene.tool_settings.transform_pivot_point
-        alignment_value = None
+        if self.algn == 'X': bpy.ops.object.align(align_axis={'X'})
+        elif self.algn == 'Y': bpy.ops.object.align(align_axis={'Y'})
+        else: bpy.ops.object.align(align_axis={'Z'})
         
-        if pivot_point == 'BOUNDING_BOX_CENTER':
-            min_co = float('inf')
-            max_co = float('-inf')
+        if self.spacing != 0.0:
+            sorted_objects = sorted(selected_objects, key=lambda obj: obj.matrix_world.translation[axis_index])
+            original_selection = context.selected_objects.copy()
+            original_active = context.active_object
+            bpy.ops.object.select_all(action='DESELECT')
             
-            for obj in selected_objects:
-                for corner in obj.bound_box:
-                    world_corner = obj.matrix_world @ mathutils.Vector(corner)
-                    min_co = min(min_co, world_corner[axis_index])
-                    max_co = max(max_co, world_corner[axis_index])
+            base_pos = sorted_objects[0].matrix_world.translation[axis_index]
             
-            alignment_value = (min_co + max_co) / 2
+            for i, obj in enumerate(sorted_objects):
+                if i == 0: continue
+                obj.select_set(True)
+                context.view_layer.objects.active = obj
+                
+                exact_pos = base_pos + (i * self.spacing)
+                current_pos = obj.matrix_world.translation[axis_index]
+                offset = exact_pos - current_pos
+                
+                if axis_index == 0: bpy.ops.transform.translate(value=(offset, 0, 0))
+                elif axis_index == 1: bpy.ops.transform.translate(value=(0, offset, 0))
+                else: bpy.ops.transform.translate(value=(0, 0, offset))
+                
+                obj.select_set(False)
             
-        elif pivot_point == 'CURSOR':
-            alignment_value = context.scene.cursor.location[axis_index]
-            
-        elif pivot_point == 'MEDIAN_POINT':
-            sum_co = 0
-            for obj in selected_objects:
-                sum_co += obj.matrix_world.translation[axis_index]
-            alignment_value = sum_co / len(selected_objects)
-            
-        elif pivot_point == 'ACTIVE_ELEMENT':
-            if context.active_object and context.active_object in selected_objects:
-                alignment_value = context.active_object.matrix_world.translation[axis_index]
-            else:
-                self.report({'WARNING'}, f"No active object, using median for {self.algn} axis")
-                sum_co = 0
-                for obj in selected_objects:
-                    sum_co += obj.matrix_world.translation[axis_index]
-                alignment_value = sum_co / len(selected_objects)
+            for obj in original_selection: obj.select_set(True)
+            if original_active: context.view_layer.objects.active = original_active
         
-        elif pivot_point == 'INDIVIDUAL_ORIGINS':
-            self.report({'WARNING'}, "Individual origins not applicable, using median point")
-            sum_co = 0
-            for obj in selected_objects:
-                sum_co += obj.matrix_world.translation[axis_index]
-            alignment_value = sum_co / len(selected_objects)
-        
-        if alignment_value is not None:
-            for obj in selected_objects:
-                if pivot_point == 'ACTIVE_ELEMENT' and obj == context.active_object:
-                    continue
-                    
-                new_location = obj.matrix_world.translation.copy()
-                new_location[axis_index] = alignment_value
-                obj.matrix_world.translation = new_location
-        
-        self.report({'INFO'}, f"Aligned objects on {self.algn} axis using {pivot_point}")
+        spacing_info = f" with {self.spacing} spacing" if self.spacing != 0.0 else ""
+        self.report({'INFO'}, f"Aligned objects on {self.algn} axis{spacing_info}")
         return {"FINISHED"}
+    
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "spacing", text=f"Spacing({self.algn})")
 
 classes = (ALIGN_OT_operator,) 
