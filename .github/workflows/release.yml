@@ -12,13 +12,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Create TidyMonkey Directory
+      - name: Create Addon Structure
         run: |
-          mkdir -p TidyMonkey
-          find . -name "*.py" -exec cp {} TidyMonkey/ \;
+          mkdir -p temp/TidyMonkey
+          # Copy blender_manifest.toml to the root level
+          cp blender_manifest.toml temp/
+          # Copy __init__.py and src directory to the addon folder
+          cp __init__.py temp/TidyMonkey/
+          if [ -d "src" ]; then
+            cp -r src temp/TidyMonkey/
+          fi
+          # Copy icons if they exist
+          if [ -d "icons" ]; then
+            cp -r icons temp/TidyMonkey/
+          fi
           
       - name: Create Zip File
-        run: zip -r TidyMonkey_Installer.zip TidyMonkey
+        run: |
+          cd temp
+          zip -r ../TidyMonkey_Installer.zip *
+          cd ..
 
       - name: Update Release
         uses: softprops/action-gh-release@v1
