@@ -3,25 +3,32 @@ setlocal enabledelayedexpansion
 
 :: Clear temporary directory
 rmdir /S /Q ".\temp" 2>nul
-mkdir ".\temp\TidyMonkey" 2>nul
+mkdir ".\temp" 2>nul
 
-:: Copy the root files to the addon subfolder
-copy ".\__init__.py" ".\temp\TidyMonkey\" >nul
-copy ".\blender_manifest.toml" ".\temp\" >nul
+:: 1. Create directory structure (use manifest file name - not blender_manifest.toml)
+copy ".\blender_manifest.toml" ".\temp\manifest.toml" >nul
 
-:: Copy the src directory with all subdirectories (this includes all modules)
+:: 2. Create addon directory matching the id from manifest
+mkdir ".\temp\tidy_monkey" 2>nul
+
+:: 3. Create the primary __init__.py file (must have register/unregister)
+copy ".\__init__.py" ".\temp\tidy_monkey\" >nul
+
+:: 4. Copy source files
 if exist ".\src\" (
-    xcopy /S /E /Y ".\src" ".\temp\TidyMonkey\src\" >nul
-    echo Copied src directory with modules
-) else (
-    echo WARNING: src directory not found! Addon will not work correctly.
+    xcopy /S /E /Y ".\src" ".\temp\tidy_monkey\src\" >nul
 )
 
-:: Copy icons folder if it exists
+:: 5. Copy icons if they exist
 if exist ".\icons\" (
-    mkdir ".\temp\TidyMonkey\icons" 2>nul
-    xcopy /S /E /Y ".\icons" ".\temp\TidyMonkey\icons\" >nul
-    echo Copied icons folder
+    xcopy /S /E /Y ".\icons" ".\temp\tidy_monkey\icons\" >nul
+)
+
+:: Ensure all needed subdirectories have an __init__.py file
+for /d /r ".\temp\tidy_monkey" %%i in (*) do (
+    if not exist "%%i\__init__.py" (
+        echo # Auto-generated file > "%%i\__init__.py"
+    )
 )
 
 :: Delete existing zip file first
