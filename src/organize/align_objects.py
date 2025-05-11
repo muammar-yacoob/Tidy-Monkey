@@ -34,15 +34,17 @@ class ALIGN_OT_operator(bpy.types.Operator):
             original_selection = context.selected_objects.copy()
             original_active = context.active_object
             bpy.ops.object.select_all(action='DESELECT')
+            
             base_pos = sorted_objects[0].matrix_world.translation[axis_index]
             
             for i, obj in enumerate(sorted_objects):
                 if i == 0: continue
                 obj.select_set(True)
                 context.view_layer.objects.active = obj
-                target_pos = base_pos + (i * self.spacing)
+                
+                exact_pos = base_pos + (i * self.spacing)
                 current_pos = obj.matrix_world.translation[axis_index]
-                offset = target_pos - current_pos
+                offset = exact_pos - current_pos
                 
                 if axis_index == 0: bpy.ops.transform.translate(value=(offset, 0, 0))
                 elif axis_index == 1: bpy.ops.transform.translate(value=(0, offset, 0))
