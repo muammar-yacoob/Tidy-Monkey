@@ -6,6 +6,7 @@ from bpy.types import Operator
 class APPLY_MODS_OT_operator(bpy.types.Operator):
     bl_label = "Apply Modifiers"
     bl_idname = "organize.applymodifiers"
+    bl_description = "Apply all modifiers on selected objects while preserving shape keys when possible"
     bl_options = {'REGISTER', 'UNDO'}
         
     def execute(self, context):

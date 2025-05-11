@@ -7,6 +7,7 @@ from bpy.types import Operator
 class BEAUTIFY_OT_operator(bpy.types.Operator):
     bl_label = "Beautify"
     bl_idname = "cleanup.beautify"
+    bl_description = "Fix mesh topology, untrigulate, fix normals issues and apply modifiers    for better shading"
     bl_options = {'REGISTER', 'UNDO'}
     
     def execute(self, context):
