@@ -22,14 +22,13 @@ try:
         select_similar,
         checker_edge,
         select_bottom,
-        select_similar_mesh,
-        space_objects
+        select_similar_mesh
     )
     # First register all operator modules
     modules_to_process.extend([
         origin_to_selected, center_origins, origin_to_bottom,
         align_to_view, align_objects, apply_modifiers, select_similar, checker_edge,
-        select_bottom, select_similar_mesh, space_objects
+        select_bottom, select_similar_mesh
     ])
     modules_to_process.append(organize_panel)
 except ImportError as e:

@@ -23,7 +23,6 @@ try:
     from . import checker_edge
     from . import select_bottom
     from . import select_similar_mesh
-    from . import space_objects
     print("    Imported organize ops modules (excluding self-import check)." )
 except ImportError as e:
      print(f"    ERROR importing organize operator modules: {e}")
