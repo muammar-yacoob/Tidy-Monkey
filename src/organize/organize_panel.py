@@ -12,6 +12,7 @@ from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_ope
 from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
 from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
+from ..organize.space_objects import SPACE_OT_operator, check_axis_alignment
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
@@ -33,7 +34,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
             if in_object_mode:
                 # Origin tools group
                 box = layout.box()
-                # box.label(text="Origin Tools")
+                box.label(text="Origin")
                 
                 row = box.row()
                 if selection_count > 1:
@@ -51,13 +52,12 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 
                 # Alignment tools group
                 box = layout.box()
-                # box.label(text="Alignment Tools")
+                box.label(text="Alignment")
                 
                 row = box.row()
-                if selection_count > 1:
-                    row.operator("organize.aligntoview", text=f"Align to View ({selection_count})", icon='ORIENTATION_GIMBAL')
-                else:
-                    row.operator("organize.aligntoview", text="Align to View", icon='ORIENTATION_GIMBAL')
+                
+                if selection_count > 1: row.operator("organize.aligntoview", text=f"Align to View ({selection_count})", icon='ORIENTATION_GIMBAL')
+                else: row.operator("organize.aligntoview", text="Align to View", icon='ORIENTATION_GIMBAL')
                 row.enabled = selection_count > 0
                 
                 col = box.column(align=True)
@@ -66,6 +66,28 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator("organize.alignobjects", text="Y").algn = 'Y'
                 row.operator("organize.alignobjects", text="Z").algn = 'Z'
                 row.enabled = selection_count > 1
+                
+                # Space objects tools
+                box = layout.box()
+                row = box.row()
+                row.label(text="Spacing")
+                
+                col = box.column(align=True)
+                row = col.row(align=True)
+                
+                x_op = row.operator("organize.spaceobjects", text="X")
+                x_op.axis = 'X'
+                x_op.enabled = selection_count > 2 and not check_axis_alignment(context, 'X')
+                
+                y_op = row.operator("organize.spaceobjects", text="Y")
+                y_op.axis = 'Y'
+                y_op.enabled = selection_count > 2 and not check_axis_alignment(context, 'Y')
+                
+                z_op = row.operator("organize.spaceobjects", text="Z")
+                z_op.axis = 'Z'
+                z_op.enabled = selection_count > 2 and not check_axis_alignment(context, 'Z')
+                
+                row.enabled = selection_count > 2
                 
                 # Selection and Modifiers tools
                 row = layout.row()
