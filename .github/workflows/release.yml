@@ -14,18 +14,30 @@ jobs:
       
       - name: Create Addon Structure
         run: |
-          mkdir -p temp/TidyMonkey
-          # Copy blender_manifest.toml to the root level
-          cp blender_manifest.toml temp/
-          # Copy __init__.py and src directory to the addon folder
-          cp __init__.py temp/TidyMonkey/
+          # Create directory structure
+          mkdir -p temp
+          
+          # Copy manifest with correct name
+          cp blender_manifest.toml temp/manifest.toml
+          
+          # Create addon directory
+          mkdir -p temp/tidy_monkey
+          
+          # Copy primary __init__.py file
+          cp __init__.py temp/tidy_monkey/
+          
+          # Copy src directory if it exists
           if [ -d "src" ]; then
-            cp -r src temp/TidyMonkey/
+            cp -r src temp/tidy_monkey/
           fi
+          
           # Copy icons if they exist
           if [ -d "icons" ]; then
-            cp -r icons temp/TidyMonkey/
+            cp -r icons temp/tidy_monkey/
           fi
+          
+          # Ensure all subdirectories have an __init__.py file
+          find temp/tidy_monkey -type d -exec sh -c 'if [ ! -f "{}/__init__.py" ]; then echo "# Auto-generated file" > "{}/__init__.py"; fi' \;
           
       - name: Create Zip File
         run: |
