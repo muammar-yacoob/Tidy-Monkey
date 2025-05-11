@@ -54,8 +54,6 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.operator("organize.alignobjects", text="Z").algn = 'Z'
                 row.enabled = selection_count > 1
                 
-               
-                
                 row = layout.row()
                 row.operator("organize.selectsimilarmesh", icon='MOD_MESHDEFORM')
                 row.enabled = context.active_object.type == 'MESH' and selection_count == 1
