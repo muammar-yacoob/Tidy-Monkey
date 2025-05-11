@@ -12,7 +12,7 @@ from ..organize.select_similar import (SELECT_MAT_OT_operator, SELECT_PER_OT_ope
 from ..organize.checker_edge import CHECKER_EDGE_OT_operator
 from ..organize.select_bottom import BUTTS_OT_operator
 from ..organize.select_similar_mesh import SELECT_SAME_OT_operator
-from ..organize.space_objects import SPACE_OT_operator, check_axis_alignment
+from ..organize.space_objects import SPACE_OT_operator
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
@@ -74,20 +74,10 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 
                 col = box.column(align=True)
                 row = col.row(align=True)
-                
-                x_op = row.operator("organize.spaceobjects", text="X")
-                x_op.axis = 'X'
-                x_op.enabled = selection_count > 2 and not check_axis_alignment(context, 'X')
-                
-                y_op = row.operator("organize.spaceobjects", text="Y")
-                y_op.axis = 'Y'
-                y_op.enabled = selection_count > 2 and not check_axis_alignment(context, 'Y')
-                
-                z_op = row.operator("organize.spaceobjects", text="Z")
-                z_op.axis = 'Z'
-                z_op.enabled = selection_count > 2 and not check_axis_alignment(context, 'Z')
-                
-                row.enabled = selection_count > 2
+                row.operator("organize.spaceobjects", text="X").axis = 'X'
+                row.operator("organize.spaceobjects", text="Y").axis = 'Y'
+                row.operator("organize.spaceobjects", text="Z").axis = 'Z'
+                row.enabled = selection_count > 1
                 
                 # Selection and Modifiers tools
                 row = layout.row()
