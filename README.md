@@ -53,14 +53,7 @@ Watch [tutorial on YouTube]([youtube-link])
 <tr>
 <td width="50%" valign="top">
 
-### 📦 Object Mode
-[![Object Mode Tutorial](./res/Object%20Mode.jpg)](https://youtu.be/3g1JKg0-Wtc)
-
-</td>
-<td width="50%" valign="top">
-
-### ✏️ Edit Mode
-![Edit Mode Guide](./res/Edit%20Mode.jpg)
+![Edit Mode Guide](./res/UI.png)
 
 </td>
 </tr>
