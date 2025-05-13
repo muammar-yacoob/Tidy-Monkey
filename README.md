@@ -11,8 +11,6 @@
 [privacy-link]: ../../blob/main/PRIVACY.md
 [issues-link]: ../../issues
 
-# 🐵 Tidy Monkey
-
 <div align="center">
   <img src="./res/logo.png" width="300" alt="Tidy Monkey Logo">
 

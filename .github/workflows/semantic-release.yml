@@ -1,0 +1,82 @@
+name: Semantic Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  release:
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          
+      - name: Install dependencies
+        run: npm install -g semantic-release @semantic-release/github @semantic-release/changelog @semantic-release/git
+        
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      - name: Create Addon Structure
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        run: |
+          # Create directory structure
+          mkdir -p temp
+          
+          # Copy manifest with correct name
+          cp blender_manifest.toml temp/manifest.toml
+          
+          # Create addon directory
+          mkdir -p temp/tidy_monkey
+          
+          # Copy primary __init__.py file
+          cp __init__.py temp/tidy_monkey/
+          
+          # Copy src directory if it exists
+          if [ -d "src" ]; then
+            cp -r src temp/tidy_monkey/
+          fi
+          
+          # Copy icons if they exist
+          if [ -d "icons" ]; then
+            cp -r icons temp/tidy_monkey/
+          fi
+          
+          # Ensure all subdirectories have an __init__.py file
+          find temp/tidy_monkey -type d -exec sh -c 'if [ ! -f "{}/__init__.py" ]; then echo "# Auto-generated file" > "{}/__init__.py"; fi' \;
+          
+      - name: Create Zip File
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        run: |
+          cd temp
+          zip -r ../TidyMonkey.zip *
+          cd ..
+          
+      - name: Upload Addon as Release Asset
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_ID=$(curl --silent --header "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | \
+            jq -r .id)
+          
+          curl --request POST \
+            --url "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=TidyMonkey.zip" \
+            --header "Authorization: token $GITHUB_TOKEN" \
+            --header "Content-Type: application/zip" \
+            --data-binary "@TidyMonkey.zip" 
