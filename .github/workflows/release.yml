@@ -6,11 +6,31 @@ on:
 
 jobs:
   build:
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          
+      - name: Install dependencies
+        run: npm install -g semantic-release @semantic-release/github @semantic-release/changelog @semantic-release/git
+        
+      - name: Semantic Release
+        id: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
       
       - name: Create Addon Structure
         run: |
@@ -42,13 +62,31 @@ jobs:
       - name: Create Zip File
         run: |
           cd temp
-          zip -r ../TidyMonkey_Installer.zip *
+          zip -r ../TidyMonkey.zip *
           cd ..
 
-      - name: Update Release
+      - name: Upload to Release
+        if: steps.semantic-release.outputs.new_release_published == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.semantic-release.outputs.new_release_version }}"
+          RELEASE_ID=$(curl --silent --header "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | \
+            jq -r .id)
+          
+          curl --request POST \
+            --url "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=TidyMonkey-${VERSION}.zip" \
+            --header "Authorization: token $GITHUB_TOKEN" \
+            --header "Content-Type: application/zip" \
+            --data-binary "@TidyMonkey.zip"
+      
+      # Fallback for if semantic-release didn't create a new release
+      - name: Create manual release if needed
+        if: steps.semantic-release.outputs.new_release_published != 'true'
         uses: softprops/action-gh-release@v1
         with:
-          files: TidyMonkey_Installer.zip
+          files: TidyMonkey.zip
           name: Latest Release
           tag_name: latest
           body: Automated release from latest main branch push
