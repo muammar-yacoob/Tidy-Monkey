@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.5...v1.0.6) (2025-05-16)
+
+
+### Bug Fixes
+
+* improve beautify ([3fdacf6](https://github.com/muammar-yacoob/Tidy-Monkey/commit/3fdacf6d12806b13614a656b98d6cae0bef845ac))
+
 ## [1.0.5](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.4...v1.0.5) (2025-05-16)
 
 
