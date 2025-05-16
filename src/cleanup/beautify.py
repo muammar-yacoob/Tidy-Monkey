@@ -104,7 +104,7 @@ class BEAUTIFY_OT_operator(bpy.types.Operator):
             
             # Ensure modifiers are in the correct order
             if 'Weld' in obj.modifiers and 'DecimateAngle' in obj.modifiers:
-                # Make sure Weld is before DecimateAngle
+                # Make sure Weld is before DecimateAngle modifier
                 weld_index = list(obj.modifiers.keys()).index('Weld')
                 decimate_index = list(obj.modifiers.keys()).index('DecimateAngle')
                 if weld_index > decimate_index:
