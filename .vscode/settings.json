@@ -1,0 +1,9 @@
+{
+  "files.exclude": {
+    "Test": true,
+    "TidyMonkeyInstaller.zip": true,
+    "CHANGELOG.md": true,
+    "LICENSE": true,
+    "res": true
+  }
+}
