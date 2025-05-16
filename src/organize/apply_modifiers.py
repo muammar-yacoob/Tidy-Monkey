@@ -8,6 +8,19 @@ class APPLY_MODS_OT_operator(bpy.types.Operator):
     bl_idname = "organize.applymodifiers"
     bl_description = "Apply all modifiers on selected objects while preserving shape keys when possible"
     bl_options = {'REGISTER', 'UNDO'}
+    
+    def apply_non_armature_modifiers(self, obj):
+        """Helper method to apply all non-armature modifiers on an object"""
+        for mod in obj.modifiers[:]:  # Iterate over a copy
+            if mod.type == 'ARMATURE': continue
+            try:
+                bpy.ops.object.modifier_apply(modifier=mod.name)
+            except Exception as e:
+                self.report({'WARNING'}, f"Could not apply {mod.name}: {str(e)}")
+                try:
+                    obj.modifiers.remove(mod)
+                except Exception as e_rem:
+                    self.report({'WARNING'}, f"Also failed to remove modifier {mod.name} after apply error: {str(e_rem)}")
         
     def execute(self, context):
         original_selection = context.selected_objects.copy()
@@ -44,15 +57,8 @@ class APPLY_MODS_OT_operator(bpy.types.Operator):
                 
                 obj.shape_key_clear()
                 
-                for mod in obj.modifiers[:]:
-                    try:
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    except Exception as e:
-                        self.report({'WARNING'}, f"Could not apply {mod.name}: {str(e)}")
-                        obj.modifiers.remove(mod)
-                
-                for mod in obj.modifiers[:]:
-                    obj.modifiers.remove(mod)
+                # Apply modifiers (except Armature)
+                self.apply_non_armature_modifiers(obj)
                 
                 if len(shape_keys_data) > 0 and len(obj.data.vertices) == len(shape_keys_data[0]['verts']):
                     basis_key = obj.shape_key_add(name='Basis')
@@ -77,16 +83,8 @@ class APPLY_MODS_OT_operator(bpy.types.Operator):
                 
                 processed += 1
             else:
-                for mod in obj.modifiers[:]:
-                    try:
-                        bpy.ops.object.modifier_apply(modifier=mod.name)
-                    except Exception as e:
-                        self.report({'WARNING'}, f"Could not apply {mod.name}: {str(e)}")
-                        obj.modifiers.remove(mod)
-                
-                for mod in obj.modifiers[:]:
-                    obj.modifiers.remove(mod)
-                    
+                # Apply modifiers (except Armature)
+                self.apply_non_armature_modifiers(obj)
                 processed += 1
             
             obj.matrix_world = orig_matrix

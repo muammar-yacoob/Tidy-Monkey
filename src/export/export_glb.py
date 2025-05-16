@@ -11,6 +11,14 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
     bl_label = "Export GLB"
     bl_description = "Exports selected objects as GLB files for web/game engines"
 
+    def find_parent_armature(self, current_obj):
+        p = current_obj.parent
+        while p:
+            if p.type == 'ARMATURE':
+                return p
+            p = p.parent
+        return None
+
     def execute(self, context):
         if not bpy.data.filepath:
             self.report({'ERROR'}, "Please save your file first before exporting")
@@ -28,13 +36,6 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
             self.report({'ERROR'}, "No objects selected to export")
             return {'CANCELLED'}
             
-        armatures = [obj for obj in sel_objs if obj.type == 'ARMATURE']
-        armature_children = {}
-        
-        for arm in armatures:
-            armature_children[arm] = [obj for obj in bpy.data.objects 
-                                     if obj.parent == arm and obj.type == 'MESH']
-        
         original_active = context.view_layer.objects.active
         original_area_type = context.area.type
         
@@ -73,31 +74,29 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
         context.scene.frame_set(context.scene.frame_start)
         
         exported_count = 0
-        
-        def is_armature_child(obj, arm):
-            parent = obj.parent
-            while parent:
-                if parent == arm: return True
-                parent = parent.parent
-            return False
+
+        # Helper function for recursive selection
+        def local_select_hierarchy_recursively(obj_root_select):
+            obj_root_select.select_set(True)
+            for child_obj_select in obj_root_select.children: # Iterate over direct children
+                local_select_hierarchy_recursively(child_obj_select) # Recurse
+
+        for s_obj in sel_objs: # Iterate over originally selected objects
+            export_filename_stem = s_obj.name
+            export_root_object = s_obj # Default: export the selected object itself
+
+            if s_obj.type != 'ARMATURE':
+                parent_arm = self.find_parent_armature(s_obj)
+                if parent_arm:
+                    export_root_object = parent_arm
             
-        for arm in armatures:
-            children = armature_children[arm]
-            if not children:
-                continue
-                
+            # Deselect all, then select the hierarchy for the current export target
             bpy.ops.object.select_all(action='DESELECT')
             
-            arm.select_set(True)
-            for child in children:
-                child.select_set(True)
-                
-            for obj in bpy.data.objects:
-                if is_armature_child(obj, arm): obj.select_set(True)
-                
-            context.view_layer.objects.active = arm
+            local_select_hierarchy_recursively(export_root_object)
+            context.view_layer.objects.active = export_root_object # Set active object
             
-            obj_path = os.path.join(directory, arm.name + ".glb")
+            obj_path = os.path.join(directory, export_filename_stem + ".glb")
             
             try:
                 bpy.ops.export_scene.gltf(
@@ -113,50 +112,9 @@ class EXPORT_GLB_OT_operator(bpy.types.Operator):
                     export_animations=True
                 )
                 exported_count += 1
-                self.report({'INFO'}, f"Exported armature: {arm.name}")
+                self.report({'INFO'}, f"Exported '{export_filename_stem}.glb' (using hierarchy from '{export_root_object.name}')")
             except Exception as e:
-                self.report({'ERROR'}, f"Could not export armature {arm.name}\n{str(e)}")
-            
-        remaining_objs = [obj for obj in sel_objs if obj not in armatures and 
-                         obj.parent not in armatures]
-                         
-        for obj in remaining_objs:
-            bpy.ops.object.select_all(action='DESELECT')
-            obj.select_set(True)
-            
-            def select_children_recursive(parent_obj):
-                for child in bpy.data.objects:
-                    if child.parent == parent_obj:
-                        child.select_set(True)
-                        select_children_recursive(child)
-            
-            select_children_recursive(obj)
-            
-            context.view_layer.objects.active = obj
-            
-            has_morph = False
-            if obj.type == 'MESH' and hasattr(obj.data, 'shape_keys') and obj.data.shape_keys:
-                if obj.data.shape_keys.key_blocks:
-                    has_morph = len(obj.data.shape_keys.key_blocks) > 0
-                    
-            obj_path = os.path.join(directory, obj.name + ".glb")
-            
-            try:
-                bpy.ops.export_scene.gltf(
-                    filepath=obj_path,
-                    export_format='GLB',
-                    use_selection=True,
-                    use_visible=True,
-                    export_apply=True,
-                    export_yup=True,
-                    export_morph=True,
-                    export_morph_normal=True,
-                    export_morph_animation=True,
-                    export_animations=True
-                )
-                exported_count += 1
-            except Exception as e:
-                self.report({'ERROR'}, f"Could not export object {obj.name}\n{str(e)}")
+                self.report({'ERROR'}, f"Could not export '{export_filename_stem}.glb' (hierarchy from '{export_root_object.name}')\\n{str(e)}")
                 
         context.scene.frame_set(current_frame)
         
