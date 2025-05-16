@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.3...v1.0.4) (2025-05-16)
+
+
+### Bug Fixes
+
+* glb export ([4231d61](https://github.com/muammar-yacoob/Tidy-Monkey/commit/4231d6142cf53f71261fb10501ab84642f7b1e3a))
+
 ## [1.0.3](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.2...v1.0.3) (2025-05-16)
 
 
