@@ -1,6 +1,8 @@
 import bpy
 from .cleanup import beautify, clean_verts
 
+ENABLE_SUPPORT_PANEL = False
+
 modules_to_process = []
 
 try:
@@ -66,12 +68,13 @@ except ImportError as e:
     print(f"ERROR importing export modules: {e}")
 
 # Import Support Modules
-try:
-    from .support import support_panel, support_links
-    modules_to_process.append(support_links)
-    modules_to_process.append(support_panel)
-except ImportError as e:
-    print(f"ERROR importing support modules: {e}")
+if ENABLE_SUPPORT_PANEL:
+    try:
+        from .support import support_panel, support_links
+        modules_to_process.append(support_links)
+        modules_to_process.append(support_panel)
+    except ImportError as e:
+        print(f"ERROR importing support modules: {e}")
 
 # Copyright © 2023-2024 spark-games.co.uk. All rights reserved.
 
