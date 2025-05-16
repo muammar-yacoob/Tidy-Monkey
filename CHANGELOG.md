@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.4...v1.0.5) (2025-05-16)
+
+
+### Bug Fixes
+
+* disabled fbx export ([a1a5792](https://github.com/muammar-yacoob/Tidy-Monkey/commit/a1a5792b867c8ca3120f9c431470bab1463fff0d))
+
 ## [1.0.4](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.3...v1.0.4) (2025-05-16)
 
 
