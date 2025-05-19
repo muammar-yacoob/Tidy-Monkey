@@ -29,6 +29,12 @@
 ## 🚀 Quick Start
 Watch this [quick tutorial video][vid-link]<br>
 
+<div align="center">
+  <a href="[vid-link]">
+    <img src="res/TDMK.png " alt="Tidy Monkey Tutorial" width="600">
+  </a>
+</div>
+
 ## ✨ Features
 - Topology cleanup and editing tools
 - Automated mesh decimation and simplification
@@ -53,7 +59,7 @@ Watch this [quick tutorial video][vid-link]<br>
 <tr>
 <td width="50%" valign="top">
 
-![Edit Mode Guide](./res/UI.png)
+<!-- ![Edit Mode Guide](./res/UI.png) -->
 
 </td>
 </tr>

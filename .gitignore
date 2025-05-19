@@ -7,5 +7,6 @@ FBXs/
 *.kra
 *.kra~
 *.pyc
+*.mp4
 Test/
 voiceoverscript.txt
