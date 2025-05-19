@@ -8,7 +8,8 @@
 [release-link]: ../../releases
 [object-tutorial-link]: https://youtu.be/3g1JKg0-Wtc
 [fork-link]: ../../fork
-[privacy-link]: ../../blob/main/PRIVACY.md
+[privacy-link]: ./PRIVACY.md
+[license-link]: ./LICENSE
 [issues-link]: ../../issues
 
 <div align="center">
@@ -19,7 +20,7 @@
   [![GitHub Sponsors](https://img.shields.io/github/sponsors/spark88?label=Sponsor&logo=github-sponsors&logoColor=white&color=pink)](https://github.com/sponsors/spark88)
   [![Buy Me Coffee](https://img.shields.io/badge/Buy%20Me-Coffee-green?logo=buy-me-a-coffee&logoColor=white)][coffee-link]
   [![Report Bug](https://img.shields.io/badge/Report-Bug-red?logo=github&logoColor=white)][issues-link]
-  [![License](https://img.shields.io/badge/📜%20License-MIT-blue.svg)](./LICENSE)
+  [![License](https://img.shields.io/badge/📜%20License-MIT-blue.svg)][license-link]
 </div>
 
 ## 📥 Installation
