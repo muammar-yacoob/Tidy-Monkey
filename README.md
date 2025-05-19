@@ -70,5 +70,5 @@ If you find Tidy Monkey useful, please consider sponsoring the project! Your sup
 
 ---
 <div align="center">
-<sub>Released under MIT License | <a href="[privacy-link]">Privacy Policy</a></sub>
+<sub>Released under MIT License | <a href="./PRIVACY.md">Privacy Policy</a></sub>
 </div>
