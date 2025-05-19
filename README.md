@@ -16,7 +16,8 @@
 
   <h3>Productivity Tools for Blender 3D Artists</h3>
 
-  [![Buy Me Coffee](https://img.shields.io/badge/Buy%20Me-☕%20Coffee-green?logo=buy-me-a-coffee&logoColor=white)][coffee-link] 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/spark88?label=Sponsor&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/spark88)
+[![Buy Me Coffee](https://img.shields.io/badge/Buy%20Me-☕%20Coffee-green?logo=buy-me-a-coffee&logoColor=white)][coffee-link]
   [![Report Bug](https://img.shields.io/badge/Report-🐞%20Bug-red?logo=github&logoColor=white)][issues-link]
   [![License](https://img.shields.io/badge/License-MIT-blue.svg)][license-link]
 </div>
@@ -60,6 +61,11 @@ Watch this [quick tutorial video][vid-link]<br>
 Star the repo ⭐ & I power up like Mario 🍄<br>
 Devs run on [coffee][coffee-link] ☕<br>
 [contributions][fork-link] are welcome.
+
+### 💖 Sponsor
+If you find Tidy Monkey useful, please consider sponsoring the project! Your support helps maintain and improve the addon.
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/spark88?label=Sponsor&logo=github-sponsors&logoColor=white)](https://github.com/sponsors/spark88)
 
 ---
 <div align="center">
