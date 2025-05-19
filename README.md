@@ -1,7 +1,7 @@
 [//]: # (Constants)
 [license-link]: ../../blob/main/LICENSE
 [stars-link]: ../../stargazers
-[youtube-link]: https://youtu.be/3g1JKg0-Wtc
+[vid-link]: https://www.youtube.com/shorts/CCbY_ETwFss
 [website-link]: https://spark-games.co.uk
 [coffee-link]: https://buymeacoffee.com/spark88
 [bug-link]: ../../issues
@@ -27,7 +27,7 @@
 3. Press `N` key to view the sidebar panel
 
 ## 🚀 Quick Start
-Watch [tutorial on YouTube]([youtube-link])
+Watch this [quick tutorial video][vid-link]<br>
 
 ## ✨ Features
 - Topology cleanup and editing tools
