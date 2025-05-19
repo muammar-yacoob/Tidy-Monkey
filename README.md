@@ -30,8 +30,8 @@
 Watch this [quick tutorial video][vid-link]<br>
 
 <div align="center">
-  <a href="[vid-link]">
-    <img src="res/TDMK.png " alt="Tidy Monkey Tutorial" width="600">
+  <a href="https://www.youtube.com/shorts/CCbY_ETwFss">
+    <img src="res/TDMK.png" alt="Tidy Monkey Tutorial" width="600">
   </a>
 </div>
 
@@ -55,15 +55,6 @@ Watch this [quick tutorial video][vid-link]<br>
 - **Clean Verts**: Identifies and dissolves vertices with exactly 2 edge connections.
 - **Fix Rotation**: Aligns selected elements' rotation to world or local coordinate space.
 
-<table>
-<tr>
-<td width="50%" valign="top">
-
-<!-- ![Edit Mode Guide](./res/UI.png) -->
-
-</td>
-</tr>
-</table>
 
 ## 🌱 Support & Contributions
 Star the repo ⭐ & I power up like Mario 🍄<br>
