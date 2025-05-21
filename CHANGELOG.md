@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.6...v1.0.7) (2025-05-21)
+
+
+### Bug Fixes
+
+* select similar mesh ([b680999](https://github.com/muammar-yacoob/Tidy-Monkey/commit/b680999fb32dad929a963a99e3e05ffa1e5dd310))
+
 ## [1.0.6](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.5...v1.0.6) (2025-05-16)
 
 
