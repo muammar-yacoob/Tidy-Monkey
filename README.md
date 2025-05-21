@@ -20,8 +20,7 @@
   [![GitHub Sponsors](https://img.shields.io/github/sponsors/muammar-yacoob?label=Sponsor&logo=github-sponsors&logoColor=white&color=pink)](https://github.com/sponsors/muammar-yacoob)
   [![Buy Me Coffee](https://img.shields.io/badge/Buy%20Me-Coffee-green?logo=buy-me-a-coffee&logoColor=white)][coffee-link]
   [![Report Bug](https://img.shields.io/badge/Report-Bug-red?logo=github&logoColor=white)][issues-link]
-  [![Downloads](https://img.shields.io/github/downloads/muammar-yacoob/TidyMonkey/total?logo=download&logoColor=white&color=yellow)](../../releases)
-  [![License](https://img.shields.io/badge/📜%20License-MIT-blue.svg)][license-link]
+  [![Downloads](https://img.shields.io/github/downloads/muammar-yacoob/Tidy-Monkey/total?logo=cloud-downloadlogoColor=white&color=blue)](../../releases)
 </div>
 
 ## 📥 Installation
