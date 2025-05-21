@@ -11,6 +11,14 @@ class SELECT_SAME_OT_operator(bpy.types.Operator):
         
     similar: bpy.props.StringProperty(name="Similar:", options={'HIDDEN'})
     
+    def get_base_name(self, name):
+        # List of separators - can be extended if needed
+        separators = ['.', ' ']
+        base_name = name
+        for sep in separators:
+            base_name = base_name.split(sep)[0]
+        return base_name
+    
     def execute(self, context):
         if context.mode != 'OBJECT':
             self.report({'ERROR'}, "Must be in Object Mode")
@@ -22,12 +30,12 @@ class SELECT_SAME_OT_operator(bpy.types.Operator):
             return {'CANCELLED'}
             
         active_verts = len(active_obj.data.vertices)
-        active_base_name = active_obj.name.split('.')[0]
+        active_base_name = self.get_base_name(active_obj.name)
         
         count = 0
         for obj in context.visible_objects:
             if obj != active_obj and obj.type == 'MESH':
-                obj_base_name = obj.name.split('.')[0]
+                obj_base_name = self.get_base_name(obj.name)
                 verts = len(obj.data.vertices)
                 
                 if (verts == active_verts) and (obj_base_name == active_base_name):
