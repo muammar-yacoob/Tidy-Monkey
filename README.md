@@ -21,6 +21,7 @@
   [![Buy Me Coffee](https://img.shields.io/badge/Buy%20Me-Coffee-green?logo=buy-me-a-coffee&logoColor=white)][coffee-link]
   [![Report Bug](https://img.shields.io/badge/Report-Bug-red?logo=github&logoColor=white)][issues-link]
   [![Downloads](https://img.shields.io/github/downloads/muammar-yacoob/Tidy-Monkey/total?logo=cloud-downloadlogoColor=white&color=blue)](../../releases)
+  [![GitHub Stars](https://img.shields.io/github/stars/muammar-yacoob/Tidy-Monkey?style=social)](https://github.com/muammar-yacoob/Tidy-Monkey/stargazers)
 </div>
 
 ## 📥 Installation
