@@ -12,7 +12,6 @@ class SELECT_SAME_OT_operator(bpy.types.Operator):
     similar: bpy.props.StringProperty(name="Similar:", options={'HIDDEN'})
     
     def get_base_name(self, name):
-        # List of separators - can be extended if needed
         separators = ['.', ' ']
         base_name = name
         for sep in separators:
