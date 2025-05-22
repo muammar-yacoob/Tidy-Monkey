@@ -23,14 +23,14 @@ jobs:
         with:
           node-version: 'lts/*'
           
-      - name: Create Initial Release
-        id: create_release
+      - name: Install dependencies
+        run: npm install -g semantic-release @semantic-release/github @semantic-release/changelog @semantic-release/git
+        
+      - name: Semantic Release
+        id: semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: "1.0.9"
-        run: |
-          echo "new_release_version=1.0.9" >> $GITHUB_OUTPUT
-          echo "new_release_published=true" >> $GITHUB_OUTPUT
+        run: npx semantic-release
       
       - name: Create Addon Structure
         run: |
@@ -44,11 +44,13 @@ jobs:
           mkdir -p temp/tidy_monkey
           
           # Update version in __init__.py
-          VERSION="1.0.9"
-          MAJOR=1
-          MINOR=0
-          PATCH=9
-          sed -i "s/\"version\": (.*)/\"version\": ($MAJOR, $MINOR, $PATCH),  # Updated by GitHub Actions/" __init__.py
+          VERSION="${{ steps.semantic-release.outputs.new_release_version }}"
+          if [ ! -z "$VERSION" ]; then
+            MAJOR=$(echo $VERSION | cut -d. -f1)
+            MINOR=$(echo $VERSION | cut -d. -f2)
+            PATCH=$(echo $VERSION | cut -d. -f3)
+            sed -i "s/\"version\": (.*)/\"version\": ($MAJOR, $MINOR, $PATCH),  # Updated by GitHub Actions/" __init__.py
+          fi
           
           # Copy primary __init__.py file
           cp __init__.py temp/tidy_monkey/
@@ -73,12 +75,12 @@ jobs:
           cd ..
 
       - name: Upload to Release
-        if: steps.create_release.outputs.new_release_published == 'true'
+        if: steps.semantic-release.outputs.new_release_published == 'true'
         uses: softprops/action-gh-release@v1
         with:
           files: TidyMonkey.zip
-          name: Release 1.0.9
-          tag_name: v1.0.9
+          name: Release ${{ steps.semantic-release.outputs.new_release_version }}
+          tag_name: v${{ steps.semantic-release.outputs.new_release_version }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
