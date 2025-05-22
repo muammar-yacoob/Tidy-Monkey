@@ -76,29 +76,11 @@ jobs:
 
       - name: Upload to Release
         if: steps.semantic-release.outputs.new_release_published == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION="${{ steps.semantic-release.outputs.new_release_version }}"
-          RELEASE_ID=$(curl --silent --header "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | \
-            jq -r .id)
-          
-          curl --request POST \
-            --url "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets?name=TidyMonkey-${VERSION}.zip" \
-            --header "Authorization: token $GITHUB_TOKEN" \
-            --header "Content-Type: application/zip" \
-            --data-binary "@TidyMonkey.zip"
-      
-      # Fallback for if semantic-release didn't create a new release
-      - name: Create manual release if needed
-        if: steps.semantic-release.outputs.new_release_published != 'true'
         uses: softprops/action-gh-release@v1
         with:
           files: TidyMonkey.zip
-          name: Latest Release
-          tag_name: latest
-          body: Automated release from latest main branch push
+          name: Release ${{ steps.semantic-release.outputs.new_release_version }}
+          tag_name: v${{ steps.semantic-release.outputs.new_release_version }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
