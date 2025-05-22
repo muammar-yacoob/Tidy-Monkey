@@ -5,7 +5,6 @@ bl_info = {
     "blender": (4, 4, 0),
     "version": (2, 0, 0),
     "location": "View3D > Sidebar > Tidy Monkey",
-    "warning": "For the Export FBX to work, make sure you save the .blend file first",
     "doc_url": "https://spark-games.co.uk",
     "category": "Scene Organization"
 }
