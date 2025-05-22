@@ -1,3 +1,11 @@
+## [1.0.8](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.7...v1.0.8) (2025-05-21)
+
+
+### Bug Fixes
+
+* improved mesh lookup ([f6e025c](https://github.com/muammar-yacoob/Tidy-Monkey/commit/f6e025c7a63c7803330017437259f12446280d51))
+* similar mesh by name property added ([7aebaf3](https://github.com/muammar-yacoob/Tidy-Monkey/commit/7aebaf3ed711331dee724d1732c7a5bea2e3fddc))
+
 ## [1.0.7](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.6...v1.0.7) (2025-05-21)
 
 
