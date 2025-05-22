@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/muammar-yacoob/Tidy-Monkey/compare/v1.0.0...v1.0.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* release tags fixed ([e3c0321](https://github.com/muammar-yacoob/Tidy-Monkey/commit/e3c0321f3172154a3f74b2a4e05a15cc8b8eafcc))
+
 # 1.0.0 (2025-05-22)
 
 
