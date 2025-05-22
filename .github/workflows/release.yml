@@ -43,6 +43,15 @@ jobs:
           # Create addon directory
           mkdir -p temp/tidy_monkey
           
+          # Update version in __init__.py
+          VERSION="${{ steps.semantic-release.outputs.new_release_version }}"
+          if [ ! -z "$VERSION" ]; then
+            MAJOR=$(echo $VERSION | cut -d. -f1)
+            MINOR=$(echo $VERSION | cut -d. -f2)
+            PATCH=$(echo $VERSION | cut -d. -f3)
+            sed -i "s/\"version\": (.*)/\"version\": ($MAJOR, $MINOR, $PATCH),  # Updated by GitHub Actions/" __init__.py
+          fi
+          
           # Copy primary __init__.py file
           cp __init__.py temp/tidy_monkey/
           

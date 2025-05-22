@@ -1,9 +1,9 @@
 bl_info = {
     "name": "Tidy Monkey",
-    "author": "Spark Games",
+    "author": "Spark Games", 
     "description": "Scene Organization Tool",
     "blender": (4, 4, 0),
-    "version": (2, 0, 0),
+    "version": (0, 0, 0),  # Version will be updated by GitHub Actions
     "location": "View3D > Sidebar > Tidy Monkey",
     "doc_url": "https://spark-games.co.uk",
     "category": "Scene Organization"
