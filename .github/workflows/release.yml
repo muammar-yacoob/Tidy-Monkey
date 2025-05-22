@@ -18,6 +18,12 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Delete existing tags
+        run: |
+          git fetch --tags
+          git tag -l | xargs git push --delete origin
+          git tag -l | xargs git tag -d
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
