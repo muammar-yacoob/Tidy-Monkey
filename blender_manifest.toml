@@ -17,4 +17,27 @@ license = [
 ]
 copyright = [
   "2025 Spark Games",
+]
+
+# Exclude unnecessary files from the build
+exclude = [
+  "res/**/*",
+  "Social/**/*",
+  "Test/**/*",
+  ".vscode/**/*",
+  ".github/**/*",
+  "TidyMonkeyInstaller/**/*",
+  "*.bat",
+  "*.zip",
+  "CHANGELOG.md",
+  "PRIVACY.md",
+  ".releaserc",
+  ".gitignore",
+  "README.md",
+  "__pycache__/**/*",
+  "**/*.pyc",
+  "**/*.pyo",
+  "**/*.pyd",
+  "**/.DS_Store",
+  "**/.git/**/*"
 ] 
