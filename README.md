@@ -71,6 +71,20 @@ Watch this [quick tutorial video][vid-link]<br>
 > **Setup Required**: See [AI_FEATURES.md](./AI_FEATURES.md) for installation and configuration instructions.
 
 
+## 🛠️ Development
+
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for:
+- Setting up dev environment
+- Linting and code quality checks
+- Testing in Blender
+- Code style guidelines
+
+```bash
+# Quick lint check
+./lint.sh  # Linux/Mac
+lint.bat   # Windows
+```
+
 ## 🌱 Support & Contributions
 Star the repo ⭐ & I power up like Mario 🍄<br>
 Devs run on [coffee][coffee-link] ☕<br>

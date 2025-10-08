@@ -1,0 +1,6 @@
+# Development dependencies for linting and testing
+flake8>=6.0.0
+pylint>=3.0.0
+mypy>=1.7.0
+black>=23.0.0
+fake-bpy-module-4.4>=20241112  # Provides bpy stubs for IDE/linting
