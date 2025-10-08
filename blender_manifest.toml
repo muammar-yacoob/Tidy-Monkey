@@ -8,7 +8,7 @@ maintainer = "Spark Games <support@spark-games.co.uk>"
 type = "add-on"
 
 website = "https://spark-games.co.uk"
-tags = ["Scene Organization", "Modeling", "Export"]
+tags = ["Scene", "Modeling", "Object"]
 
 blender_version_min = "4.0.0"
 
@@ -19,25 +19,42 @@ copyright = [
   "2025 Spark Games",
 ]
 
-# Exclude unnecessary files from the build
-exclude = [
-  "res/**/*",
-  "Social/**/*",
-  "Test/**/*",
-  ".vscode/**/*",
-  ".github/**/*",
-  "TidyMonkeyInstaller/**/*",
-  "*.bat",
+[build]
+paths_exclude_pattern = [
+  # Default patterns
+  "__pycache__/",
+  ".*",
   "*.zip",
-  "CHANGELOG.md",
-  "PRIVACY.md",
-  ".releaserc",
-  ".gitignore",
-  "README.md",
-  "__pycache__/**/*",
-  "**/*.pyc",
-  "**/*.pyo",
-  "**/*.pyd",
-  "**/.DS_Store",
-  "**/.git/**/*"
+  # Project-specific patterns
+  "res/",
+  "Test/",
+  "Social/",
+  "TidyMonkeyInstaller/",
+  ".git/",
+  ".github/",
+  ".vscode/",
+  "**/test_*.py",
+  "**/tests/",
+  "**/__pycache__/"
+]
+
+# Only include essential files
+include = [
+  "src/**/*.py",
+  "__init__.py",
+  "manifest.toml",
+  "LICENSE"
+]
+
+# Exclude non-essential directories
+exclude = [
+  "res/**",
+  "Test/**",
+  "Social/**",
+  "TidyMonkeyInstaller/**",
+  ".git/**",
+  ".github/**",
+  ".vscode/**",
+  "__pycache__/**",
+  "**/__pycache__/**"
 ] 

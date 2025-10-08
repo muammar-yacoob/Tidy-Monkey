@@ -3,7 +3,7 @@ from bpy.types import Panel, PropertyGroup
 import bpy.props
 import bmesh
 
-from .beautify import BEAUTIFY_OT_operator
+from .beautify import OBJECT_OT_beautify_mesh
 from ..cleanup.clear_materials import CLEAR_MATS_OT_operator
 from ..cleanup.generate_actions import GEN_ACTS_OT_operator
 from ..cleanup.clean_textures import CLEAN_TEX_OT_operator
@@ -37,8 +37,8 @@ class CLEANUP_PT_panel(bpy.types.Panel):
                 # box.label(text="Mesh Cleanup")
                 
                 row = box.row()
-                if selected_mesh_count > 1: row.operator("cleanup.beautify", text=f"Beautify ({selected_mesh_count})", icon='SHADERFX')
-                else: row.operator("cleanup.beautify", text="Beautify", icon='SHADERFX')
+                if selected_mesh_count > 1: row.operator(OBJECT_OT_beautify_mesh.bl_idname, text=f"Beautify ({selected_mesh_count})", icon='SHADERFX')
+                else: row.operator(OBJECT_OT_beautify_mesh.bl_idname, text="Beautify", icon='SHADERFX')
                 row.enabled = selected_mesh_count > 0
                 
                 row = box.row()

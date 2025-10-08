@@ -1,0 +1,41 @@
+schema_version = "1.0.0"
+
+id = "tidy_monkey"
+version = "2.0.0"
+name = "Tidy Monkey"
+tagline = "Scene Organization Tool for Artists and Game Developers"
+maintainer = "Spark Games <support@spark-games.co.uk>"
+type = "add-on"
+
+website = "https://spark-games.co.uk"
+tags = ["Scene", "Modeling", "Object"]
+
+blender_version_min = "4.0.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+copyright = [
+  "2025 Spark Games",
+]
+
+# Only include essential files
+include = [
+  "src/**/*.py",
+  "__init__.py",
+  "manifest.toml",
+  "LICENSE"
+]
+
+# Exclude non-essential directories
+exclude = [
+  "res/**",
+  "Test/**",
+  "Social/**",
+  "TidyMonkeyInstaller/**",
+  ".git/**",
+  ".github/**",
+  ".vscode/**",
+  "__pycache__/**",
+  "**/__pycache__/**"
+] 

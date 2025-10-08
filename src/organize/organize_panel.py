@@ -4,7 +4,7 @@ from bpy.types import Panel
 from ..base_panel import TITLE_PT_panel
 from ..organize.origin_to_selected import ORG_SELECTED_OT_operator
 from ..organize.center_origins import ORG_CENTER_OT_operator
-from ..organize.origin_to_bottom import ORG_BOTTOMCENTER_OT_operator
+from ..organize.origin_to_bottom import OBJECT_OT_origin_to_bottom
 from ..organize.align_to_view import ORG_ALIGNTOVIEW_OT_operator
 from ..organize.align_objects import ALIGN_OT_operator
 from ..organize.apply_modifiers import APPLY_MODS_OT_operator
@@ -37,7 +37,7 @@ class ORGANIZE_PT_panel(bpy.types.Panel):
                 row.enabled = selection_count > 0
                 
                 row = box.row()
-                row.operator("organize.origintobottomcenter", text=f"Origin to Bottom ({selection_count})" if selection_count > 1 else "Origin to Bottom", icon='ANCHOR_BOTTOM')
+                row.operator(OBJECT_OT_origin_to_bottom.bl_idname, text=f"Origin to Bottom ({selection_count})" if selection_count > 1 else "Origin to Bottom", icon='ANCHOR_BOTTOM')
                 row.enabled = selection_count > 0
                 
                 box = layout.box()

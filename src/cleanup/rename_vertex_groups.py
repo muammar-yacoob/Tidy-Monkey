@@ -9,7 +9,7 @@ class REN_VERT_OT_operator(bpy.types.Operator):
     bl_description = "Removes the word Mixamo from all vertex groups"
     bl_options = {'REGISTER', 'UNDO'}
     
-    text_input: bpy.props.StringProperty(name="Text Input")
+    text_input = bpy.props.StringProperty(name="Text Input")
     
     def execute(self, context):
         return {"FINISHED"}

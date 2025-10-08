@@ -4,6 +4,8 @@
     "TidyMonkeyInstaller.zip": true,
     "CHANGELOG.md": true,
     "LICENSE": true,
-    "res": true
+    "res": true,
+    "TidyMonkeyInstaller": true,
+    "tidy_monkey.zip": true
   }
 }

@@ -44,6 +44,11 @@ Watch this [quick tutorial video][vid-link]<br>
 - Parent-child normal transfers
 - Export automation with texture packing
 - Material and texture management
+- **🤖 AI-Powered Tools** (NEW!)
+  - Generate 3D models from text descriptions
+  - Create animations with AI assistance
+  - Setup professional lighting automatically
+  - Supports Anthropic Claude and OpenAI GPT models
 
 ### 📦 Object Mode
 - **Beautify**: Applies consistent normals, transforms tris to quads, adds bevel/weighted normal modifiers, and transfers normals data between parent-child objects.
@@ -57,6 +62,13 @@ Watch this [quick tutorial video][vid-link]<br>
 - **Checker Edge**: Selects alternating edges in connected loops with dissolve option for topology decimation.
 - **Clean Verts**: Identifies and dissolves vertices with exactly 2 edge connections.
 - **Fix Rotation**: Aligns selected elements' rotation to world or local coordinate space.
+
+### 🤖 AI Tools (NEW!)
+- **AI 3D Modeling**: Generate models from text (chairs, tables, custom objects)
+- **AI Animation**: Animate objects with natural language (bounce, rotate, custom motions)
+- **AI Lighting**: Create professional lighting setups (studio, dramatic, sunset, etc.)
+
+> **Setup Required**: See [AI_FEATURES.md](./AI_FEATURES.md) for installation and configuration instructions.
 
 
 ## 🌱 Support & Contributions

@@ -39,25 +39,29 @@ def register():
         if hasattr(src, 'register') and callable(src.register):
             src.register()
         else:
-             pass
+            print("Error: src module has no register function")
     except ImportError as e:
-        pass
+        print(f"Error importing src module: {str(e)}")
+        traceback.print_exc()
     except Exception as e:
-        pass
+        print(f"Error during registration: {str(e)}")
+        traceback.print_exc()
 
 def unregister():
     try:
         # Import and call src unregister dynamically
         from . import src
-         # Check if src has an unregister function before calling
+        # Check if src has an unregister function before calling
         if hasattr(src, 'unregister') and callable(src.unregister):
             src.unregister()
         else:
-             pass
+            print("Error: src module has no unregister function")
     except ImportError as e:
-        pass
+        print(f"Error importing src module: {str(e)}")
+        traceback.print_exc()
     except Exception as e:
-        pass
+        print(f"Error during unregistration: {str(e)}")
+        traceback.print_exc()
     
 if __name__ == "__main__":
     # This part should ideally not run when installed as an addon
@@ -65,6 +69,7 @@ if __name__ == "__main__":
     try:
         register()
     except Exception as e:
-        pass
+        print(f"Error during standalone registration: {str(e)}")
+        traceback.print_exc()
 
 #endregion

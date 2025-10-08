@@ -1,51 +1,53 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Clear temporary directory
-rmdir /S /Q ".\temp" 2>nul
-mkdir ".\temp" 2>nul
+:: Delete existing zip files
+if exist ".\tidy_monkey.zip" del /F ".\tidy_monkey.zip"
 
-:: 1. Create directory structure (use manifest file name - not blender_manifest.toml)
-copy ".\blender_manifest.toml" ".\temp\manifest.toml" >nul
-
-:: 2. Create addon directory matching the id from manifest
-mkdir ".\temp\tidy_monkey" 2>nul
-
-:: 3. Create the primary __init__.py file (must have register/unregister)
-copy ".\__init__.py" ".\temp\tidy_monkey\" >nul
-
-:: 4. Copy source files
-if exist ".\src\" (
-    xcopy /S /E /Y ".\src" ".\temp\tidy_monkey\src\" >nul
+:: Clean up any cached Python files - more thorough cleanup
+echo Cleaning up Python cache files...
+for /d /r "." %%d in (__pycache__) do @if exist "%%d" (
+    echo Removing: %%d
+    rd /s /q "%%d"
 )
-
-:: 5. Copy icons if they exist
-if exist ".\icons\" (
-    xcopy /S /E /Y ".\icons" ".\temp\tidy_monkey\icons\" >nul
+for /r "." %%f in (*.pyc) do @if exist "%%f" (
+    echo Removing: %%f
+    del /f /q "%%f"
 )
 
 :: Ensure all needed subdirectories have an __init__.py file
-for /d /r ".\temp\tidy_monkey" %%i in (*) do (
+for /d /r ".\src" %%i in (*) do (
     if not exist "%%i\__init__.py" (
         echo # Auto-generated file > "%%i\__init__.py"
     )
 )
 
-:: Delete existing zip file first
-if exist ".\TidyMonkeyInstaller.zip" del /F ".\TidyMonkeyInstaller.zip"
+:: Check if manifest file exists
+if not exist "blender_manifest.toml" (
+    echo Error: blender_manifest.toml not found!
+    exit /b 1
+)
 
-:: Create zip with correct structure
-powershell -Command "Compress-Archive -Path '.\temp\*' -DestinationPath '.\TidyMonkeyInstaller.zip' -Force"
+:: Attempt to uninstall existing addon first
+echo Attempting to uninstall existing addon...
+"%programfiles%\Blender Foundation\Blender 4.4\blender.exe" --background --python-expr "import bpy; bpy.ops.preferences.addon_disable(module='tidy_monkey'); bpy.ops.preferences.addon_remove(module='tidy_monkey')" 2>nul
 
-:: Clean up
-rmdir /S /Q ".\temp"
+:: Build the extension using Blender's command line tool
+echo Building extension...
+"%programfiles%\Blender Foundation\Blender 4.4\blender.exe" --background --python-expr "import bpy; bpy.ops.preferences.addon_disable(module='tidy_monkey')" --command extension build --source-dir . --output-filepath tidy_monkey.zip --valid-tags="" --verbose
 
-echo Package created: TidyMonkeyInstaller.zip
+if %ERRORLEVEL% NEQ 0 (
+    echo Error: Extension build failed!
+    exit /b 1
+)
+
+echo.
+echo Package created: tidy_monkey.zip
 echo.
 echo Installation instructions:
 echo 1. Open Blender 4.x
 echo 2. Go to Edit -^> Preferences -^> Add-ons -^> Install...
-echo 3. Select the TidyMonkeyInstaller.zip file
+echo 3. Select the tidy_monkey.zip file
 echo 4. Enable the addon
 echo.
-:: pause
+pause

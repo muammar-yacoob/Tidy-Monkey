@@ -1,0 +1,2 @@
+# Python dependencies for Tidy Monkey AI features
+requests>=2.31.0

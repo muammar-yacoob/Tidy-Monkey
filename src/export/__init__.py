@@ -10,7 +10,6 @@ except ImportError as e:
      print(f"    ERROR importing export_panel: {e}")
 
 try:
-    from . import export_fbx
     from . import export_glb
     print("    Imported export ops modules (excluding self-import check)." )
 except ImportError as e:
